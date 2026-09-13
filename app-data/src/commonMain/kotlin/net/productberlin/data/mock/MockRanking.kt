@@ -1,0 +1,173 @@
+package net.productberlin.data.mock
+
+/** Fictional demo stories and positions; not verified Berlin company coverage. */
+internal object MockRanking {
+    val json =
+        """
+{
+  "weekLabel": "September 7–13, 2026",
+  "startups": [
+    {
+      "id": "almedia",
+      "name": "Almedia",
+      "description": "Turning discovery into rewards.",
+      "category": "Adtech",
+      "movement": 2,
+      "reason": "A new product launch and growing partner interest put Almedia at the top of this week’s demo ranking.",
+      "news": [
+        {
+          "id": "almedia-story",
+          "headline": "Almedia introduces a new way for brands to reach audiences",
+          "source": "Product update",
+          "publishedAt": "Sep 11, 2026"
+        }
+      ]
+    },
+    {
+      "id": "aignostics",
+      "name": "Aignostics",
+      "description": "Turning pathology into possibility.",
+      "category": "Health tech",
+      "movement": 4,
+      "reason": "Research interest and a fresh pathology tool are driving this week’s sample momentum.",
+      "news": [
+        {
+          "id": "aignostics-story",
+          "headline": "A new way to help research teams understand pathology",
+          "source": "Product launch",
+          "publishedAt": "Sep 10, 2026"
+        }
+      ]
+    },
+    {
+      "id": "n26",
+      "name": "N26",
+      "description": "Your money. A little more mobile.",
+      "category": "Fintech",
+      "movement": 1,
+      "reason": "New everyday banking features keep N26 in the conversation in our illustrative weekly roundup.",
+      "news": [
+        {
+          "id": "n26-story",
+          "headline": "N26 rethinks the everyday banking experience",
+          "source": "Company news",
+          "publishedAt": "Sep 9, 2026"
+        }
+      ]
+    },
+    {
+      "id": "parloa",
+      "name": "Parloa",
+      "description": "A better conversation with AI.",
+      "category": "AI & software",
+      "movement": null,
+      "reason": "A new arrival in this demo, with a wave of interest around customer conversations with AI.",
+      "news": [
+        {
+          "id": "parloa-story",
+          "headline": "Making customer conversations more helpful with AI",
+          "source": "Community buzz",
+          "publishedAt": "Sep 8, 2026"
+        }
+      ]
+    },
+    {
+      "id": "sennder",
+      "name": "sennder",
+      "description": "Moving freight forward.",
+      "category": "Logistics",
+      "movement": -2,
+      "reason": "Digital freight and smarter operations feature in this week’s example industry coverage.",
+      "news": [
+        {
+          "id": "sennder-story",
+          "headline": "Making road freight a little smarter, one shipment at a time",
+          "source": "Industry news",
+          "publishedAt": "Sep 11, 2026"
+        }
+      ]
+    },
+    {
+      "id": "enpal",
+      "name": "Enpal",
+      "description": "Bringing sunshine home.",
+      "category": "Climate tech",
+      "movement": 3,
+      "reason": "A sample climate-tech launch shows how a new product story might influence the weekly list.",
+      "news": [
+        {
+          "id": "enpal-story",
+          "headline": "A fresh approach to home solar energy",
+          "source": "Product launch",
+          "publishedAt": "Sep 10, 2026"
+        }
+      ]
+    },
+    {
+      "id": "trade-republic",
+      "name": "Trade Republic",
+      "description": "Make your money work for you.",
+      "category": "Fintech",
+      "movement": -1,
+      "reason": "Consistent product interest keeps Trade Republic in the top ten of this fictional snapshot.",
+      "news": [
+        {
+          "id": "trade-republic-story",
+          "headline": "A closer look at the next generation of personal finance",
+          "source": "Company news",
+          "publishedAt": "Sep 9, 2026"
+        }
+      ]
+    },
+    {
+      "id": "deepset",
+      "name": "deepset",
+      "description": "Putting AI to work.",
+      "category": "AI & software",
+      "movement": 0,
+      "reason": "Applied AI remains part of the conversation, with a sample story about collaboration tools.",
+      "news": [
+        {
+          "id": "deepset-story",
+          "headline": "Helping teams build useful AI applications",
+          "source": "Product update",
+          "publishedAt": "Sep 8, 2026"
+        }
+      ]
+    },
+    {
+      "id": "personio",
+      "name": "Personio",
+      "description": "More time for the people part.",
+      "category": "HR software",
+      "movement": 2,
+      "reason": "An example product update and customer story give Personio a lift in the demo ranking.",
+      "news": [
+        {
+          "id": "personio-story",
+          "headline": "Helping people teams spend less time on admin",
+          "source": "Company news",
+          "publishedAt": "Sep 11, 2026"
+        }
+      ]
+    },
+    {
+      "id": "ecosia",
+      "name": "Ecosia",
+      "description": "A greener way to search.",
+      "category": "Climate tech",
+      "movement": null,
+      "reason": "A fresh sustainability story brings Ecosia into this week’s illustrative selection.",
+      "news": [
+        {
+          "id": "ecosia-story",
+          "headline": "Small searches, bigger possibilities for the planet",
+          "source": "Impact story",
+          "publishedAt": "Sep 10, 2026"
+        }
+      ]
+    }
+  ]
+}
+        """.trimIndent()
+}
