@@ -1,0 +1,56 @@
+import { spawnSync } from 'node:child_process';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { mockSeedSql } from './seed.mjs';
+
+const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const [command, environment] = process.argv.slice(2);
+if (!['config', 'migrate', 'seed', 'deploy-check', 'deploy'].includes(command) || !['local', 'staging', 'production'].includes(environment)) {
+  throw new Error('Usage: npm run cf -- <config|migrate|seed|deploy-check|deploy> <local|staging|production>');
+}
+if (environment === 'local' && command === 'deploy') throw new Error('Local configuration cannot be deployed');
+let configPath = resolve(root, 'wrangler.json');
+if (environment !== 'local') {
+  const databaseId = process.env.D1_DATABASE_ID;
+  const buildSha = process.env.BUILD_SHA;
+  if (!databaseId || !/^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(databaseId) || /^0+-0+-0+-0+-0+$/.test(databaseId)) {
+    throw new Error('Set D1_DATABASE_ID to the database UUID for the selected environment');
+  }
+  if (['deploy', 'deploy-check'].includes(command) && !/^[0-9a-f]{40}$/.test(buildSha ?? '')) {
+    throw new Error('Set BUILD_SHA to the full Git commit SHA before deploying');
+  }
+  const config = JSON.parse(await readFile(configPath, 'utf8'));
+  delete config.$schema;
+  config.name = `productberlin-${environment}`;
+  config.main = resolve(root, config.main);
+  config.assets.directory = resolve(root, config.assets.directory);
+  config.vars = { BUILD_SHA: buildSha ?? 'manual' };
+  config.d1_databases = [{
+    binding: 'DB', database_name: `productberlin-${environment}`, database_id: databaseId,
+    migrations_dir: resolve(root, 'cloudflare/migrations'),
+  }];
+  configPath = resolve(root, `cloudflare/.generated/${environment}.json`);
+  await mkdir(dirname(configPath), { recursive: true });
+  await writeFile(configPath, JSON.stringify(config, null, 2) + '\n');
+}
+if (command === 'config') {
+  console.log(configPath);
+} else {
+  const target = environment === 'local' ? '--local' : '--remote';
+  let args;
+  if (command === 'migrate') args = ['d1', 'migrations', 'apply', 'DB', target];
+  if (command === 'seed') {
+    const seedPath = resolve(root, '.wrangler/mock-seed.sql');
+    await mkdir(dirname(seedPath), { recursive: true });
+    await writeFile(seedPath, await mockSeedSql());
+    args = ['d1', 'execute', 'DB', target, '--file', seedPath, '--yes'];
+  }
+  if (command === 'deploy-check') args = ['deploy', '--dry-run'];
+  if (command === 'deploy') args = ['deploy', '--message', `Git ${process.env.BUILD_SHA}`];
+  const result = spawnSync(process.execPath, [resolve(root, 'node_modules/wrangler/bin/wrangler.js'), ...args, '--config', configPath], {
+    cwd: root, stdio: 'inherit', env: { ...process.env, CI: 'true', WRANGLER_SEND_METRICS: 'false' },
+  });
+  if (result.error) throw result.error;
+  process.exitCode = result.status ?? 1;
+}

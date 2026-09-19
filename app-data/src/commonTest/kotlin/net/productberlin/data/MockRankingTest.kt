@@ -15,7 +15,7 @@ class MockRankingTest {
         runTest {
             val client = createMockHttpClient()
             try {
-                val ranking = KtorStartupRepository(client).getWeeklyRanking()
+                val ranking = KtorStartupRepository(client, "https://productberlin.invalid").getWeeklyRanking()
                 assertEquals(10, ranking.startups.size)
                 assertEquals("almedia", ranking.startups.first().id)
                 assertEquals("ecosia", ranking.startups.last().id)

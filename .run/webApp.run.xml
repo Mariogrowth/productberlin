@@ -3,8 +3,7 @@
     <ExternalSystemSettings>
       <option name="externalProjectPath" value="$PROJECT_DIR$" />
       <option name="externalSystemIdString" value="GRADLE" />
-      <option name="taskNames"><list><option value=":webApp:jsBrowserDevelopmentRun" /></list></option>
-      <option name="scriptParameters" value="--continuous" />
+      <option name="taskNames"><list><option value=":runLocal" /></list></option>
     </ExternalSystemSettings>
     <method v="2" />
   </configuration>

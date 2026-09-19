@@ -69,7 +69,7 @@ val App =
             div {
                 className = ClassName("ranking-meta")
                 h2 { +"The weekly ten" }
-                span { +((state as? RankingState.Ready)?.ranking?.weekLabel ?: "September 7–13, 2026") }
+                span { +((state as? RankingState.Ready)?.ranking?.weekLabel ?: "This week") }
             }
             div {
                 className = ClassName("ranking-layout")

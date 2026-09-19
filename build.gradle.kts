@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsEnvSpec
+import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension
 import org.jlleitschuh.gradle.ktlint.KtlintExtension
@@ -43,5 +45,19 @@ plugins.withType<YarnPlugin> {
     extensions.configure<YarnRootExtension> {
         resolution("react", reactVersion)
         resolution("react-dom", reactVersion)
+    }
+}
+
+// The IDE run action must serve both the UI and its D1-backed API.
+plugins.withType<NodeJsRootPlugin> {
+    val node = extensions.getByType<NodeJsEnvSpec>()
+    tasks.register<Exec>("runLocal") {
+        group = "application"
+        description = "Build, initialize local D1, and serve the website and API on port 8787."
+        dependsOn(":api-worker:jsNodeProductionLibraryDistribution", ":webApp:jsBrowserDistribution")
+        dependsOn("kotlinNodeJsSetup")
+        workingDir(rootDir)
+        executable(node.executable.get())
+        args("scripts/local-dev.mjs")
     }
 }

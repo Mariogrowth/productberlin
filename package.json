@@ -3,10 +3,25 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "./gradlew :webApp:jsBrowserDevelopmentRun --continuous",
-    "build": "./gradlew :webApp:jsBrowserDistribution",
+    "start": "npm run build && node scripts/local-dev.mjs",
+    "dev": "node scripts/local-dev.mjs --serve-only",
+    "dev:web": "./gradlew :webApp:jsBrowserDevelopmentRun --continuous",
+    "build": "./gradlew :api-worker:jsNodeProductionLibraryDistribution :webApp:jsBrowserDistribution",
     "test": "./gradlew :app-domain:jsNodeTest :app-data:jsNodeTest",
+    "test:integration": "node --test scripts/test/cloudflare.test.mjs",
+    "test:dev": "node --test scripts/test/local-dev.test.mjs",
+    "check": "npm run lint && npm test && npm run build && npm run test:integration && npm run test:dev",
     "lint": "./gradlew ktlintCheck",
-    "format": "./gradlew ktlintFormat"
+    "format": "./gradlew ktlintFormat",
+    "db:migrate:local": "wrangler d1 migrations apply DB --local",
+    "db:seed:local": "node scripts/cloudflare.mjs seed local",
+    "setup:local": "npm run db:migrate:local && npm run db:seed:local",
+    "cf": "node scripts/cloudflare.mjs"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "devDependencies": {
+    "wrangler": "4.135.0"
   }
 }

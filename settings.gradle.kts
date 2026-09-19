@@ -27,4 +27,4 @@ dependencyResolutionManagement {
     }
 }
 
-include(":app-domain", ":app-data", ":app-presentation", ":webApp")
+include(":api-contract", ":api-worker", ":app-domain", ":app-data", ":app-presentation", ":webApp")
