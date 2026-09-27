@@ -11,7 +11,7 @@ All six modules have automated behavioral tests. These are test counts and a cov
 | `app-presentation` | 23 | Loading/success/empty/error/retry states, cancellation on use-case replacement, live/mock attribution, design-system semantics/styles, safe news links, disclosure and focus |
 | `webApp` | 4 | Koin graph and instance isolation, real Ktor-to-screen bootstrap with an intercepted response, API-free design-system route |
 
-`app-domain`, `app-data`, and `api-contract` run in both Node and Chrome. Presentation and bootstrap tests run in Chrome, Worker unit tests in Node. This produces **94 Kotlin test executions**. There are also **19 local Worker/RSS integration tests** and **3 launcher regression tests**.
+`app-domain`, `app-data`, and `api-contract` run in both Node and Chrome. Presentation and bootstrap tests run in Chrome, Worker unit tests in Node. This produces **94 Kotlin test executions**. There are also **19 local Worker/RSS integration tests**, **3 launcher regression tests**, and **6 deployment-configuration tests**.
 
 ## Database publication and fetching
 

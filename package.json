@@ -10,13 +10,14 @@
     "test": "./gradlew allTests",
     "test:integration": "node --test scripts/test/cloudflare.test.mjs scripts/test/collector.test.mjs scripts/test/rss-parser.test.mjs",
     "test:dev": "node --test scripts/test/local-dev.test.mjs",
-    "check": "npm run lint && npm test && npm run build && npm run test:integration && npm run test:dev",
+    "check": "npm run lint && npm run test:deployment && npm test && npm run build && npm run test:integration && npm run test:dev",
     "lint": "./gradlew ktlintCheck",
     "format": "./gradlew ktlintFormat",
     "db:migrate:local": "wrangler d1 migrations apply DB --local",
     "db:seed:local": "node scripts/cloudflare.mjs seed local",
     "setup:local": "npm run db:migrate:local && npm run db:seed:local",
-    "cf": "node scripts/cloudflare.mjs"
+    "cf": "node scripts/cloudflare.mjs",
+    "test:deployment": "node --test scripts/test/deployment.test.mjs"
   },
   "engines": {
     "node": ">=22.0.0"

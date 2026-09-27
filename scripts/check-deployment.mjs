@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { stat } from 'node:fs/promises';
+import { validateDeploymentUrl } from './deployment-url.mjs';
 
 // Fail before migrations or uploads. Never print credential values.
 const required = ['CLOUDFLARE_API_TOKEN', 'CLOUDFLARE_ACCOUNT_ID', 'D1_DATABASE_ID', 'DEPLOY_URL', 'BUILD_SHA', 'TARGET_ENV'];
@@ -8,9 +9,7 @@ assert.equal(missing.length, 0, `Missing GitHub environment settings: ${missing.
 assert.ok(['staging', 'production'].includes(process.env.TARGET_ENV), 'Invalid deployment environment');
 assert.match(process.env.BUILD_SHA, /^[0-9a-f]{40}$/, 'BUILD_SHA must be a full Git commit SHA');
 assert.match(process.env.CLOUDFLARE_ACCOUNT_ID, /^[0-9a-f]{32}$/i, 'Invalid Cloudflare account ID');
-const url = new URL(process.env.DEPLOY_URL);
-assert.ok(url.protocol === 'https:' && !url.username && !url.password && !url.search && !url.hash && url.pathname === '/',
-  'DEPLOY_URL must be an HTTPS origin, such as https://productberlin-staging.example.workers.dev');
+validateDeploymentUrl(process.env.DEPLOY_URL, process.env.TARGET_ENV);
 
 for (const path of [
   'api-worker/entry.mjs',

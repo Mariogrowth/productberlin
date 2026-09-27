@@ -93,6 +93,8 @@ One-time setup (these remote resources have not been created by this scaffold):
 4. Set environment variables `D1_DATABASE_ID` (that environment's database UUID) and `DEPLOY_URL` (the full HTTPS Worker/custom-domain URL). Worker names are `productberlin-staging` and `productberlin-production`.
 5. Commit and push the scaffold (including `.github/workflows/`, `package-lock.json`, both new Kotlin modules, and migrations). In GitHub, open **Actions → Deploy Cloudflare → Run workflow**, select `staging`, and check **seed_mock_data** for the initial populated demo. Repeat for production when ready. Leave the checkbox off for ordinary updates; the standalone **Seed mock data** workflow is also available.
 
+Set these variables in **Settings → Environments → staging/production**, rather than relying on one repository-wide URL. Repository variables are defaults for environments without an override. For workers.dev, the first hostname label must match the deployed Worker: `productberlin-staging` or `productberlin-production`; the following account subdomain stays the same and may itself contain `staging`. Preflight rejects a workers.dev URL for the wrong environment before migrations or uploads. Custom domains are still checked against the deployed Git SHA by the smoke test.
+
 Workflows:
 
 | Workflow | Trigger | Work |
@@ -126,6 +128,7 @@ npm run check             # lint, Kotlin tests, production builds, D1/API integr
 ./gradlew allTests        # Tests on every configured target in every module
 ./gradlew allTests --rerun-tasks  # Force fresh execution instead of reusing test results
 npm run test:integration  # Run against already-built artifacts
+npm run test:deployment   # Deployment URL/environment validation regression tests
 npm run test:dev          # Port conflict, debugger collision, stop/restart regression checks
 ```
 
