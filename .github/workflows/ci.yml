@@ -21,6 +21,16 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
       - run: npm ci
       - run: npm run check
+      - name: Upload module test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports-${{ github.sha }}
+          retention-days: 7
+          if-no-files-found: warn
+          path: |
+            **/build/reports/tests/
+            **/build/test-results/
       - uses: actions/upload-artifact@v4
         with:
           name: cloudflare-dist-${{ github.sha }}

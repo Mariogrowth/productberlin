@@ -10,6 +10,7 @@ import net.productberlin.presentation.testing.ComponentTest
 import react.create
 import react.dom.flushSync
 import web.cssom.ClassName
+import web.dom.document
 import web.html.HTMLButtonElement
 
 /** Existing behavior baseline; Figma visual parity is verified separately once the design is accessible. */
@@ -65,6 +66,22 @@ class StartupRowTest : ComponentTest() {
         flushSync { button.click() }
         assertEquals("false", button.getAttribute("aria-expanded"))
         assertTrue(content.classList.contains(ClassName("is-collapsed")))
+    }
+
+    @Test
+    fun showLessClosesNewsAndReturnsFocusToWhy() {
+        render(
+            StartupRow.create {
+                company = this@StartupRowTest.company
+                position = 1
+            },
+        )
+        val why = container.querySelector(".why-button")!!.unsafeCast<HTMLButtonElement>()
+        flushSync { why.click() }
+        val less = container.querySelector(".pb-news-feed button")!!.unsafeCast<HTMLButtonElement>()
+        flushSync { less.click() }
+        assertEquals("false", why.getAttribute("aria-expanded"))
+        assertEquals(why, document.activeElement)
     }
 
     @Test

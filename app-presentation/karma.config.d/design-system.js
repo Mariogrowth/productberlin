@@ -4,3 +4,6 @@ const resources = path.resolve(config.basePath, '../../../../app-presentation/sr
 config.files.push({ pattern: path.join(resources, 'design-system.css'), included: true, watched: true, type: 'css' });
 config.files.push({ pattern: path.join(resources, 'fonts/*.woff2'), included: false, served: true });
 config.proxies['/fonts/'] = '/absolute' + path.join(resources, 'fonts/') ;
+
+config.files.push({ pattern: path.join(resources, 'arrow.svg'), included: false, served: true });
+config.proxies['/arrow.svg'] = '/absolute' + path.join(resources, 'arrow.svg');

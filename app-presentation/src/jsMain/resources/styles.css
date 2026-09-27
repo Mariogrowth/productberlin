@@ -84,3 +84,6 @@ footer > p { font-size: 10px; color: #a0a0a7; margin: 9px 0 13px; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 
 .why-content.is-collapsed { display: none; }
+
+.why-content { background: transparent; padding: 0; }
+@media (max-width: 540px) { .why-content { grid-column: 1 / -1; padding: 0; } }

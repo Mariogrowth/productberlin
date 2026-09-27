@@ -1,6 +1,6 @@
 # Product.berlin design system
 
-Open `/design-system` using the normal local app (`./gradlew runLocal`). The catalogue is bundled with the website and uses local sample data; opening it does not initialize Koin or call the API. The existing home page is unchanged.
+Open `/design-system` using the normal local app (`./gradlew runLocal`). The catalogue is bundled with the website and uses local sample data; opening it does not initialize Koin or call the API. The home page uses the reusable news disclosure layout.
 
 ## Reference and fidelity
 
@@ -96,3 +96,9 @@ div {
 ```
 
 The browser tests use Chrome Headless and load the actual shipped design-system CSS. Install Chrome/Chromium locally, or set `CHROME_BIN` to its executable if it is not discovered automatically. `npm test` and the existing GitHub `Checks` workflow include these tests. They cover rendering, measured typography, control dimensions, input callbacks and validation associations, disabled actions, selection, disclosure isolation, table alignment and recovery actions. Existing home-page row tests protect its behavior. These checks establish code and browser behavior; they cannot verify unexposed Figma attributes.
+
+## News disclosure
+
+`layouts.news.NewsFeed` consumes presentation-only `NewsStory` models: publisher, date, headline, optional HTTPS link and optional plain-text summary. It composes `Card` and `Button`; `NewsStoryMapper` adapts domain news at the screen boundary. `StartupRow` owns disclosure state and restores focus to Why on Show less. The gallery includes a fictional example. News panel radii (24px/20px mobile), spacing, publisher initials and responsive typography are estimates from the supplied expanded-news screenshot; no image/menu is invented when the source has none.
+
+News feeds draw separators only between adjacent articles; the first publisher has no top divider or extra top padding.

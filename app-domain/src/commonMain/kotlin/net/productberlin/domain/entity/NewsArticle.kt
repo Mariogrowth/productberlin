@@ -5,4 +5,6 @@ data class NewsArticle(
     val headline: String,
     val source: String,
     val publishedAt: String,
+    val url: String? = null,
+    val summary: String? = null,
 )

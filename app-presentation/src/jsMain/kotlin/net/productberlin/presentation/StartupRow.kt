@@ -1,25 +1,26 @@
 package net.productberlin.presentation
 
 import net.productberlin.domain.entity.Startup
+import net.productberlin.presentation.designsystem.layouts.news.NewsFeed
 import react.FC
-import react.Key
 import react.Props
-import react.dom.html.ReactHTML.article
 import react.dom.html.ReactHTML.button
 import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.h3
-import react.dom.html.ReactHTML.h4
 import react.dom.html.ReactHTML.li
 import react.dom.html.ReactHTML.p
 import react.dom.html.ReactHTML.span
+import react.useRef
 import react.useState
 import web.cssom.ClassName
 import web.dom.ElementId
 import web.html.ButtonType
+import web.html.HTMLButtonElement
 import web.html.button
 
 external interface StartupRowProps : Props {
     var company: Startup
+    var isMock: Boolean?
     var position: Int
 }
 
@@ -27,6 +28,7 @@ val StartupRow =
     FC<StartupRowProps> { props ->
         val company = props.company
         var expanded by useState(false)
+        val whyButton = useRef<HTMLButtonElement>(null)
         li {
             className = ClassName("startup-row")
             span {
@@ -47,7 +49,7 @@ val StartupRow =
                         "trade-republic" -> "TR"
                         "deepset" -> "d"
                         "personio" -> "p"
-                        else -> "e"
+                        else -> company.name.take(2)
                     }
                 )
             }
@@ -91,6 +93,7 @@ val StartupRow =
                 }
             }
             button {
+                ref = whyButton
                 type = ButtonType.button
                 className = ClassName("why-button")
                 ariaLabel = "Why ${company.name} is ranked ${props.position}"
@@ -114,15 +117,15 @@ val StartupRow =
                     className = ClassName("ranking-reason")
                     +company.reason
                 }
-                company.news.forEach { story ->
-                    article {
-                        key = Key(story.id)
-                        className = ClassName("news-story")
-                        span {
-                            className = ClassName("story-meta")
-                            +"${story.source} · ${story.publishedAt} · Sample story"
+                div {
+                    className = ClassName("pb-theme")
+                    NewsFeed {
+                        stories = company.news.map { it.toNewsStory() }
+                        isMock = props.isMock != false
+                        onCollapse = {
+                            expanded = false
+                            whyButton.current?.focus()
                         }
-                        h4 { +story.headline }
                     }
                 }
             }

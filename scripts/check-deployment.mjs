@@ -14,6 +14,9 @@ assert.ok(url.protocol === 'https:' && !url.username && !url.password && !url.se
 
 for (const path of [
   'api-worker/entry.mjs',
+  'api-worker/rss-parser.mjs',
+  'cloudflare/startups.json',
+  'cloudflare/migrations/0002_weekly_collection.sql',
   'api-worker/build/dist/js/productionLibrary/Productberlin-api-worker.mjs',
   'webApp/build/dist/js/productionExecutable/index.html',
   'webApp/build/dist/js/productionExecutable/productberlin.js',

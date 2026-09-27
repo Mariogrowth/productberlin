@@ -1,0 +1,228 @@
+[
+  {
+    "id": "almedia",
+    "name": "Almedia",
+    "description": "Consumer discovery and rewards.",
+    "category": "Adtech",
+    "aliases": []
+  },
+  {
+    "id": "aignostics",
+    "name": "Aignostics",
+    "description": "AI for computational pathology.",
+    "category": "Health tech",
+    "aliases": []
+  },
+  {
+    "id": "n26",
+    "name": "N26",
+    "description": "Digital banking.",
+    "category": "Fintech",
+    "aliases": []
+  },
+  {
+    "id": "parloa",
+    "name": "Parloa",
+    "description": "AI agents for customer service.",
+    "category": "AI",
+    "aliases": []
+  },
+  {
+    "id": "sennder",
+    "name": "sennder",
+    "description": "Digital road freight.",
+    "category": "Logistics",
+    "aliases": []
+  },
+  {
+    "id": "enpal",
+    "name": "Enpal",
+    "description": "Home solar and energy systems.",
+    "category": "Climate tech",
+    "aliases": []
+  },
+  {
+    "id": "trade-republic",
+    "name": "Trade Republic",
+    "description": "Investing and savings.",
+    "category": "Fintech",
+    "aliases": []
+  },
+  {
+    "id": "deepset",
+    "name": "deepset",
+    "description": "Tools for building AI applications.",
+    "category": "AI",
+    "aliases": []
+  },
+  {
+    "id": "ecosia",
+    "name": "Ecosia",
+    "description": "Search supporting climate action.",
+    "category": "Climate tech",
+    "aliases": []
+  },
+  {
+    "id": "mika",
+    "name": "mika",
+    "description": "AI-powered accounting for small businesses.",
+    "category": "Fintech",
+    "aliases": [],
+    "contextKeywords": [
+      "accounting",
+      "Buchhaltung",
+      "fintech",
+      "tax",
+      "startup",
+      "AI",
+      "funding"
+    ]
+  },
+  {
+    "id": "recovery-cat",
+    "name": "Recovery Cat",
+    "description": "Digital support for mental healthcare.",
+    "category": "Health tech",
+    "aliases": [
+      "RecoveryCat"
+    ]
+  },
+  {
+    "id": "blacklane",
+    "name": "Blacklane",
+    "description": "Chauffeur services.",
+    "category": "Mobility",
+    "aliases": []
+  },
+  {
+    "id": "noxtua",
+    "name": "Noxtua",
+    "description": "AI tools for legal research and legal work.",
+    "category": "Legal tech",
+    "aliases": [],
+    "contextKeywords": []
+  },
+  {
+    "id": "choco",
+    "name": "Choco",
+    "description": "Software connecting restaurants and food distributors.",
+    "category": "Food tech",
+    "aliases": [],
+    "contextKeywords": [
+      "foodtech",
+      "restaurant",
+      "restaurants",
+      "Gastronomie",
+      "KI",
+      "software"
+    ]
+  },
+  {
+    "id": "langdock",
+    "name": "Langdock",
+    "description": "AI assistants and workflows for businesses.",
+    "category": "AI",
+    "aliases": [],
+    "contextKeywords": []
+  },
+  {
+    "id": "koro",
+    "name": "KoRo",
+    "description": "Online food and snack retail.",
+    "category": "Food tech",
+    "aliases": [],
+    "contextKeywords": []
+  },
+  {
+    "id": "nox",
+    "name": "Nox",
+    "description": "Developing overnight trains with private rooms.",
+    "category": "Mobility",
+    "aliases": [
+      "Nox Mobility"
+    ],
+    "contextKeywords": [
+      "train",
+      "trains",
+      "night",
+      "Nachtzug",
+      "Nachtzüge",
+      "Nachtzügen",
+      "rail",
+      "Mobility",
+      "Zug",
+      "Züge"
+    ]
+  },
+  {
+    "id": "wefox",
+    "name": "wefox",
+    "description": "Technology for insurance distribution.",
+    "category": "Insurtech",
+    "aliases": [],
+    "contextKeywords": []
+  },
+  {
+    "id": "raisin",
+    "name": "Raisin",
+    "description": "A marketplace for savings and investments.",
+    "category": "Fintech",
+    "aliases": [
+      "WeltSparen"
+    ],
+    "contextKeywords": [
+      "bank",
+      "banking",
+      "savings",
+      "fintech",
+      "Zinsen",
+      "Zins",
+      "WeltSparen",
+      "Geldanlage",
+      "Sparen",
+      "Festgeld"
+    ]
+  },
+  {
+    "id": "getyourguide",
+    "name": "GetYourGuide",
+    "description": "Booking experiences and activities for travellers.",
+    "category": "Travel tech",
+    "aliases": [
+      "Get Your Guide"
+    ],
+    "contextKeywords": []
+  },
+  {
+    "id": "contentful",
+    "name": "Contentful",
+    "description": "A content platform for digital experiences.",
+    "category": "Software",
+    "aliases": [],
+    "contextKeywords": []
+  },
+  {
+    "id": "omio",
+    "name": "Omio",
+    "description": "Booking rail, bus and air travel.",
+    "category": "Travel tech",
+    "aliases": [],
+    "contextKeywords": []
+  },
+  {
+    "id": "forto",
+    "name": "Forto",
+    "description": "Digital freight forwarding and logistics.",
+    "category": "Logistics",
+    "aliases": [],
+    "contextKeywords": []
+  },
+  {
+    "id": "babbel",
+    "name": "Babbel",
+    "description": "Digital language learning.",
+    "category": "Education",
+    "aliases": [],
+    "contextKeywords": []
+  }
+]

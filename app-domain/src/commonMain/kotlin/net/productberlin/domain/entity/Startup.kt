@@ -9,4 +9,5 @@ data class Startup(
     val movement: Int?,
     val reason: String,
     val news: List<NewsArticle>,
+    val mentionCount: Int? = null,
 )

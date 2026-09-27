@@ -3,6 +3,8 @@ package net.productberlin.domain.usecase
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertSame
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.test.runTest
 import net.productberlin.domain.entity.Startup
 import net.productberlin.domain.entity.WeeklyRanking
@@ -35,5 +37,18 @@ class GetWeeklyRankingTest {
                     override suspend fun getWeeklyRanking() = WeeklyRanking("Demo week", listOf(startup, startup))
                 }
             assertFailsWith<IllegalArgumentException> { GetWeeklyRanking(repository)() }
+        }
+
+    @Test
+    fun preservesFailuresAndCancellationForTheCaller() =
+        runTest {
+            for (failure in listOf(IllegalStateException("Unavailable"), CancellationException("Cancelled"))) {
+                val repository =
+                    object : StartupRepository {
+                        override suspend fun getWeeklyRanking(): WeeklyRanking = throw failure
+                    }
+                val actual = assertFailsWith<Exception> { GetWeeklyRanking(repository)() }
+                assertSame(failure, actual)
+            }
         }
 }

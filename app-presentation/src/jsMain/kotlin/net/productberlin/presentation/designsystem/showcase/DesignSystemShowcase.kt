@@ -18,6 +18,8 @@ import net.productberlin.presentation.designsystem.layouts.cards.Card
 import net.productberlin.presentation.designsystem.layouts.feedback.EmptyState
 import net.productberlin.presentation.designsystem.layouts.filters.FilterBar
 import net.productberlin.presentation.designsystem.layouts.filters.FilterOption
+import net.productberlin.presentation.designsystem.layouts.news.NewsFeed
+import net.productberlin.presentation.designsystem.layouts.news.NewsStory
 import net.productberlin.presentation.designsystem.layouts.ranking.RankedResult
 import net.productberlin.presentation.designsystem.layouts.ranking.RankedResults
 import net.productberlin.presentation.designsystem.layouts.tables.DenseTable
@@ -615,6 +617,10 @@ val DesignSystemShowcase =
                                 +"Example: search, filter, compare, then inspect the rationale behind each ranking."
                             }
                         }
+                    }
+                    NewsFeed {
+                        isMock = true
+                        stories = listOf(NewsStory("sample-news", "A new product for Berlin", "Sample publisher", "2026-09-27", null))
                     }
                     Card {
                         DenseTable {

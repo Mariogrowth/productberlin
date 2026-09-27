@@ -11,4 +11,5 @@ data class StartupDto(
     val movement: Int? = null,
     val reason: String,
     val news: List<NewsDto> = emptyList(),
+    val mentionCount: Int? = null,
 )

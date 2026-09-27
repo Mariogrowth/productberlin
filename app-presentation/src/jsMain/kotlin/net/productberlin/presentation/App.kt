@@ -37,6 +37,7 @@ val App =
     FC<AppProps> { props ->
         var attempt by useState(0)
         val state = useWeeklyRanking(props.getRanking, attempt)
+        val ranking = (state as? RankingState.Ready)?.ranking
 
         a {
             className = ClassName("skip-link")
@@ -111,6 +112,7 @@ val App =
                                             key = Key(startup.id)
                                             company = startup
                                             position = index + 1
+                                            isMock = current.ranking.isMock
                                         }
                                     }
                                 }
@@ -141,17 +143,38 @@ val App =
                 div {
                     className = ClassName("demo-label")
                     span { className = ClassName("demo-dot") }
-                    +"Demo edition"
+                    +(if (ranking?.isMock == true) "Demo edition" else "Google News · Updated weekly")
                 }
-                p { +"Sample rankings & fictional news. Real Berlin energy." }
+                p {
+                    +(
+                        if (ranking?.isMock == true) {
+                            "Sample rankings & fictional news. Real Berlin energy."
+                        } else {
+                            ranking?.updatedAt?.let { "Last updated ${it.take(10)} · ${ranking.articleCount ?: 0} articles reviewed" }
+                                ?: "Berlin startups in the news."
+                        }
+                    )
+                }
                 details {
                     className = ClassName("about-ranking")
                     summary { +"How the list works" }
                     p {
                         +(
-                            "A preview of a weekly startup roundup. Positions, movement, and stories are mocked for this design. " +
-                                "Later, source workers will collect public company updates and news for a transparent, " +
-                                "evidence-backed ranking."
+                            if (ranking?.isMock == true) {
+                                "A preview with sample rankings and fictional stories."
+                            } else {
+                                "We count distinct Google News headlines mentioning companies " +
+                                    "in our maintained Berlin startup catalogue. Ambiguous names also require company context. " +
+                                    "We search English and German Berlin startup and business news " +
+                                    "over the previous seven complete UTC days. " +
+                                    "Up to ten companies are ranked by " +
+                                    "article count, with a consistent order for ties. Why shows up to five recent stories, " +
+                                    "newest first. " +
+                                    "Coverage depends on Google News and our catalogue; this is a news signal, " +
+                                    "not a measure of company quality. " +
+                                    "We refresh Mondays at 06:00 UTC. If collection fails or finds no matches, " +
+                                    "the previous dated list stays visible."
+                            }
                         )
                     }
                 }

@@ -15,8 +15,11 @@ for (let attempt = 0; attempt < 6; attempt++) {
     const health = await (await get('/api/health')).json();
     assert.equal(health.version, expectedVersion);
     const ranking = await (await get('/api/rankings/weekly')).json();
-    const allowedCounts = process.env.REQUIRE_RANKING === 'true' ? [10] : [0, 10];
-    assert.ok(allowedCounts.includes(ranking.startups.length), 'Unexpected ranking size');
+    const count = ranking.startups.length;
+    assert.ok(count >= (process.env.REQUIRE_RANKING === 'true' ? 1 : 0) && count <= 10, 'Unexpected ranking size');
+    if (!ranking.isMock && count > 0) {
+      assert.ok(ranking.startups.every(s => s.mentionCount > 0 && s.news.length <= 5), 'Invalid live ranking');
+    }
     assert.match(await (await get('/')).text(), /productberlin\.js/);
     const javascript = await get('/productberlin.js');
     assert.match(javascript.headers.get('content-type') ?? '', /javascript/);

@@ -43,7 +43,7 @@ For local operation, module responsibilities, API behavior, or deployment detail
 - Deploy the Worker and website artifacts produced by the checks job for the same commit SHA. Preserve the checks dependency, environment isolation, and deployment/seed concurrency.
 - Keep credentials in GitHub environment secrets and local ignored environment files. Use `BUILD_SHA` for deployed version identity and complete HTTPS `DEPLOY_URL` values for smoke checks.
 - Keep D1 migrations numbered and backward-compatible with the currently deployed Worker. Add a migration rather than editing an already-applied one. Migrations and seeding are separate operations; ordinary push deployments must not seed.
-- The app currently serves mock rankings/news through D1. Keep the demo labeling and do not add live scraping/RSS calls as part of unrelated work.
+- The scheduled Worker collects Google News RSS weekly and matches headlines against `cloudflare/startups.json`. Keep ranking deterministic, deduplicate articles, and publish D1 snapshots atomically. Preserve the previous ranking on failed or empty collections. Mock seeds and `/design-system` stay visibly labeled; live rankings must not be labeled as demo data. Keep tests independent of upstream news services.
 - Use the existing local launcher; stop temporary servers you start. Do not kill another IDE/server process to free a port.
 
 ## Code Review Rules

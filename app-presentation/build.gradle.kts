@@ -9,7 +9,10 @@ kotlin {
         }
     }
     sourceSets {
-        jsTest.dependencies { implementation(libs.kotlin.test) }
+        jsTest.dependencies {
+            implementation(libs.kotlin.test)
+            implementation(libs.coroutines.test)
+        }
         jsMain.dependencies {
             implementation(project(":app-domain"))
             implementation(libs.wrappers.react)

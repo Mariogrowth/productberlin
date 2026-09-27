@@ -74,7 +74,10 @@ test('seeded D1 serves exactly the shared mock contract and is idempotent', asyn
   await seed();
   const expected = JSON.parse(await readFile('cloudflare/fixtures/ranking.json', 'utf8'));
   const actual = await ranking();
-  assert.deepEqual(actual, expected);
+  assert.deepEqual(actual, {
+    ...expected, isMock: true, updatedAt: '2026-09-13T00:00:00Z', searchQuery: null, articleCount: null,
+    startups: expected.startups.map(s => ({ ...s, mentionCount: null, news: s.news.map(n => ({ ...n, url: null, summary: null })) })),
+  });
   await seed();
   assert.deepEqual(await ranking(), actual);
   const counts = JSON.parse(execute('SELECT COUNT(*) AS count FROM ranking_entries;'));
@@ -83,10 +86,10 @@ test('seeded D1 serves exactly the shared mock contract and is idempotent', asyn
 
 test('API reads D1 changes, while incomplete or draft snapshots stay hidden', async () => {
   execute(`UPDATE ranking_entries SET reason = 'Database-backed reason' WHERE snapshot_id = '${snapshotId}' AND position = 1;
-    INSERT INTO ranking_snapshots VALUES ('future-draft', '2099-01-01', 'Future', 'draft', 0, '2099-01-01T00:00:00Z');
-    INSERT INTO ranking_snapshots VALUES ('incomplete', '2099-01-02', 'Incomplete', 'published', 0, '2099-01-02T00:00:00Z');
-    INSERT INTO ranking_entries SELECT 'future-draft', startup_id, position, movement, reason FROM ranking_entries WHERE snapshot_id = '${snapshotId}';
-    INSERT INTO news_articles VALUES ('second-story', '${snapshotId}', 'almedia', 'Second DB story', 'Demo', NULL, 'Sep 12, 2026');`);
+    INSERT INTO ranking_snapshots (id,week_start,week_label,status,is_mock,created_at) VALUES ('future-draft', '2099-01-01', 'Future', 'draft', 0, '2099-01-01T00:00:00Z');
+    INSERT INTO ranking_snapshots (id,week_start,week_label,status,is_mock,created_at) VALUES ('incomplete', '2099-01-02', 'Incomplete', 'published', 0, '2099-01-02T00:00:00Z');
+    INSERT INTO ranking_entries (snapshot_id,startup_id,position,movement,reason) SELECT 'future-draft', startup_id, position, movement, reason FROM ranking_entries WHERE snapshot_id = '${snapshotId}';
+    INSERT INTO news_articles (id,snapshot_id,startup_id,headline,source,url,published_at) VALUES ('second-story', '${snapshotId}', 'almedia', 'Second DB story', 'Demo', NULL, 'Sep 12, 2026');`);
   await seed();
   const result = await ranking();
   assert.equal(result.startups.length, 10);

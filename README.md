@@ -1,6 +1,6 @@
 # Product.berlin
 
-A Kotlin/JS + React website showing ten Berlin startups and expandable fictional news. Cloudflare Workers serves the website and a Kotlin/JS API; D1 stores the demo ranking. There are no upstream scraping or RSS requests yet.
+A Kotlin/JS + React website showing up to ten Berlin startups ranked by weekly Google News headline mentions. A scheduled Cloudflare Worker collects RSS, publishes a snapshot to D1, and serves the website and Kotlin/JS API. “Why” reveals up to five recent news links per company. Local development starts with an explicitly labeled demo.
 
 ## Working with coding agents
 
@@ -22,7 +22,7 @@ Gradle supplies Node.js and builds the frontend and Worker. The launcher install
 
 If Node.js 24 and npm are already installed, `npm start` performs the same build/setup/start sequence. You do not need to run database setup separately.
 
-Open http://localhost:8787. The real path is React → Ktor HTTP → Worker → local D1. The “Why” buttons reveal news returned with the ranking. Data persists in `.wrangler/state/` and is separate from remote databases. Startup order, movement, explanations, and news are fictional and visibly labeled as a demo.
+Open http://localhost:8787. The real path is React → Ktor HTTP → Worker → local D1. The “Why” buttons reveal news returned with the ranking. Data persists in `.wrangler/state/` and is separate from remote databases. The initial seeded edition is fictional and visibly labeled as a demo. A successful scheduled collection replaces it with a dated live edition.
 
 For the full-app run, restart `webApp` / `runLocal` after Kotlin edits, or run `npm run build` in another terminal; Wrangler reloads generated files. For fast frontend iteration, leave `npm run dev` running on port 8787 and run `npm run dev:web` in another terminal. Webpack serves the UI on port 8080 and proxies `/api` to Wrangler. `dev:web` alone does not start the API: a 504 on `/api/rankings/weekly` means Wrangler is missing or unreachable. Use the full-app run configuration by default.
 
@@ -44,7 +44,7 @@ api-worker ─────────────► app-domain + api-contract
   ├── D1 repository
   └── small JavaScript Cloudflare entry adapter
 
-cloudflare/             SQL migrations and mock fixture
+cloudflare/             SQL migrations, startup catalogue and mock fixture
 scripts/                local/remote DB tooling, deployment configuration, tests
 .github/workflows/      checks, deployment, manual seeding
 ```
@@ -62,7 +62,7 @@ Repositories, use cases, states, entities, DTOs, and per-type mappers stay in se
 
 | Route | Behavior |
 | --- | --- |
-| `GET /api/rankings/weekly` | Latest complete published snapshot, ten startups and their news; an empty list before seeding |
+| `GET /api/rankings/weekly` | Latest complete published snapshot, up to ten startups and their news; empty before seeding/collection |
 | `GET /api/health` | Checks D1 connectivity and returns the deployed Git SHA |
 | `HEAD` on either route | Same status/headers with no body |
 | Unknown `/api/*` | JSON 404, never the SPA shell |
@@ -101,7 +101,7 @@ Workflows:
 | Deploy Cloudflare | Push to `main` → production; manual staging/production | Checks → validate downloaded build and configuration → local deployment dry run → D1 migrations → upload Worker/assets → optional manual seed → HTTP/version/asset smoke checks |
 | Seed mock data | Manual environment choice | Apply migrations, then seed that environment; no website deployment |
 
-Deployment and seeding share an environment concurrency group so they cannot mutate the same environment concurrently. No Cloudflare credentials are needed by pull request checks. An empty first deployment passes smoke checks unless seeding was requested, in which case the checks require ten startups. Each build artifact is named with its Git SHA; deployment uploads that tested build without recompiling. The workflow summary links the site and records the commit. D1 databases must already exist; migrations create/update their tables. The Worker itself is created by its first deployment. Configure GitHub environments and secrets **before** enabling production pushes.
+Deployment and seeding share an environment concurrency group so they cannot mutate the same environment concurrently. No Cloudflare credentials are needed by pull request checks. An empty first deployment passes smoke checks unless seeding was requested, in which case the checks require a populated ranking (a newer live edition can have fewer than ten). Each build artifact is named with its Git SHA; deployment uploads that tested build without recompiling. The workflow summary links the site and records the commit. D1 databases must already exist; migrations create/update their tables. The Worker itself is created by its first deployment. Configure GitHub environments and secrets **before** enabling production pushes.
 
 For manual remote commands after `npm run build`, set `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `D1_DATABASE_ID`, and the full commit SHA in `BUILD_SHA` in your environment, then:
 
@@ -116,6 +116,8 @@ npm run cf -- seed staging    # Explicit one-time demo seeding
 Application versions use the Git SHA in `/api/health` and the Worker deployment message. Wrangler also records a Worker version. Schema versions are numbered SQL migrations; data versions are snapshot IDs/weeks. The deployment workflow uses the pinned Wrangler installed by `npm ci` to upload the Worker and the entire static assets directory in one deployment, following [Cloudflare’s static assets model](https://developers.cloudflare.com/workers/static-assets/). Keep migrations backward-compatible with the currently running Worker: migrations run before deployment, and rolling back a Worker does not roll back D1. Do not rename or edit an already-applied migration; add the next numbered file.
 
 ## Validation and tooling
+
+See [the test coverage inventory](TESTING.md) for per-module scenarios, counts, report locations and measurement limitations.
 
 ```sh
 npm run format            # ktlint across all Kotlin and Gradle Kotlin files
@@ -135,14 +137,30 @@ Kotlin versions are pinned in `gradle/libs.versions.toml`, the Gradle version/ch
 
 The production frontend still has a webpack bundle-size advisory (~1.19 MiB minified). This scaffold keeps the existing UI and Kotlin stack; bundle optimization is separate work.
 
-## Next: weekly collection
+## Weekly Google News collection
 
-The current mock seed is an explicit setup task. No Cron Trigger or live source adapter is enabled yet. Add a server-side scheduled collector when sources and the ranking policy are chosen:
+The deployed Worker has a Cron Trigger, `0 6 * * MON`: Monday at **06:00 UTC**, in both staging and production. Deploy through the existing **Deploy Cloudflare** workflow; migration `0002_weekly_collection.sql`, the catalogue, RSS parser and cron configuration ship with it. No Google API key or new GitHub secret is needed. The first live snapshot appears after the first successful scheduled run; deployment itself does not fetch news. Seed mock data only if you want a demo while waiting. Cron configuration can take time to propagate.
 
-1. Fetch API/RSS sources, normalize timestamps/URLs, resolve company identity, and deduplicate news.
-2. Write a new draft snapshot and its ten ranked entries/news. Publish only when the collection is complete; retain the previous published snapshot on failure.
-3. Add the Worker `scheduled` adapter and a weekly cron configuration, with retries and collection status logging. Both browser and collector use the same D1 schema; the frontend continues using the existing read API.
+The collector:
 
-This scaffold uses human-readable demo publication dates; normalize them to ISO timestamps (and format them in the UI) before adding real feeds. RSS currently means the visible list of sample news, not an XML feed endpoint.
+1. Searches Google News RSS in **English and German**, in seven daily slices per language (14 discovery requests). The query combines `(Berlin OR Berliner)` with `startup`, `startups`, `start-up`, `start-ups`, `funding`, `Finanzierung`, `Finanzierungsrunde` and `Gründer`. Both editions use Germany (`gl=DE`, `ceid=DE:en` / `DE:de`). The ranking still covers the previous seven complete UTC days. Publication dates outside that window are rejected.
+2. Matches case-insensitive whole-word company names/aliases from **`cloudflare/startups.json`** in headlines. Ambiguous company names also require one of their catalogue context keywords in the headline. An article counts once per company, regardless of repeated name occurrences. Duplicate IDs, links and same-publisher/headline pairs collapse. Publisher names and follow-up searches do not inflate counts.
+3. Keeps up to ten companies with positive counts, descending by count, breaking ties by stable company ID. Fewer matches means a shorter list. Movement compares to the latest published live snapshot from an earlier week (never another policy edition of the same week); first-time entries show NEW.
+4. Searches each winning company's name in both languages over the same period, adding catalogue `contextKeywords` as an OR group when the name is ambiguous (for example, mika + accounting/Buchhaltung/fintech). Combines those results with discovery articles, deduplicates, filters to matching headlines and keeps the five newest links (or fewer when unavailable). Headlines, publishers, links and ISO timestamps come from RSS; there are no fabricated excerpts or thumbnails.
+5. Publishes the snapshot, entries and news in one **D1 transaction**. A per-window-and-policy 15-minute lease prevents overlapping work; successful windows under the same policy are idempotent, failed/expired attempts can retry. Failures or no catalogue matches retain the previous dated edition and record failure in `collection_runs`. Observe scheduled invocation errors and this table in Cloudflare; there is no separate alert integration or in-run retry loop.
 
-References: [Cloudflare static assets](https://developers.cloudflare.com/workers/static-assets/binding/), [D1 migrations](https://developers.cloudflare.com/d1/reference/migrations/), [Worker versions](https://developers.cloudflare.com/workers/versions-and-deployments/), [Ktor client testing](https://ktor.io/docs/client-testing.html).
+The catalogue is editorial data, not automatic company discovery. It contains 24 Berlin startups/scaleups; [catalogue notes and source references](cloudflare/CATALOGUE.md) describe the expanded coverage and Berlin connection criteria. Add verified Berlin companies with a stable slug, name, short description, category and optional distinctive aliases. Add `contextKeywords` for ambiguous names to constrain follow-up searches; a headline must contain a keyword as well as the company name/alias to qualify, both for discovery counts and displayed news. This conservative rule prevents person-name collisions but can miss terse company headlines. Avoid broad aliases and retired/non-Berlin companies. Changes require a normal deployment. [Automatic catalogue refresh](cloudflare/CATALOGUE.md#refreshing-the-catalogue-on-each-weekly-run) is possible with a supported feed, but is not enabled without API/export access. The fixed search plan makes at most 34 RSS requests per run (14 discovery + two for each of ten winners), independently of catalogue size. If ranking/search methodology changes again, increment `CollectionWindow.POLICY_VERSION` to permit a fresh same-week snapshot. Google News RSS can omit or cap results; daily slicing reduces that effect, but this is a **catalogue-limited news signal**, not an exhaustive census or a company-quality score. Article deduplication is heuristic and cannot detect all syndicated copies. The public RSS endpoint is an upstream dependency, not a guaranteed structured company API.
+
+### Try a real collection locally
+
+Start the full app (`./gradlew runLocal`) to build and apply migrations, then trigger its **local-only** scheduled endpoint:
+
+```sh
+curl 'http://localhost:8787/cdn-cgi/local/scheduled?cron=0%206%20*%20*%20MON'
+```
+
+This makes public Google News requests and writes **local D1 only**. Refresh the page after completion. Manually triggering on another weekday uses the seven complete days ending at that day's UTC midnight; it does not emulate a Monday unless you provide a Monday `time` parameter (Unix milliseconds). Successful windows under the same policy skip subsequent runs. The `bilingual-v2` policy uses new lease/snapshot IDs, so triggering it can publish an expanded edition for a week already collected by the earlier English-only policy, while preserving the old snapshot. To retry failed collection, invoke the same event again. The endpoint is provided by Wrangler for development; the production API remains read-only.
+
+Integration tests exercise the actual bundled Kotlin scheduled handler in Miniflare/workerd with isolated D1 and deterministic RSS fixtures. They cover top-ten ordering, five stories, deduplication, status/idempotency, failed feed retention, expired leases, SQL rollback and retry. They make no real Google News calls. Domain tests cover identity boundaries/ties; browser tests cover safe links and disclosure focus. RSS here is an input source; the app exposes JSON, not a public RSS output endpoint.
+
+References: [Cloudflare Cron Triggers](https://developers.cloudflare.com/workers/configuration/cron-triggers/), [D1 transactions](https://developers.cloudflare.com/d1/worker-api/d1-database/), [Cloudflare static assets](https://developers.cloudflare.com/workers/static-assets/binding/), [D1 migrations](https://developers.cloudflare.com/d1/reference/migrations/), [Worker versions](https://developers.cloudflare.com/workers/versions-and-deployments/), [Ktor client testing](https://ktor.io/docs/client-testing.html).
