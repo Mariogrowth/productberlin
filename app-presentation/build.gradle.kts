@@ -1,8 +1,15 @@
 plugins { alias(libs.plugins.kotlinMultiplatform) }
 
 kotlin {
-    js { browser() }
+    js {
+        browser {
+            testTask {
+                useKarma { useChromeHeadless() }
+            }
+        }
+    }
     sourceSets {
+        jsTest.dependencies { implementation(libs.kotlin.test) }
         jsMain.dependencies {
             implementation(project(":app-domain"))
             implementation(libs.wrappers.react)
@@ -10,4 +17,10 @@ kotlin {
             implementation(libs.coroutines.core)
         }
     }
+}
+
+// A token or style change must rerun browser assertions even when Kotlin is unchanged.
+tasks.named("jsBrowserTest") {
+    inputs.file("src/jsMain/resources/design-system.css")
+    inputs.dir("karma.config.d")
 }

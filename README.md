@@ -2,6 +2,14 @@
 
 A Kotlin/JS + React website showing ten Berlin startups and expandable fictional news. Cloudflare Workers serves the website and a Kotlin/JS API; D1 stores the demo ranking. There are no upstream scraping or RSS requests yet.
 
+## Working with coding agents
+
+[AGENTS.md](AGENTS.md) records the repository's architecture, testing, lint, CI, and delivery rules. [app-presentation/AGENTS.md](app-presentation/AGENTS.md) adds the component/layout boundaries and UI-specific conventions. Keep these files versioned and update them alongside agreed changes; use them as the shared source of guidance rather than relying on one chat's history.
+
+Codex discovers repository instruction files automatically; see the [official AGENTS.md guide](https://learn.chatgpt.com/docs/agent-configuration/agents-md). For another agent, configure its instruction entry point to read these files rather than duplicating the rules. A fresh session can verify discovery by asking it to summarize the applicable architecture and validation commands.
+
+Instructions guide implementation; CI checks provide executable validation. `npm run check` runs ktlint, all configured Gradle tests, both production builds, local D1/API tests, and launcher tests. Architecture/package boundaries additionally require review; they are not currently covered by a dedicated architecture checker. To prevent merging failed checks, configure a GitHub ruleset/branch protection requiring the checks job on `main` and restrict bypasses. That repository setting is managed separately from these files; adding instructions or a workflow does not enable it automatically.
+
 ## Run locally
 
 Requirements: JDK 21. The saved IDE **webApp** run configuration now launches the complete app (both website and API):
@@ -113,9 +121,13 @@ Application versions use the Git SHA in `/api/health` and the Worker deployment 
 npm run format            # ktlint across all Kotlin and Gradle Kotlin files
 npm run check             # lint, Kotlin tests, production builds, D1/API integration tests
 ./gradlew check           # Gradle module checks and project-wide ktlint
+./gradlew allTests        # Tests on every configured target in every module
+./gradlew allTests --rerun-tasks  # Force fresh execution instead of reusing test results
 npm run test:integration  # Run against already-built artifacts
 npm run test:dev          # Port conflict, debugger collision, stop/restart regression checks
 ```
+
+In the IDE, select the shared **All tests** Gradle run configuration. It runs `allTests --rerun-tasks` so unchanged tests execute again and emit fresh test events. For an existing Gradle configuration, enter that same task and option in its Run field, without `./gradlew`. A normal cached run may show `UP-TO-DATE` and “Test events were not received”; this does not mean the project has no tests. Modules without test sources legitimately show `NO-SOURCE` or `SKIPPED`. Browser tests require Chrome/Chromium (set `CHROME_BIN` if automatic discovery fails). HTML reports are under each tested module's `build/reports/tests/` directory. The standalone Node.js integration tests remain part of `npm run check`.
 
 Integration tests use Wrangler/workerd with a temporary local D1 database, not mocked SQL responses. They cover empty data, migrations, exact fixture decoding, repeated seeds, DB-backed changes, hidden drafts/incomplete snapshots, health/version, routing, static assets, and database failures. Tests remove their temporary state on completion and never touch the normal local database or remote D1.
 
