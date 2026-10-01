@@ -38,7 +38,7 @@ fun handleScheduled(
                 WeeklyCollector(GoogleNewsSource(client, RssParser(parseXml)), D1CollectionRepository(database))
                     .refresh(
                         parseCatalogue(catalogueJson),
-                        CollectionWindow.endingAt(scheduledTime),
+                        CollectionWindow.latestCompleteWeek(scheduledTime),
                         Date().toISOString(),
                         js("globalThis.crypto.randomUUID()").unsafeCast<String>(),
                     )

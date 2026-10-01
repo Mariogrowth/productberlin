@@ -38,9 +38,16 @@ internal data class CollectionWindow(
                 "funding OR Finanzierung OR Finanzierungsrunde OR Gründer)"
         const val DAY = 86_400_000.0
 
-        fun endingAt(scheduledTime: Double): CollectionWindow {
+        /**
+         * The Monday–Sunday UTC week that ended at the most recent Monday 00:00 UTC. Any event during a week, whether
+         * the Monday cron, a retry or a manual trigger, resolves to the same window and collection key, so a published
+         * edition stays unchanged until the next Monday.
+         */
+        fun latestCompleteWeek(scheduledTime: Double): CollectionWindow {
             require(scheduledTime.isFinite())
-            val end = Date(Date(scheduledTime).toISOString().take(10) + "T00:00:00.000Z").getTime()
+            val midnight = Date(Date(scheduledTime).toISOString().take(10) + "T00:00:00.000Z")
+            val daysSinceMonday = (midnight.getUTCDay() + 6) % 7
+            val end = midnight.getTime() - daysSinceMonday * DAY
             return CollectionWindow(Date(end - 7 * DAY).toISOString(), Date(end).toISOString())
         }
     }
