@@ -20,7 +20,8 @@
     }
   ],
   "vars": {
-    "BUILD_SHA": "local"
+    "BUILD_SHA": "local",
+    "BRANDFETCH_CLIENT_ID": "1idVlgkCIW8K520_bqV"
   },
   "observability": {
     "enabled": true

@@ -36,6 +36,7 @@ jobs:
       D1_DATABASE_ID: ${{ vars.D1_DATABASE_ID }}
       DEPLOY_URL: ${{ vars.DEPLOY_URL }}
       BUILD_SHA: ${{ github.sha }}
+      BRANDFETCH_CLIENT_ID: ${{ vars.BRANDFETCH_CLIENT_ID }}
       TARGET_ENV: ${{ inputs.environment || 'production' }}
       WRANGLER_SEND_METRICS: 'false'
     steps:

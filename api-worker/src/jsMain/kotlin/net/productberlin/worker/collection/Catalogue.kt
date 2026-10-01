@@ -28,9 +28,14 @@ internal fun parseCatalogue(json: String): List<StartupCandidate> =
                 field("category"),
                 value["aliases"]?.jsonArray?.map { string(it) } ?: emptyList(),
                 value["contextKeywords"]?.jsonArray?.map { string(it) } ?: emptyList(),
+                value["domain"]?.let { string(it) },
             )
         }.also { catalogue ->
             require(catalogue.isNotEmpty() && catalogue.size <= 500) { "Catalogue must have 1–500 companies" }
             require(catalogue.map { it.id }.distinct().size == catalogue.size) { "Duplicate catalogue IDs" }
             require(catalogue.all { Regex("[a-z0-9-]+").matches(it.id) }) { "Invalid catalogue ID" }
+            require(catalogue.all { it.domain?.let(DOMAIN::matches) ?: true }) { "Invalid catalogue domain" }
         }
+
+/** A bare lowercase hostname such as `n26.com`: no scheme, path, port or credentials. */
+private val DOMAIN = Regex("([a-z0-9]([a-z0-9-]*[a-z0-9])?\\.)+[a-z]{2,}")

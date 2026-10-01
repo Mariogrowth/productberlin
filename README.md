@@ -70,6 +70,10 @@ Repositories, use cases, states, entities, DTOs, and per-type mappers stay in se
 
 Database failures return 503; the UI shows its retry state. The response includes news eagerly because there are only ten startups and a small feed per company. There is no public write or seed endpoint.
 
+### Company logos
+
+Ranked companies carry a `logoUrl` for the [Brandfetch Logo API](https://docs.brandfetch.com/logo-api/overview). The Worker builds it at response time from the company's `domain` in the bundled `cloudflare/startups.json` (not from D1), so catalogue domain fixes apply to existing snapshots on the next deployment. Only the up to ten companies in the response get a URL; nothing is requested for other catalogue companies. Brandfetch requires browsers to hotlink logos, so the Worker never fetches, caches or proxies them. URLs use `fallback/404`: when Brandfetch has no icon, or the image fails, the UI keeps its letter mark. The `BRANDFETCH_CLIENT_ID` Worker variable is a public client ID, committed in `wrangler.json`; set a GitHub environment variable of the same name to override it per environment. Without one, the API omits logos. Brandfetch rejects headless-browser user agents, so headless screenshots show letter marks unless they use a regular Chrome user agent.
+
 `cloudflare/migrations/0001_initial.sql` creates:
 
 - `startups`: company identity and descriptions.
@@ -90,7 +94,7 @@ One-time setup (these remote resources have not been created by this scaffold):
 1. Create a Cloudflare account and enable Workers. Create two D1 databases named `productberlin-staging` and `productberlin-production` using the dashboard or `npx wrangler d1 create <name>`.
 2. Create GitHub environments named `staging` and `production`. Configure their allowed deployment branches and any desired approval rules.
 3. In each environment set secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`. The token needs Workers Scripts Edit and D1 Edit on the target account.
-4. Set environment variables `D1_DATABASE_ID` (that environment's database UUID) and `DEPLOY_URL` (the full HTTPS Worker/custom-domain URL). Worker names are `productberlin-staging` and `productberlin-production`.
+4. Set environment variables `D1_DATABASE_ID` (that environment's database UUID) and `DEPLOY_URL` (the full HTTPS Worker/custom-domain URL). Optionally set `BRANDFETCH_CLIENT_ID` to override the committed public logo client ID. Worker names are `productberlin-staging` and `productberlin-production`.
 5. Commit and push the scaffold (including `.github/workflows/`, `package-lock.json`, both new Kotlin modules, and migrations). In GitHub, open **Actions → Deploy Cloudflare → Run workflow**, select `staging`, and check **seed_mock_data** for the initial populated demo. Repeat for production when ready. Leave the checkbox off for ordinary updates; the standalone **Seed mock data** workflow is also available.
 
 Set these variables in **Settings → Environments → staging/production**, rather than relying on one repository-wide URL. Repository variables are defaults for environments without an override. For workers.dev, the first hostname label must match the deployed Worker: `productberlin-staging` or `productberlin-production`; the following account subdomain stays the same and may itself contain `staging`. Preflight rejects a workers.dev URL for the wrong environment before migrations or uploads. Custom domains are still checked against the deployed Git SHA by the smoke test.

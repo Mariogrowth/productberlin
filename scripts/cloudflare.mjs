@@ -25,7 +25,9 @@ if (environment !== 'local') {
   config.name = `productberlin-${environment}`;
   config.main = resolve(root, config.main);
   config.assets.directory = resolve(root, config.assets.directory);
-  config.vars = { BUILD_SHA: buildSha ?? 'manual' };
+  // The Brandfetch client ID is public (embedded in logo URLs); an environment variable may override the default.
+  config.vars = { ...config.vars, BUILD_SHA: buildSha ?? 'manual' };
+  if (process.env.BRANDFETCH_CLIENT_ID) config.vars.BRANDFETCH_CLIENT_ID = process.env.BRANDFETCH_CLIENT_ID;
   config.d1_databases = [{
     binding: 'DB', database_name: `productberlin-${environment}`, database_id: databaseId,
     migrations_dir: resolve(root, 'cloudflare/migrations'),

@@ -10,4 +10,5 @@ data class Startup(
     val reason: String,
     val news: List<NewsArticle>,
     val mentionCount: Int? = null,
+    val logoUrl: String? = null,
 )

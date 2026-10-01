@@ -4,6 +4,7 @@
     "name": "Almedia",
     "description": "Consumer discovery and rewards.",
     "category": "Adtech",
+    "domain": "almedia.co",
     "aliases": []
   },
   {
@@ -11,6 +12,7 @@
     "name": "Aignostics",
     "description": "AI for computational pathology.",
     "category": "Health tech",
+    "domain": "aignostics.com",
     "aliases": []
   },
   {
@@ -18,6 +20,7 @@
     "name": "N26",
     "description": "Digital banking.",
     "category": "Fintech",
+    "domain": "n26.com",
     "aliases": []
   },
   {
@@ -25,6 +28,7 @@
     "name": "Parloa",
     "description": "AI agents for customer service.",
     "category": "AI",
+    "domain": "parloa.com",
     "aliases": []
   },
   {
@@ -32,6 +36,7 @@
     "name": "sennder",
     "description": "Digital road freight.",
     "category": "Logistics",
+    "domain": "sennder.com",
     "aliases": []
   },
   {
@@ -39,6 +44,7 @@
     "name": "Enpal",
     "description": "Home solar and energy systems.",
     "category": "Climate tech",
+    "domain": "enpal.com",
     "aliases": []
   },
   {
@@ -46,6 +52,7 @@
     "name": "Trade Republic",
     "description": "Investing and savings.",
     "category": "Fintech",
+    "domain": "traderepublic.com",
     "aliases": []
   },
   {
@@ -53,6 +60,7 @@
     "name": "deepset",
     "description": "Tools for building AI applications.",
     "category": "AI",
+    "domain": "deepset.ai",
     "aliases": []
   },
   {
@@ -60,6 +68,7 @@
     "name": "Ecosia",
     "description": "Search supporting climate action.",
     "category": "Climate tech",
+    "domain": "ecosia.org",
     "aliases": []
   },
   {
@@ -67,6 +76,7 @@
     "name": "mika",
     "description": "AI-powered accounting for small businesses.",
     "category": "Fintech",
+    "domain": "getmika.de",
     "aliases": [],
     "contextKeywords": [
       "accounting",
@@ -83,6 +93,7 @@
     "name": "Recovery Cat",
     "description": "Digital support for mental healthcare.",
     "category": "Health tech",
+    "domain": "recovery.cat",
     "aliases": [
       "RecoveryCat"
     ]
@@ -92,6 +103,7 @@
     "name": "Blacklane",
     "description": "Chauffeur services.",
     "category": "Mobility",
+    "domain": "blacklane.com",
     "aliases": []
   },
   {
@@ -99,6 +111,7 @@
     "name": "Noxtua",
     "description": "AI tools for legal research and legal work.",
     "category": "Legal tech",
+    "domain": "noxtua.com",
     "aliases": [],
     "contextKeywords": []
   },
@@ -107,6 +120,7 @@
     "name": "Choco",
     "description": "Software connecting restaurants and food distributors.",
     "category": "Food tech",
+    "domain": "choco.com",
     "aliases": [],
     "contextKeywords": [
       "foodtech",
@@ -122,6 +136,7 @@
     "name": "Langdock",
     "description": "AI assistants and workflows for businesses.",
     "category": "AI",
+    "domain": "langdock.com",
     "aliases": [],
     "contextKeywords": []
   },
@@ -130,6 +145,7 @@
     "name": "KoRo",
     "description": "Online food and snack retail.",
     "category": "Food tech",
+    "domain": "korodrogerie.de",
     "aliases": [],
     "contextKeywords": []
   },
@@ -138,6 +154,7 @@
     "name": "Nox",
     "description": "Developing overnight trains with private rooms.",
     "category": "Mobility",
+    "domain": "noxmobility.com",
     "aliases": [
       "Nox Mobility"
     ],
@@ -159,6 +176,7 @@
     "name": "wefox",
     "description": "Technology for insurance distribution.",
     "category": "Insurtech",
+    "domain": "wefox.com",
     "aliases": [],
     "contextKeywords": []
   },
@@ -167,6 +185,7 @@
     "name": "Raisin",
     "description": "A marketplace for savings and investments.",
     "category": "Fintech",
+    "domain": "raisin.com",
     "aliases": [
       "WeltSparen"
     ],
@@ -188,6 +207,7 @@
     "name": "GetYourGuide",
     "description": "Booking experiences and activities for travellers.",
     "category": "Travel tech",
+    "domain": "getyourguide.com",
     "aliases": [
       "Get Your Guide"
     ],
@@ -198,6 +218,7 @@
     "name": "Contentful",
     "description": "A content platform for digital experiences.",
     "category": "Software",
+    "domain": "contentful.com",
     "aliases": [],
     "contextKeywords": []
   },
@@ -206,6 +227,7 @@
     "name": "Omio",
     "description": "Booking rail, bus and air travel.",
     "category": "Travel tech",
+    "domain": "omio.com",
     "aliases": [],
     "contextKeywords": []
   },
@@ -214,6 +236,7 @@
     "name": "Forto",
     "description": "Digital freight forwarding and logistics.",
     "category": "Logistics",
+    "domain": "forto.com",
     "aliases": [],
     "contextKeywords": []
   },
@@ -222,7 +245,901 @@
     "name": "Babbel",
     "description": "Digital language learning.",
     "category": "Education",
+    "domain": "babbel.com",
     "aliases": [],
     "contextKeywords": []
+  },
+  {
+    "id": "helsing",
+    "name": "Helsing",
+    "description": "AI software for defence.",
+    "category": "AI",
+    "domain": "helsing.ai",
+    "aliases": [],
+    "contextKeywords": [
+      "defence",
+      "defense",
+      "Verteidigung",
+      "Rüstung",
+      "Rüstungs",
+      "drone",
+      "drones",
+      "Drohne",
+      "Drohnen",
+      "military",
+      "Militär",
+      "Bundeswehr",
+      "AI",
+      "KI",
+      "startup",
+      "funding",
+      "Finanzierung",
+      "valuation",
+      "Bewertung"
+    ]
+  },
+  {
+    "id": "n8n",
+    "name": "n8n",
+    "description": "Workflow automation platform.",
+    "category": "Software",
+    "domain": "n8n.io",
+    "aliases": []
+  },
+  {
+    "id": "langfuse",
+    "name": "Langfuse",
+    "description": "Open-source LLM engineering and observability.",
+    "category": "AI",
+    "domain": "langfuse.com",
+    "aliases": []
+  },
+  {
+    "id": "levity",
+    "name": "Levity AI",
+    "description": "No-code AI workflow automation.",
+    "category": "AI",
+    "domain": "levity.ai",
+    "aliases": [
+      "Levity"
+    ],
+    "contextKeywords": [
+      "AI",
+      "KI",
+      "automation",
+      "Automatisierung",
+      "no-code",
+      "startup",
+      "funding",
+      "Finanzierung"
+    ]
+  },
+  {
+    "id": "synthflow",
+    "name": "Synthflow",
+    "description": "Voice AI agents for businesses.",
+    "category": "AI",
+    "domain": "synthflow.ai",
+    "aliases": []
+  },
+  {
+    "id": "qdrant",
+    "name": "Qdrant",
+    "description": "Open-source vector database.",
+    "category": "Software",
+    "domain": "qdrant.tech",
+    "aliases": []
+  },
+  {
+    "id": "peec-ai",
+    "name": "Peec AI",
+    "description": "AI search visibility analytics for brands.",
+    "category": "Software",
+    "domain": "peec.ai",
+    "aliases": [
+      "Peec"
+    ]
+  },
+  {
+    "id": "solsten",
+    "name": "Solsten",
+    "description": "Psychology-based audience insights for games.",
+    "category": "AI",
+    "domain": "solsten.io",
+    "aliases": []
+  },
+  {
+    "id": "konvo",
+    "name": "Konvo",
+    "description": "AI agents for e-commerce customer service.",
+    "category": "AI",
+    "domain": "konvo.ai",
+    "aliases": [],
+    "contextKeywords": [
+      "AI",
+      "KI",
+      "e-commerce",
+      "ecommerce",
+      "startup",
+      "funding",
+      "seed",
+      "Finanzierung",
+      "agents"
+    ]
+  },
+  {
+    "id": "simpleshow",
+    "name": "simpleshow",
+    "description": "AI-powered explainer video creation.",
+    "category": "Software",
+    "domain": "simpleshow.com",
+    "aliases": []
+  },
+  {
+    "id": "buena",
+    "name": "Buena",
+    "description": "AI-driven property management.",
+    "category": "Proptech",
+    "domain": "buena.com",
+    "aliases": [],
+    "contextKeywords": [
+      "proptech",
+      "Hausverwaltung",
+      "property",
+      "Immobilien",
+      "Immobilienverwaltung",
+      "startup",
+      "funding",
+      "Finanzierung",
+      "AI",
+      "KI"
+    ]
+  },
+  {
+    "id": "upvest",
+    "name": "Upvest",
+    "description": "Investment infrastructure API.",
+    "category": "Fintech",
+    "domain": "upvest.co",
+    "aliases": []
+  },
+  {
+    "id": "mondu",
+    "name": "Mondu",
+    "description": "B2B buy now, pay later payments.",
+    "category": "Fintech",
+    "domain": "mondu.ai",
+    "aliases": []
+  },
+  {
+    "id": "taxfix",
+    "name": "Taxfix",
+    "description": "Mobile tax return app.",
+    "category": "Fintech",
+    "domain": "taxfix.de",
+    "aliases": []
+  },
+  {
+    "id": "lemon-markets",
+    "name": "lemon.markets",
+    "description": "Brokerage infrastructure API.",
+    "category": "Fintech",
+    "domain": "lemon.markets",
+    "aliases": []
+  },
+  {
+    "id": "pliant",
+    "name": "Pliant",
+    "description": "Corporate credit cards and spend management.",
+    "category": "Fintech",
+    "domain": "getpliant.com",
+    "aliases": [],
+    "contextKeywords": [
+      "fintech",
+      "card",
+      "cards",
+      "credit card",
+      "Kreditkarte",
+      "Kreditkarten",
+      "Firmenkreditkarte",
+      "payments",
+      "spend management",
+      "startup",
+      "funding",
+      "Finanzierung"
+    ]
+  },
+  {
+    "id": "finmid",
+    "name": "finmid",
+    "description": "Embedded financing for B2B platforms.",
+    "category": "Fintech",
+    "domain": "finmid.com",
+    "aliases": []
+  },
+  {
+    "id": "finoa",
+    "name": "Finoa",
+    "description": "Digital asset custody for institutions.",
+    "category": "Fintech",
+    "domain": "finoa.io",
+    "aliases": []
+  },
+  {
+    "id": "solaris",
+    "name": "Solaris",
+    "description": "Banking-as-a-service platform.",
+    "category": "Fintech",
+    "domain": "solarisgroup.com",
+    "aliases": [
+      "Solarisbank",
+      "Solaris SE"
+    ],
+    "contextKeywords": [
+      "fintech",
+      "bank",
+      "banking",
+      "Banking-as-a-Service",
+      "BaaS",
+      "SBI",
+      "Neobank",
+      "funding",
+      "Finanzierung",
+      "Kapital",
+      "BaFin"
+    ]
+  },
+  {
+    "id": "mambu",
+    "name": "Mambu",
+    "description": "Cloud banking platform.",
+    "category": "Fintech",
+    "domain": "mambu.com",
+    "aliases": []
+  },
+  {
+    "id": "payrails",
+    "name": "Payrails",
+    "description": "Payment orchestration for enterprises.",
+    "category": "Fintech",
+    "domain": "payrails.com",
+    "aliases": []
+  },
+  {
+    "id": "feather",
+    "name": "Feather",
+    "description": "Digital insurance for expats.",
+    "category": "Insurtech",
+    "domain": "feather-insurance.com",
+    "aliases": [],
+    "contextKeywords": [
+      "insurance",
+      "insurtech",
+      "Versicherung",
+      "Versicherungen",
+      "Krankenversicherung",
+      "health insurance",
+      "expat",
+      "expats",
+      "broker",
+      "Startup",
+      "funding",
+      "Finanzierung"
+    ]
+  },
+  {
+    "id": "nao",
+    "name": "NAO",
+    "description": "App for investing in private markets.",
+    "category": "Fintech",
+    "domain": "investnao.com",
+    "aliases": [],
+    "contextKeywords": [
+      "wealthtech",
+      "fintech",
+      "co-investment",
+      "private markets",
+      "private equity",
+      "Geldanlage",
+      "Anleger",
+      "investing",
+      "Finanzierung",
+      "funding",
+      "Seed"
+    ]
+  },
+  {
+    "id": "midas",
+    "name": "Midas",
+    "description": "Tokenized real-world asset infrastructure.",
+    "category": "Fintech",
+    "domain": "midas.app",
+    "aliases": [],
+    "contextKeywords": [
+      "tokenization",
+      "tokenisation",
+      "tokenized",
+      "tokenised",
+      "Tokenisierung",
+      "RWA",
+      "crypto",
+      "Krypto",
+      "blockchain",
+      "stablecoin",
+      "DeFi",
+      "fintech",
+      "Series A"
+    ]
+  },
+  {
+    "id": "thermondo",
+    "name": "Thermondo",
+    "description": "Heat pump installation for homes.",
+    "category": "Climate tech",
+    "domain": "thermondo.de",
+    "aliases": []
+  },
+  {
+    "id": "trawa",
+    "name": "trawa",
+    "description": "AI-powered energy procurement for businesses.",
+    "category": "Climate tech",
+    "domain": "trawa.de",
+    "aliases": []
+  },
+  {
+    "id": "atlas-metrics",
+    "name": "Atlas Metrics",
+    "description": "ESG and sustainability reporting software.",
+    "category": "Climate tech",
+    "domain": "atlasmetrics.io",
+    "aliases": []
+  },
+  {
+    "id": "dunia-innovations",
+    "name": "Dunia Innovations",
+    "description": "AI and robotics for materials discovery.",
+    "category": "Climate tech",
+    "domain": "dunia.ai",
+    "aliases": [
+      "Dunia"
+    ],
+    "contextKeywords": [
+      "materials",
+      "Materialien",
+      "Materialforschung",
+      "AI",
+      "KI",
+      "lab",
+      "GigaLab",
+      "catalyst",
+      "catalysts",
+      "chemistry",
+      "Startup",
+      "funding",
+      "Finanzierung"
+    ]
+  },
+  {
+    "id": "terra-one",
+    "name": "Terra One",
+    "description": "Grid-scale battery storage developer.",
+    "category": "Climate tech",
+    "domain": "terra.one",
+    "aliases": []
+  },
+  {
+    "id": "ib-vogt",
+    "name": "ib vogt",
+    "description": "Utility-scale solar project developer.",
+    "category": "Climate tech",
+    "domain": "ibvogt.com",
+    "aliases": [
+      "ibvogt"
+    ]
+  },
+  {
+    "id": "camunda",
+    "name": "Camunda",
+    "description": "Process orchestration and automation.",
+    "category": "Software",
+    "domain": "camunda.com",
+    "aliases": []
+  },
+  {
+    "id": "spryker",
+    "name": "Spryker",
+    "description": "Composable commerce platform.",
+    "category": "Software",
+    "domain": "spryker.com",
+    "aliases": []
+  },
+  {
+    "id": "chartmogul",
+    "name": "ChartMogul",
+    "description": "Subscription analytics for SaaS.",
+    "category": "Software",
+    "domain": "chartmogul.com",
+    "aliases": []
+  },
+  {
+    "id": "workmotion",
+    "name": "WorkMotion",
+    "description": "Global hiring and employer of record.",
+    "category": "Software",
+    "domain": "workmotion.com",
+    "aliases": []
+  },
+  {
+    "id": "talon-one",
+    "name": "Talon.One",
+    "description": "Promotion and loyalty engine.",
+    "category": "Software",
+    "domain": "talon.one",
+    "aliases": []
+  },
+  {
+    "id": "productsup",
+    "name": "Productsup",
+    "description": "Product feed and content management.",
+    "category": "Software",
+    "domain": "productsup.com",
+    "aliases": []
+  },
+  {
+    "id": "lendis",
+    "name": "Lendis",
+    "description": "Office and IT equipment as a service.",
+    "category": "Software",
+    "domain": "lendis.io",
+    "aliases": []
+  },
+  {
+    "id": "mercanis",
+    "name": "Mercanis",
+    "description": "Procurement software.",
+    "category": "Software",
+    "domain": "mercanis.com",
+    "aliases": []
+  },
+  {
+    "id": "topi",
+    "name": "topi",
+    "description": "B2B payments for hardware rental.",
+    "category": "Fintech",
+    "domain": "topi.eu",
+    "aliases": [],
+    "contextKeywords": [
+      "fintech",
+      "payments",
+      "B2B",
+      "hardware",
+      "rental",
+      "subscription",
+      "leasing",
+      "Miete",
+      "Mietkauf",
+      "Startup",
+      "funding",
+      "Finanzierung"
+    ]
+  },
+  {
+    "id": "emnify",
+    "name": "emnify",
+    "description": "Cellular connectivity for IoT.",
+    "category": "Software",
+    "domain": "emnify.com",
+    "aliases": []
+  },
+  {
+    "id": "adjust",
+    "name": "Adjust",
+    "description": "Mobile measurement and app analytics.",
+    "category": "Adtech",
+    "domain": "adjust.com",
+    "aliases": [],
+    "contextKeywords": [
+      "AppLovin",
+      "mobile measurement",
+      "measurement",
+      "attribution",
+      "app marketing",
+      "mobile marketing",
+      "MMP",
+      "adtech",
+      "app analytics",
+      "apps"
+    ]
+  },
+  {
+    "id": "swaarm",
+    "name": "Swaarm",
+    "description": "Mobile marketing measurement and attribution.",
+    "category": "Adtech",
+    "domain": "swaarm.com",
+    "aliases": []
+  },
+  {
+    "id": "market-logic",
+    "name": "Market Logic Software",
+    "description": "Market insights and knowledge management software.",
+    "category": "Software",
+    "domain": "marketlogicsoftware.com",
+    "aliases": [
+      "Market Logic"
+    ],
+    "contextKeywords": [
+      "software",
+      "insights",
+      "AI",
+      "KI",
+      "DeepSights",
+      "funding",
+      "Finanzierung",
+      "startup"
+    ]
+  },
+  {
+    "id": "inhubber",
+    "name": "INHUBBER",
+    "description": "Contract management and e-signature software.",
+    "category": "Legal tech",
+    "domain": "inhubber.com",
+    "aliases": []
+  },
+  {
+    "id": "razor-group",
+    "name": "Razor Group",
+    "description": "Acquires and scales Amazon marketplace brands.",
+    "category": "E-commerce",
+    "domain": "razor-group.com",
+    "aliases": []
+  },
+  {
+    "id": "berlin-brands-group",
+    "name": "Berlin Brands Group",
+    "description": "Online consumer brands such as Klarstein.",
+    "category": "E-commerce",
+    "domain": "berlin-brands-group.com",
+    "aliases": [
+      "Chal-Tec"
+    ]
+  },
+  {
+    "id": "sellerx",
+    "name": "SellerX",
+    "description": "Acquires and grows e-commerce brands.",
+    "category": "E-commerce",
+    "domain": "sellerx.com",
+    "aliases": []
+  },
+  {
+    "id": "ada-health",
+    "name": "Ada Health",
+    "description": "AI symptom assessment and health guidance.",
+    "category": "Health tech",
+    "domain": "ada.com",
+    "aliases": []
+  },
+  {
+    "id": "clue",
+    "name": "Clue",
+    "description": "Period and cycle tracking app.",
+    "category": "Health tech",
+    "domain": "helloclue.com",
+    "aliases": [
+      "BioWink"
+    ],
+    "contextKeywords": [
+      "app",
+      "period",
+      "periods",
+      "Periode",
+      "cycle",
+      "Zyklus",
+      "menstrual",
+      "menstruation",
+      "femtech",
+      "fertility",
+      "tracker",
+      "tracking",
+      "health",
+      "Gesundheit"
+    ]
+  },
+  {
+    "id": "amboss",
+    "name": "AMBOSS",
+    "description": "Medical knowledge and learning platform.",
+    "category": "Health tech",
+    "domain": "amboss.com",
+    "aliases": [],
+    "contextKeywords": [
+      "medical",
+      "medicine",
+      "Medizin",
+      "medizinisch",
+      "doctors",
+      "physicians",
+      "Ärzte",
+      "students",
+      "Studierende",
+      "clinical",
+      "AI",
+      "KI",
+      "funding",
+      "Finanzierung",
+      "startup",
+      "edtech",
+      "healthtech"
+    ]
+  },
+  {
+    "id": "ariceum",
+    "name": "Ariceum",
+    "description": "Radiopharmaceuticals for hard-to-treat cancers.",
+    "category": "Biotech",
+    "domain": "ariceum-therapeutics.com",
+    "aliases": [
+      "Ariceum Therapeutics"
+    ]
+  },
+  {
+    "id": "berlin-heals",
+    "name": "Berlin Heals",
+    "description": "Implantable microcurrent therapy for heart failure.",
+    "category": "Health tech",
+    "domain": "berlinheals.com",
+    "aliases": []
+  },
+  {
+    "id": "aiomics",
+    "name": "aiomics",
+    "description": "AI clinical documentation for healthcare.",
+    "category": "Health tech",
+    "domain": "aiomics.io",
+    "aliases": []
+  },
+  {
+    "id": "dott",
+    "name": "Dott",
+    "description": "Shared e-scooters and e-bikes.",
+    "category": "Mobility",
+    "domain": "ridedott.com",
+    "aliases": [
+      "TIER Mobility",
+      "TIER",
+      "Tier-Dott"
+    ],
+    "contextKeywords": [
+      "e-scooter",
+      "e-scooters",
+      "scooter",
+      "scooters",
+      "E-Scooter",
+      "Roller",
+      "E-Roller",
+      "e-bike",
+      "e-bikes",
+      "micromobility",
+      "Mikromobilität",
+      "mobility",
+      "sharing",
+      "Leihroller"
+    ]
+  },
+  {
+    "id": "tourlane",
+    "name": "Tourlane",
+    "description": "Tailor-made trip planning and booking.",
+    "category": "Travel tech",
+    "domain": "tourlane.de",
+    "aliases": []
+  },
+  {
+    "id": "autodoc",
+    "name": "Autodoc",
+    "description": "Online retailer of car parts.",
+    "category": "E-commerce",
+    "domain": "autodoc.de",
+    "aliases": []
+  },
+  {
+    "id": "distribusion",
+    "name": "Distribusion",
+    "description": "Distribution platform for bus, rail and ferry.",
+    "category": "Travel tech",
+    "domain": "distribusion.com",
+    "aliases": [
+      "Distribusion Technologies"
+    ]
+  },
+  {
+    "id": "coachhub",
+    "name": "CoachHub",
+    "description": "Digital coaching for employees.",
+    "category": "HR tech",
+    "domain": "coachhub.com",
+    "aliases": []
+  },
+  {
+    "id": "knowunity",
+    "name": "Knowunity",
+    "description": "AI-powered learning app for students.",
+    "category": "Education",
+    "domain": "knowunity.de",
+    "aliases": []
+  },
+  {
+    "id": "grid-esports",
+    "name": "GRID",
+    "description": "Official esports and game data platform.",
+    "category": "Software",
+    "domain": "grid.gg",
+    "aliases": [
+      "GRID Esports"
+    ],
+    "contextKeywords": [
+      "esports",
+      "e sports",
+      "gaming",
+      "game data",
+      "Spieldaten",
+      "Riot",
+      "Ubisoft",
+      "Counter-Strike"
+    ]
+  },
+  {
+    "id": "grover",
+    "name": "Grover",
+    "description": "Consumer tech rental subscriptions.",
+    "category": "E-commerce",
+    "domain": "grover.com",
+    "aliases": [],
+    "contextKeywords": [
+      "rental",
+      "rent",
+      "renting",
+      "subscription",
+      "Miete",
+      "mieten",
+      "Abo",
+      "electronics",
+      "Elektronik",
+      "gadgets",
+      "funding",
+      "Finanzierung",
+      "startup",
+      "unicorn"
+    ]
+  },
+  {
+    "id": "urban-sports-club",
+    "name": "Urban Sports Club",
+    "description": "Multi-sport fitness memberships.",
+    "category": "Health tech",
+    "domain": "urbansportsclub.com",
+    "aliases": []
+  },
+  {
+    "id": "born",
+    "name": "Born",
+    "description": "Social AI companion apps such as Pengu.",
+    "category": "AI",
+    "domain": "born.com",
+    "aliases": [],
+    "contextKeywords": [
+      "Pengu",
+      "AI companion",
+      "AI companions",
+      "KI-Begleiter",
+      "virtual pet",
+      "social AI",
+      "Accel",
+      "Fabian Kamberi"
+    ]
+  },
+  {
+    "id": "soundcloud",
+    "name": "SoundCloud",
+    "description": "Audio streaming and creator platform.",
+    "category": "Media",
+    "domain": "soundcloud.com",
+    "aliases": []
+  },
+  {
+    "id": "onefootball",
+    "name": "OneFootball",
+    "description": "Football news, scores and streaming.",
+    "category": "Media",
+    "domain": "onefootball.com",
+    "aliases": []
+  },
+  {
+    "id": "faircado",
+    "name": "Faircado",
+    "description": "Browser extension for secondhand shopping.",
+    "category": "Climate tech",
+    "domain": "faircado.com",
+    "aliases": []
+  },
+  {
+    "id": "sparrks",
+    "name": "Sparrks",
+    "description": "Digital coaching for leaders and teams.",
+    "category": "HR tech",
+    "domain": "sparrks.io",
+    "aliases": []
+  },
+  {
+    "id": "livebuy",
+    "name": "Livebuy",
+    "description": "Live video shopping software for brands.",
+    "category": "Software",
+    "domain": "livebuy.io",
+    "aliases": []
+  },
+  {
+    "id": "zaubar",
+    "name": "ZAUBAR",
+    "description": "AR and generative AI location experiences.",
+    "category": "Software",
+    "domain": "zaubar.com",
+    "aliases": []
+  },
+  {
+    "id": "cardino",
+    "name": "Cardino",
+    "description": "Marketplace for used electric vehicles.",
+    "category": "Mobility",
+    "domain": "cardino.de",
+    "aliases": []
+  },
+  {
+    "id": "simply-onno",
+    "name": "Simply Onno",
+    "description": "AI that explains medical reports plainly.",
+    "category": "Health tech",
+    "domain": "simply-onno.com",
+    "aliases": []
+  },
+  {
+    "id": "liz-smart-office",
+    "name": "LIZ Smart Office",
+    "description": "Desk and room booking for hybrid offices.",
+    "category": "Software",
+    "domain": "liz.solutions",
+    "aliases": []
+  },
+  {
+    "id": "formation",
+    "name": "FORMATION",
+    "description": "Interactive maps for large workplaces.",
+    "category": "Software",
+    "domain": "tryformation.com",
+    "aliases": [],
+    "contextKeywords": [
+      "interactive map",
+      "interaktive Karte",
+      "map",
+      "maps",
+      "Karte",
+      "Karten",
+      "workplace",
+      "workplaces",
+      "facility",
+      "trade fair",
+      "Messe"
+    ]
+  },
+  {
+    "id": "vehi",
+    "name": "VEHI",
+    "description": "Compares cars, driving schools and rides.",
+    "category": "Mobility",
+    "domain": "vehi.de",
+    "aliases": []
   }
 ]

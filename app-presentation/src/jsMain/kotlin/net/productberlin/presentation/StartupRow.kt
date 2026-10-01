@@ -7,6 +7,7 @@ import react.Props
 import react.dom.html.ReactHTML.button
 import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.h3
+import react.dom.html.ReactHTML.img
 import react.dom.html.ReactHTML.li
 import react.dom.html.ReactHTML.p
 import react.dom.html.ReactHTML.span
@@ -17,6 +18,11 @@ import web.dom.ElementId
 import web.html.ButtonType
 import web.html.HTMLButtonElement
 import web.html.button
+import web.http.ReferrerPolicy
+import web.http.strictOriginWhenCrossOrigin
+
+/** Only absolute HTTPS image URLs supplied by the API are rendered. */
+private val SAFE_LOGO = Regex("^https://[^\\s/<>]+/[^\\s<>\"]*$")
 
 external interface StartupRowProps : Props {
     var company: Startup
@@ -28,6 +34,8 @@ val StartupRow =
     FC<StartupRowProps> { props ->
         val company = props.company
         var expanded by useState(false)
+        var failedLogo by useState<String?>(null)
+        val logo = company.logoUrl?.takeIf { it != failedLogo && SAFE_LOGO.matches(it) }
         val whyButton = useRef<HTMLButtonElement>(null)
         li {
             className = ClassName("startup-row")
@@ -36,8 +44,20 @@ val StartupRow =
                 +"${props.position}."
             }
             div {
-                className = ClassName("company-mark mark-${company.id}")
+                className = ClassName(if (logo != null) "company-mark has-logo" else "company-mark mark-${company.id}")
                 ariaHidden = true
+                if (logo != null) {
+                    // Decorative: the company name follows. A missing or failed logo falls back to the letter mark.
+                    img {
+                        src = logo
+                        alt = ""
+                        width = 40.0
+                        height = 40.0
+                        referrerPolicy = ReferrerPolicy.strictOriginWhenCrossOrigin
+                        onError = { failedLogo = logo }
+                    }
+                    return@div
+                }
                 +(
                     when (company.id) {
                         "almedia" -> "a"
@@ -112,10 +132,6 @@ val StartupRow =
                 span {
                     className = ClassName("category")
                     +company.category
-                }
-                p {
-                    className = ClassName("ranking-reason")
-                    +company.reason
                 }
                 div {
                     className = ClassName("pb-theme")

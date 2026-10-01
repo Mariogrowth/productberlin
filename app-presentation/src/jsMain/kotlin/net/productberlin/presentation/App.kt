@@ -49,7 +49,7 @@ val App =
             div {
                 className = ClassName("edition")
                 span { className = ClassName("live-dot") }
-                +"A weekly pulse on the city"
+                +"Your weekly news on the city"
             }
             h1 {
                 +"Product"
@@ -132,11 +132,6 @@ val App =
                         alt = ""
                         className = ClassName("note-arrow")
                     }
-                    span {
-                        +"The names. The news."
-                        br {}
-                        +"The reasons why."
-                    }
                 }
             }
             footer {
@@ -163,17 +158,9 @@ val App =
                             if (ranking?.isMock == true) {
                                 "A preview with sample rankings and fictional stories."
                             } else {
-                                "We count distinct Google News headlines mentioning companies " +
-                                    "in our maintained Berlin startup catalogue. Ambiguous names also require company context. " +
-                                    "We search English and German Berlin startup and business news " +
-                                    "over the previous seven complete UTC days. " +
-                                    "Up to ten companies are ranked by " +
-                                    "article count, with a consistent order for ties. Why shows up to five recent stories, " +
-                                    "newest first. " +
-                                    "Coverage depends on Google News and our catalogue; this is a news signal, " +
-                                    "not a measure of company quality. " +
-                                    "We refresh Mondays at 06:00 UTC. If collection fails or finds no matches, " +
-                                    "the previous dated list stays visible."
+                                "This metric ranks up to ten catalogued Berlin startups by their press relevance counts " +
+                                    "over the previous seven UTC days, refreshing every Monday at 06:00 UTC " +
+                                    "as an indicator of media visibility rather than company quality."
                             }
                         )
                     }
