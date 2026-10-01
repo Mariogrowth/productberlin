@@ -13,6 +13,28 @@ class CatalogueTest {
         assertEquals("one", entry.id)
         assertEquals(emptyList(), entry.aliases)
         assertEquals(emptyList(), entry.contextKeywords)
+        assertEquals(null, entry.domain)
+    }
+
+    @Test
+    fun preservesWebsiteDomain() {
+        assertEquals("one.example.com", parseCatalogue("[" + company.dropLast(1) + ""","domain":"one.example.com"}]""").single().domain)
+    }
+
+    @Test
+    fun rejectsDomainsThatAreNotBareHostnames() {
+        for (value in listOf(
+            "\"https://one.com\"",
+            "\"one.com/path\"",
+            "\"One.com\"",
+            "\"one\"",
+            "\"one.com:8080\"",
+            "\"-one.com\"",
+            "\" \"",
+            "42",
+        )) {
+            assertFailsWith<IllegalArgumentException> { parseCatalogue("[" + company.dropLast(1) + ",\"domain\":$value}]") }
+        }
     }
 
     @Test

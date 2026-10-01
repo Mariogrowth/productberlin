@@ -44,6 +44,7 @@ For local operation, module responsibilities, API behavior, or deployment detail
 - Keep credentials in GitHub environment secrets and local ignored environment files. Use `BUILD_SHA` for deployed version identity and complete HTTPS `DEPLOY_URL` values for smoke checks.
 - Keep D1 migrations numbered and backward-compatible with the currently deployed Worker. Add a migration rather than editing an already-applied one. Migrations and seeding are separate operations; ordinary push deployments must not seed.
 - The scheduled Worker collects Google News RSS weekly and matches headlines against `cloudflare/startups.json`. Keep ranking deterministic, deduplicate articles, and publish D1 snapshots atomically. Preserve the previous ranking on failed or empty collections. Mock seeds and `/design-system` stay visibly labeled; live rankings must not be labeled as demo data. Keep tests independent of upstream news services.
+- Company logos are hotlinked from Brandfetch by the browser. The Worker builds logo URLs only for companies in the ranking response; it never fetches, caches or proxies logos, and UI falls back to letter marks.
 - Use the existing local launcher; stop temporary servers you start. Do not kill another IDE/server process to free a port.
 
 ## Code Review Rules

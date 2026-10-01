@@ -3,6 +3,7 @@ package net.productberlin.presentation
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import net.productberlin.domain.entity.NewsArticle
 import net.productberlin.domain.entity.Startup
@@ -11,6 +12,8 @@ import react.create
 import react.dom.flushSync
 import web.cssom.ClassName
 import web.dom.document
+import web.events.Event
+import web.events.EventType
 import web.html.HTMLButtonElement
 
 /** Existing behavior baseline; Figma visual parity is verified separately once the design is accessible. */
@@ -38,7 +41,8 @@ class StartupRowTest : ComponentTest() {
         assertEquals("3.", container.querySelector(".rank")?.textContent)
         assertEquals(company.name, container.querySelector("h3")?.textContent)
         assertEquals(company.description, container.querySelector(".company-description")?.textContent)
-        assertEquals(company.reason, container.querySelector(".ranking-reason")?.textContent)
+        assertEquals(company.category, container.querySelector(".category")?.textContent)
+        assertTrue(!container.textContent.orEmpty().contains(company.reason), "Ranking reason is not shown")
         assertEquals(company.news.single().headline, container.querySelector(".news-story h4")?.textContent)
     }
 
@@ -96,5 +100,54 @@ class StartupRowTest : ComponentTest() {
                 )
                 assertEquals(label, container.querySelector(".movement")?.getAttribute("aria-label"))
             }
+    }
+
+    @Test
+    fun suppliedLogoReplacesTheLetterMarkAsADecorativeImage() {
+        render(
+            StartupRow.create {
+                company = this@StartupRowTest.company.copy(logoUrl = LOGO)
+                position = 1
+            },
+        )
+        val mark = assertNotNull(container.querySelector(".company-mark"))
+        val image = assertNotNull(mark.querySelector("img"))
+        assertEquals(LOGO, image.getAttribute("src"))
+        assertEquals("", image.getAttribute("alt"))
+        assertEquals("strict-origin-when-cross-origin", image.getAttribute("referrerpolicy"))
+        assertEquals("true", mark.getAttribute("aria-hidden"))
+        assertEquals("", mark.textContent)
+    }
+
+    @Test
+    fun failedLogoFallsBackToTheLetterMark() {
+        render(
+            StartupRow.create {
+                company = this@StartupRowTest.company.copy(logoUrl = LOGO)
+                position = 1
+            },
+        )
+        val image = assertNotNull(container.querySelector(".company-mark img"))
+        flushSync { image.dispatchEvent(Event(EventType("error"))) }
+        assertNull(container.querySelector(".company-mark img"))
+        assertEquals("a", container.querySelector(".company-mark.mark-almedia")?.textContent)
+    }
+
+    @Test
+    fun missingOrUnsafeLogoKeepsTheLetterMark() {
+        for (logo in listOf(null, "http://cdn.example.com/logo.webp", "javascript:alert(1)", "//cdn.example.com/logo.webp")) {
+            render(
+                StartupRow.create {
+                    company = this@StartupRowTest.company.copy(logoUrl = logo)
+                    position = 1
+                },
+            )
+            assertNull(container.querySelector(".company-mark img"))
+            assertEquals("a", container.querySelector(".company-mark")?.textContent)
+        }
+    }
+
+    private companion object {
+        const val LOGO = "https://cdn.brandfetch.io/domain/almedia.co/w/80/h/80/fallback/404/type/icon?c=id"
     }
 }

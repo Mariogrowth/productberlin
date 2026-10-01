@@ -12,6 +12,8 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import net.productberlin.domain.usecase.GetWeeklyRanking
+import net.productberlin.worker.collection.parseCatalogue
+import net.productberlin.worker.logo.BrandfetchLogo
 import net.productberlin.worker.mapper.toDto
 import net.productberlin.worker.repository.D1StartupRepository
 
@@ -22,6 +24,8 @@ fun handleApi(
     method: String,
     database: dynamic,
     version: String,
+    catalogue: String,
+    brandfetchClientId: String?,
 ): Promise<dynamic> =
     CoroutineScope(EmptyCoroutineContext).promise {
         if (path != "/api/health" && path != "/api/rankings/weekly") {
@@ -45,13 +49,24 @@ fun handleApi(
                     }.toString(),
                 )
             } else {
-                val ranking = GetWeeklyRanking(D1StartupRepository(database))()
+                val domains = catalogueDomains(catalogue)
+                val logo = BrandfetchLogo(brandfetchClientId)
+                val ranking = GetWeeklyRanking(D1StartupRepository(database) { logo.url(domains[it]) })()
                 response(200, wireJson.encodeToString(ranking.toDto()))
             }
         } catch (error: Throwable) {
             console.error("API request failed", error)
             response(503, """{"error":"Data temporarily unavailable"}""")
         }
+    }
+
+/** Logos are decorative: an unreadable catalogue leaves letter marks instead of failing the ranking. */
+private fun catalogueDomains(catalogue: String): Map<String, String> =
+    try {
+        parseCatalogue(catalogue).mapNotNull { company -> company.domain?.let { company.id to it } }.toMap()
+    } catch (error: IllegalArgumentException) {
+        console.error("Catalogue domains unavailable", error)
+        emptyMap()
     }
 
 private fun response(

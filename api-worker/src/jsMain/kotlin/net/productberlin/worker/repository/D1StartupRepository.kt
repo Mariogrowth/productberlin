@@ -7,9 +7,13 @@ import net.productberlin.domain.entity.Startup
 import net.productberlin.domain.entity.WeeklyRanking
 import net.productberlin.domain.repository.StartupRepository
 
-/** Reads one complete, published snapshot in one SQL statement. No partial refresh can leak into the UI. */
+/**
+ * Reads one complete, published snapshot in one SQL statement. No partial refresh can leak into the UI.
+ * Logos are resolved per ranked company only, from current catalogue metadata rather than the snapshot.
+ */
 internal class D1StartupRepository(
     private val database: dynamic,
+    private val logoUrl: (startupId: String) -> String? = { null },
 ) : StartupRepository {
     override suspend fun getWeeklyRanking(): WeeklyRanking {
         val result =
@@ -31,6 +35,7 @@ internal class D1StartupRepository(
                     movement = (row.movement as Number?)?.toInt(),
                     reason = row.reason as String,
                     mentionCount = (row.mention_count as Number?)?.toInt(),
+                    logoUrl = logoUrl(row.startup_id as String),
                     news =
                         entries.filter { it.news_id != null }.map {
                             NewsArticle(

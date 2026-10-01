@@ -34,6 +34,8 @@ h1 { margin: 17px 0 11px; font-size: 50px; font-weight: 780; letter-spacing: -2.
 .mark-deepset { background: #244577; font-size: 31px; }
 .mark-personio { background: #eee1fb; color: #5c2e90; font-size: 36px; }
 .mark-ecosia { background: #dff1c4; color: #306941; font-size: 36px; font-family: Georgia, serif; }
+.company-mark.has-logo { background: #fff; }
+.company-mark.has-logo img { display: block; width: 100%; height: 100%; object-fit: contain; }
 .company-info { min-width: 0; }
 .company-title { display: flex; align-items: center; gap: 12px; }
 h3 { margin: 0; font-size: 16px; letter-spacing: -.3px; font-weight: 650; }
@@ -47,15 +49,13 @@ summary::-webkit-details-marker { display: none; }
 .why-button[aria-expanded="true"] .chevron { transform: translateY(1px) rotate(225deg); }
 .why-button[aria-expanded="true"] { background: #f3f3ff; color: #2424dd; border-color: #dadaff; }
 .why-content { grid-column: 2 / -1; margin-top: 17px; border-radius: 10px; background: #f8f8fc; padding: 18px; }
-.category { color: #4b4bc7; font-size: 9px; letter-spacing: .8px; text-transform: uppercase; font-weight: 650; }
-.ranking-reason { font-size: 12px; line-height: 1.7; color: #62626f; margin: 9px 0 16px; }
+.category { display: block; margin-bottom: 16px; color: #4b4bc7; font-size: 9px; letter-spacing: .8px; text-transform: uppercase; font-weight: 650; }
 .news-story { border-top: 1px solid #e6e6f0; padding-top: 12px; }
 .story-meta { color: #7c7c89; font-size: 9px; }
 h4 { font-size: 12px; line-height: 1.6; font-weight: 550; margin: 6px 0 0; }
 .margin-note { position: absolute; top: 58px; left: calc(100% + 54px); width: 225px; color: #6c7d96; }
 .margin-note p { margin: 0; font-size: 22px; line-height: 1.2; letter-spacing: -.65px; font-weight: 650; transform: rotate(-4deg); }
 .note-arrow { display: block; width: 107px; height: 84px; margin: 13px 0 0 -20px; }
-.margin-note > span { display: block; margin: 21px 0 0 9px; color: #9cA4b0; font-size: 11px; line-height: 1.8; }
 footer { text-align: center; padding: 29px 0 36px; }
 .demo-label { display: flex; justify-content: center; align-items: center; gap: 6px; color: #88888f; font-size: 10px; }
 .demo-dot { background: #b5b5bd; width: 4px; height: 4px; }

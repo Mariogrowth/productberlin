@@ -17,6 +17,7 @@ class LiveRankingTest {
               "updatedAt":"2026-09-28T06:00:00.000Z", "searchQuery":"Berlin startup", "articleCount":23,
               "startups":[{"id":"mika","name":"mika","description":"Accounting","category":"Finance",
                 "movement":null,"reason":"Two mentions","mentionCount":2,
+                "logoUrl":"https://cdn.brandfetch.io/domain/getmika.de/w/64/h/64/fallback/404/type/icon?c=id",
                 "news":[{"id":"news","headline":"mika raises funding","source":"Publisher",
                   "publishedAt":"2026-09-25T12:00:00.000Z","url":"https://news.google.com/rss/articles/one"}]}]
             }""",
@@ -27,6 +28,7 @@ class LiveRankingTest {
         assertEquals("2026-09-28T06:00:00.000Z", ranking.updatedAt)
         assertEquals("Berlin startup", ranking.searchQuery)
         assertEquals(2, ranking.startups.single().mentionCount)
+        assertEquals("https://cdn.brandfetch.io/domain/getmika.de/w/64/h/64/fallback/404/type/icon?c=id", ranking.startups.single().logoUrl)
         assertEquals(
             "https://news.google.com/rss/articles/one",
             ranking.startups
