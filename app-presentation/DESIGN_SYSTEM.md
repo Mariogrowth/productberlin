@@ -46,6 +46,7 @@ The design system has two reusable layers and a separate catalogue:
 | `layouts` | `cards` | `Card` |
 | `layouts` | `filters` | `FilterBar`, `FilterOption` |
 | `layouts` | `feedback` | `EmptyState` |
+| `layouts` | `forms` | `EmailSignup`, `EmailSignupStatus` |
 | `layouts` | `ranking` | `RankedResult`, `RankedResultRow`, `RankedResults` |
 | `layouts` | `tables` | `DenseTable`, `TableColumn`, `TableRow` |
 | `showcase` | — | `DesignSystemShowcase` |
@@ -86,6 +87,7 @@ div {
 - `RankedResults` / `RankedResultRow`: supplied order and ranks, identity, description, movement and an expandable reason. Stable React keys come from presentation IDs; disclosure IDs remain unique across repeated lists. These components neither fetch nor compute rankings.
 - `DenseTable`: semantic caption/header/body, numeric alignment, 52 px rows and horizontal overflow. Each row must match the column count.
 - `EmptyState`: explanation and one recovery callback; the caller owns retained filters and clearing behavior.
+- `EmailSignup`: pill-shaped email field with an inline submit, the visible title as its label, `autocomplete="email"`, and caller-supplied `EmailSignupStatus` and message. Invalid input is marked `aria-invalid` and described by the message. Messages use one persistent polite live region. Submitting disables the action and ignores repeated submits, and success replaces the field with the message. The layout neither validates nor sends addresses. Its pill radius, 420 px maximum width and spacing are estimates; the reference screenshots do not include a sign-up form.
 
 `RankedResult`, `FilterOption`, `TableColumn` and `TableRow` are presentation models, not backend entities. Adapt domain state at the screen boundary. The catalogue's sample companies and descriptions mirror the reference for visual review and do not represent actual Berlin rankings.
 

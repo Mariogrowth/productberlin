@@ -134,6 +134,7 @@ val App =
                     }
                 }
             }
+            NewsletterSignup {}
             footer {
                 div {
                     className = ClassName("demo-label")
