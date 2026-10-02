@@ -17,8 +17,11 @@ function item(company, id, day = 1) {
   const date = new Date(activeWeek - day * 86_400_000).toUTCString();
   return `<item><title>${xml(company.name)} ${company.contextKeywords?.[0] ?? ""} launches product ${id} - Publisher</title><source url="https://publisher.test">Publisher</source><guid isPermaLink="false">${id}</guid><link>https://news.google.com/rss/articles/${id}?oc=5</link><pubDate>${date}</pubDate></item>`;
 }
+// Fixture stories are dated relative to the Monday 06:00 UTC that starts the event's week.
+const DAY = 86_400_000;
+const mondayOf = time => { const midnight = Math.floor(time / DAY) * DAY; return midnight - ((new Date(midnight).getUTCDay() + 6) % 7) * DAY + 6 * 3_600_000; };
 async function scheduled(time) {
-  activeWeek = time;
+  activeWeek = mondayOf(time);
   const worker = await mf.getWorker();
   return worker.scheduled({ scheduledTime: new Date(time), cron: '0 6 * * MON' });
 }
@@ -125,6 +128,27 @@ test('duplicate events skip collection, and a failed next week retains the previ
   assert.notEqual((await scheduled(weekOne + 7 * 86_400_000)).outcome, 'ok');
   assert.deepEqual(await ranking(), previous);
   assert.equal((await db.prepare("SELECT status FROM collection_runs WHERE week_start='2026-10-05-bilingual-v2'").first()).status, 'failed');
+});
+
+test('off-schedule events during a week neither refetch nor replace the published edition', async () => {
+  assert.equal((await scheduled(weekOne)).outcome, 'ok');
+  const published = await ranking();
+  const count = calls.length;
+  for (const day of [1, 3, 6]) {
+    assert.equal((await scheduled(weekOne + day * DAY)).outcome, 'ok');
+    assert.equal(calls.length, count);
+    assert.deepEqual(await ranking(), published);
+  }
+  assert.equal((await db.prepare('SELECT COUNT(*) AS count FROM ranking_snapshots').first()).count, 1);
+});
+
+test('a failed Monday collection is retried for the same week by a later event that week', async () => {
+  mode = 'unavailable';
+  assert.notEqual((await scheduled(weekOne)).outcome, 'ok');
+  mode = 'success';
+  assert.equal((await scheduled(weekOne + 3 * DAY)).outcome, 'ok');
+  assert.equal((await ranking()).weekLabel, '2026-09-21 – 2026-09-27');
+  assert.equal((await db.prepare("SELECT status FROM collection_runs WHERE week_start='2026-09-28-bilingual-v2'").first()).status, 'succeeded');
 });
 
 test('D1 publication rolls back all writes on failure, then a retry publishes with movement', async () => {

@@ -13,7 +13,7 @@ import net.productberlin.domain.entity.WeeklyRanking
 import net.productberlin.worker.repository.CollectionRepository
 
 class WeeklyCollectorTest {
-    private val window = CollectionWindow.endingAt(Date.parse("2026-09-28T06:00:00Z"))
+    private val window = CollectionWindow.latestCompleteWeek(Date.parse("2026-09-28T06:00:00Z"))
     private val catalogue =
         listOf(StartupCandidate("mika", "mika", "AI accounting", "Finance", contextKeywords = listOf("accounting", "fintech")))
 
