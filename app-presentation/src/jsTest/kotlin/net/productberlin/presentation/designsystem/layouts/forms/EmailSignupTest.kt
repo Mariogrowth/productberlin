@@ -98,5 +98,17 @@ class EmailSignupTest : DesignSystemTest() {
         assertEquals("rgb(102, 106, 112)", getComputedStyle(pill).borderTopColor)
         assertEquals("none", getComputedStyle(pill).boxShadow)
         assertEquals("none", getComputedStyle(input()).outlineStyle)
+        assertEquals("rgb(229, 230, 227)", getComputedStyle(button()).borderTopColor, "The action's edge is unchanged")
+    }
+
+    @Test
+    fun focusingTheActionMarksOnlyThePillEdge() {
+        themed()
+        render(signup())
+        val pill = assertNotNull(container.querySelector(".pb-email-signup-pill"))
+        flushSync { button().focus() }
+        assertEquals("rgb(102, 106, 112)", getComputedStyle(pill).borderTopColor)
+        assertEquals("none", getComputedStyle(button()).outlineStyle)
+        assertEquals("rgb(229, 230, 227)", getComputedStyle(button()).borderTopColor)
     }
 }
