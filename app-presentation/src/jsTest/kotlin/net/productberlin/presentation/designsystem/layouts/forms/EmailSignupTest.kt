@@ -86,5 +86,17 @@ class EmailSignupTest : DesignSystemTest() {
         val pill = assertNotNull(container.querySelector(".pb-email-signup-pill"))
         assertEquals("999px", getComputedStyle(pill).borderTopLeftRadius)
         assertTrue(button().getBoundingClientRect().height >= 40.0)
+        assertEquals("rgb(255, 255, 255)", getComputedStyle(button()).backgroundColor, "The action is white")
+    }
+
+    @Test
+    fun focusingTheFieldUsesANeutralEdgeWithoutBrandColour() {
+        themed()
+        render(signup())
+        val pill = assertNotNull(container.querySelector(".pb-email-signup-pill"))
+        flushSync { input().focus() }
+        assertEquals("rgb(102, 106, 112)", getComputedStyle(pill).borderTopColor)
+        assertEquals("none", getComputedStyle(pill).boxShadow)
+        assertEquals("none", getComputedStyle(input()).outlineStyle)
     }
 }

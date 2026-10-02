@@ -205,11 +205,14 @@
 .pb-email-signup form { display: grid; gap: var(--pb-space-3); justify-items: center; width: 100%; }
 .pb-email-signup-title { font-size: 15px; font-weight: 600; color: var(--pb-ink); }
 .pb-email-signup-pill { display: flex; align-items: center; gap: var(--pb-space-1); width: 100%; max-width: 420px; padding: var(--pb-space-1); background: var(--pb-surface); border: 1px solid var(--pb-line); border-radius: var(--pb-radius-pill); }
-.pb-email-signup-pill:focus-within { border-color: var(--pb-brand); box-shadow: 0 0 0 1px var(--pb-brand); }
+/* Focus stays neutral: a darker grey edge rather than a brand colour. */
+.pb-email-signup-pill:focus-within { border-color: var(--pb-muted); }
+.pb-theme .pb-email-signup-pill input:focus-visible { outline: none; }
 .pb-email-signup-pill:has([aria-invalid='true']) { border-color: var(--pb-error); box-shadow: 0 0 0 1px var(--pb-error); }
 .pb-theme .pb-email-signup-pill input { flex: 1; min-width: 0; height: 40px; padding: 0 var(--pb-space-4); font-size: 15px; color: var(--pb-ink); background: transparent; border: 0; outline: none; }
 .pb-email-signup-pill input::placeholder { color: var(--pb-muted); opacity: 1; }
-.pb-email-signup-pill .pb-button { flex: none; min-height: 40px; padding: 8px 20px; border-radius: var(--pb-radius-pill); }
+.pb-email-signup-pill .pb-button { flex: none; min-height: 40px; padding: 8px 20px; border-radius: var(--pb-radius-pill); background: var(--pb-surface); border-color: var(--pb-line); }
+.pb-theme .pb-email-signup-pill .pb-button:focus-visible { outline-color: var(--pb-ink); }
 .pb-email-signup-message { font-size: 13px; line-height: 1.4; color: var(--pb-muted); }
 .pb-email-signup-message:not(:empty) { margin-top: var(--pb-space-2); }
 .pb-email-signup-message.pb-error { color: var(--pb-error); }
