@@ -20,12 +20,11 @@ val NewsletterSignup =
         div {
             className = ClassName("pb-theme newsletter")
             EmailSignup {
-                title = "Get next Monday’s ten in your inbox"
+                title = "One email a week. Unsubscribe anytime."
                 value = email
                 placeholder = "you@company.com"
                 actionLabel = "Notify me"
                 submittingLabel = "Sending…"
-                note = "One email a week. Unsubscribe anytime."
                 this.status = status
                 this.message = message
                 onValueChange = {

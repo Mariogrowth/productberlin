@@ -39,6 +39,21 @@ class NewsletterSignupTest : ComponentTest() {
     }
 
     @Test
+    fun theFieldIsLabelledByTheFrequencyAndUnsubscribePromiseWithoutASeparateNote() {
+        render(NewsletterSignup.create())
+        assertEquals("One email a week. Unsubscribe anytime.", container.querySelector("label")?.textContent)
+        assertEquals(field().getAttribute("id"), container.querySelector("label")?.getAttribute("for"))
+        assertEquals(null, container.querySelector(".pb-email-signup-note"))
+        assertEquals(
+            1,
+            container.textContent
+                .orEmpty()
+                .split("Unsubscribe anytime")
+                .size - 1,
+        )
+    }
+
+    @Test
     fun validAddressIsNotConfirmedWhileDeliveryIsNotConnected() {
         render(NewsletterSignup.create())
         flushSync { enterValue(field(), " name@domain.de ") }
