@@ -116,6 +116,194 @@ Not added from the same list:
 | Planethic Group (Veganz) | Now registered in Ludwigsfelde, Brandenburg, and in self-administered insolvency proceedings (2026). |
 | Codeberg | Non-profit association (e.V.), not a startup. |
 
+## Expansion reviewed on 2026-10-03
+
+Ninety-six companies from a second user-supplied list of 132. Nine were already catalogued. Every entry has a website `domain` for its logo. Entries with indirect evidence or status concerns are noted; review them first when maintaining this list. `contextKeywords` were added for ordinary-word, short or shared names.
+
+| Company | Berlin connection source | Note |
+| --- | --- | --- |
+| ai-coustics | [Company reference](https://ai-coustics.com/legal/legal-notice) | |
+| AirHelp | [Company reference](https://www.airhelp.com/en-int/imprint/) | Mature scale-up (2013); German corporate office in Berlin. |
+| G2 Esports | [Company reference](https://g2esports.com/pages/imprint) | |
+| Yepoda | [Company reference](https://yepoda.com/pages/imprint-legal-disclosure) | |
+| C1 Green Chemicals | [Company reference](https://carbon.one/imprint) | Listed under its legal name; "Carbon One" is the alias from the supplied list. |
+| Kaiko Systems | [Company reference](https://www.kaikosystems.com/l/imprint) | Acquired by UniSea (Norway) in May 2026; still operates as its own product. No bare "Kaiko" alias (Paris crypto-data firm). |
+| Cortea | [Company reference](https://cortea.ai/imprint) | |
+| HOLY | [Company reference](https://de.holy.com/pages/impressum) | |
+| Ucaneo | [Company reference](https://ucaneo.com/company) | |
+| AXO Track | [Company reference](https://www.axotrack.de/impressum) | |
+| Needle | [Company reference](https://needle.app/about) | Delaware Inc.; team builds from Berlin. |
+| theion | [Company reference](https://theion.de/imprint) | |
+| ecoligo | [Company reference](https://ecoligo.com/de/kontakt) | Management reported project terminations with investor losses. |
+| ReportAssistant | [Company reference](https://reportassistant.de/impressum/) | |
+| FION Energy | [Company reference](https://www.fion-energy.com/impressum/) | |
+| quirion | [Company reference](https://www.quirion.de/impressum) | Robo-advisor founded 2013, subsidiary of Quirin Privatbank. |
+| ecoLocked | [Company reference](https://www.ecolocked.com/imprint) | Ecosia-backed venture. |
+| score4more | [Company reference](https://www.score4more.eu/imprint/) | |
+| Jacasa | [Company reference](https://www.jacasa.de/impressum) | |
+| Get2Germany | [Company reference](https://get2germany.com/en/g2g_impressum) | |
+| Rex | [Company reference](https://rex.app/impressum) | |
+| Concular | [Company reference](https://concular.de/impressum) | |
+| Viivi | [Company reference](https://viivi.de/impressum) | |
+| Travelcircus | [Company reference](https://www.travelcircus.de/impressum) | Mature company (about 2012). |
+| Flank | [Company reference](https://flank.ai/legals/impressum.html) | |
+| New Soul | [Company reference](https://newsoul.de/legal-notice) | |
+| JUHI | [Company reference](https://www.juhi.de/impressum) | |
+| Joulee | [Company reference](https://www.joulee.de/impressum) | |
+| Theo | [Company reference](https://hallotheo.de/impressum) | Formerly "hallo theo". |
+| Cakewalk | [Company reference](https://www.cakewalk.security/imprint) | |
+| Watergenics | [Company reference](https://www.watergenics.tech/impressum) | |
+| NutriMed Biosciences | [Company reference](https://nutrimed.bio/imprint) | |
+| Regpit | [Company reference](https://regpit.com/impressum) | |
+| SchienenJobs | [Company reference](https://www.schienenjobs.de/impressum) | Rail job portal launched 2013; not an early-stage startup. |
+| Sphaira | [Company reference](https://www.sphaira.com/) | Formerly Sphaira Medical; Berlin and Cambridge, MA. |
+| Taktile | [Company reference](https://taktile.com/imprint) | |
+| ctrl+s | [Company reference](https://ctrl-s.io/impressum) | |
+| YGO | [Company reference](https://join.com/companies/ygotravel) | Berlin location from its own join.com company page; no imprint on its JavaScript-only site. |
+| dsb | [Company reference](https://www.deutsche-sanierungsberatung.de/impressum) | |
+| Scale Energy | [Company reference](https://www.scale-energy.eco/de/impressum) | Name occurs in generic phrases ("grid-scale energy"), so only company-specific context keywords are used. |
+| Ascléa | [Company reference](https://asclea.ai/impressum) | Formerly x-cardiac. |
+| AudioCure Pharma | [Company reference](https://www.audiocure.com/imprint) | |
+| Integral | [Company reference](https://www.integral.de/de/imprint) | |
+| LANCH | [Company reference](https://lanch.com/impressum) | |
+| Wyrld | [Company reference](https://wyrld.de/impressum) | Registered in Berlin; operates from Hamburg. |
+| Hypatos | [Company reference](https://www.hypatos.ai/imprint) | Registered in Potsdam; Berlin office. |
+| Spark e-Fuels | [Company reference](https://www.sparkefuels.com/privacy-legal-notice) | |
+| Institute for Diversity Competence | [Company reference](https://diversity-competence.de/impressum/) | EXIST-funded project at HU Berlin; may not be incorporated yet. |
+| LexGraph | [Company reference](https://lexgraph.de/impressum) | EXIST-funded project at HU Berlin; may not be incorporated yet. |
+| platoniq | [Company reference](https://www.platoniq.health/impressum) | |
+| pHera | [Company reference](https://www.remotely.de/job/phera-cvai-engineer-in-womens-health-startup) | No imprint; Berlin from its own job ads. |
+| Neurorium | [Company reference](https://neurorium.ai/impressum.html) | Early-stage; imprint lists the founder. |
+| AVALY | [Company reference](https://theavaly.com/impressum) | |
+| Voicari | [Company reference](https://voicari.com/impressum) | |
+| Blindleister | [Company reference](https://www.blindleister.de/impressum) | |
+| Genie.Knowledge | [Company reference](https://www.genie-knows.com/imprint) | |
+| Seqana | [Company reference](https://www.seqana.com/legal/imprint) | |
+| SAILWINT | [Company reference](https://www.sailwint.com/imprint) | |
+| Decen Space | [Company reference](https://decenspace.com/) | |
+| MoleQlar | [Company reference](https://moleqlar.com/pages/impressum) | |
+| NODI kids | [Company reference](https://us.nodi.kids/pages/imprint) | Legal entity NoDi GmbH. The separately listed "NoDi" could not be identified and was not added. |
+| SerenSync | [Company reference](https://serensync.com) | |
+| INCA | [Company reference](https://www.get-inca.com/impressum) | |
+| yoona.ai | [Company reference](https://www.yoona.ai/impressum) | |
+| Kinetic | [Company reference](https://www.usekinetic.com/imprint) | |
+| Orbion | [Company reference](https://www.orbion.life/imprint) | |
+| Numa | [Company reference](https://press.numastays.com) | |
+| Lano | [Company reference](https://www.lano.io/imprint) | |
+| Monite | [Company reference](https://www.monite.com/imprint) | |
+| Swobbee | [Company reference](https://swobbee.com/imprint/) | |
+| Baller League | [Company reference](https://ballerleague.de/c/imprint) | Stopped the German league in January 2026; continues in the UK and US. |
+| Green City Solutions | [Company reference](https://greencitysolutions.de/impressum/) | |
+| Ultramarin | [Company reference](https://www.ultramarin.ai/imprint/) | |
+| voilà | [Company reference](https://getvoila.com/pages/impressum) | |
+| Nosh.bio | [Company reference](https://www.nosh.food/impressum) | |
+| JobUFO | [Company reference](https://hire.jobufo.com/legal) | |
+| Nala Earth | [Company reference](https://nala.earth/imprint) | |
+| Menlo79 | [Company reference](https://www.menlo79.com/impressum) | |
+| ENAPI | [Company reference](https://enapi.com/legal-notice) | |
+| Tapline | [Company reference](https://tech.eu/2022/12/07/emerging-from-stealth-working-capital-provider-tapline-welcomes-eur317-million-in-pre-seed-round/) | Acquired by Flowpay (Prague) in March 2026. |
+| Project Eaden | [Company reference](https://www.projecteaden.com/imprint) | |
+| ingarden | [Company reference](https://ingarden.de/pages/impressum) | |
+| Green Fusion | [Company reference](https://www.green-fusion.de/impressum) | |
+| Nelly | [Company reference](https://www.getnelly.de/impressum) | |
+| Perseus | [Company reference](https://perseus.de/imprint) | |
+| HealthCaters | [Company reference](https://www.healthcaters.ai/legal-notice) | |
+| Apheris | [Company reference](https://www.apheris.com/imprint) | |
+| telli | [Company reference](https://www.telli.com/imprint) | |
+| Dexter | [Company reference](https://www.ycombinator.com/companies/dexter) | Berlin from its Y Combinator company page; no imprint. |
+| Mirantus Health | [Company reference](https://www.mirantus.com/impressum) | |
+| Hashtag You | [Company reference](https://www.hashtag-you.com/imprint/) | |
+| ACE Alternatives | [Company reference](https://www.ace-alternatives.com/imprint) | |
+| Famedly | [Company reference](https://www.famedly.com/impressum) | |
+| Formo | [Company reference](https://formo.bio/imprint) | Registered in Berlin; operating address in Frankfurt. |
+| Mietz | [Company reference](https://mietz.com/imprint) | |
+| Frequenz | [Company reference](https://frequenz.com/imprint) | Ordinary German word; requires energy context. |
+
+Not added from the same list:
+
+| Company | Reason |
+| --- | --- |
+| sqior medical | Registered in Munich; no Berlin connection found. |
+| Flexvelop | Registered in Hamburg; no Berlin connection found. |
+| SensiVR | No first-party evidence or Berlin company of this name found. |
+| Saypien | Berlin claim only from a third-party database; the domain is parked. |
+| PAM Theragnostics | Described as a Brandenburg company; no website or first-party Berlin evidence. |
+| Bearcover | Reported insolvency in December 2025; the domain is parked. |
+| NoDi | Could not be identified; the only Berlin "NoDi GmbH" is the maker of NODI kids, which is catalogued. |
+| Racemates | The domain is parked and no live site was found; probably defunct. |
+| SE3 Labs | Registered in Munich; no Berlin location found. |
+| VaRi Bioscience | Registered in Wildau, Brandenburg, just outside Berlin. |
+| FunTech | Registered in Mainz; no Berlin connection found. |
+| Sokra | No Berlin connection found; the site is a placeholder without an imprint. |
+| nomadi | Registered in Brandenburg an der Havel, not Berlin. |
+| Porelio | Registered in Potsdam. |
+| dentson | Based in Dresden; the domains are parked. |
+| Ioviso | Registered in Potsdam. |
+| 3Digity | Based in Göttingen. |
+| Mello | Apparently defunct: the domain no longer resolves and the app is unavailable. |
+| ELEMENT | Insolvent insurer; cover ended in April 2025. |
+| Hoperfy | Registered in Lithuania; no first-party Berlin page. |
+| coobi | Operated from Hamburg. |
+| GreenCircle | The domain is parked; no live site found. |
+| Fractal (Fractal ID) | Website unavailable; Berlin connection and current operation could not be confirmed. |
+| German Bionic | Filed for insolvency in November 2025; headquartered in Augsburg with only a Berlin office. |
+| Kontext21 | No imprint; the only Berlin evidence is an expired job ad. |
+| NEX Aero | Current imprint is in Munich; Berlin origin documented only by third parties. |
+| info.link | Operated by a Hamburg-registered company; the Berlin link is weak. |
+
+## Expansion reviewed on 2026-10-04
+
+Thirty-five well-known Berlin companies missing from the catalogue, suggested from memory and checked on their own sites. Delivery Hero, Zalando and HelloFresh are large listed companies, not startups, and were included at the operator's request. The research session had exhausted its web-search quota, so Berlin connections were confirmed on first-party pages but recent acquisitions or insolvencies were not searched for: **status not re-verified** for this batch.
+
+| Company | Berlin connection source | Note |
+| --- | --- | --- |
+| Moss | [Company reference](https://www.getmoss.com/imprint) | Legal entity Nufin GmbH. |
+| Billie | [Company reference](https://www.billie.io/en/imprint) | |
+| Vivid Money | [Company reference](https://vivid.money/en-eu/imprint/) | |
+| Candis | [Company reference](https://www.candis.io/en/legal-notice) | |
+| Circula | [Company reference](https://www.circula.com/en/imprint) | |
+| Banxware | [Company reference](https://www.banxware.com/legal-notice) | |
+| Holvi | [Company reference](https://holvi.teamtailor.com/) | Registered in Helsinki; Berlin office. |
+| smava | [Company reference](https://www.smava.de/impressum/) | |
+| SumUp | [Company reference](https://www.sumup.com/careers/locations/berlin/) | Headquartered in Dublin/London; large Berlin hub. |
+| Delivery Hero | [Company reference](https://careers.deliveryhero.com/) | Large listed company, not a startup; included at the operator's request. |
+| Zalando | [Company reference](https://corporate.zalando.com/en/legal-notice) | Large listed company, not a startup; included at the operator's request. |
+| HelloFresh | [Company reference](https://www.hellofreshgroup.com/en/imprint/) | Large listed company, not a startup; included at the operator's request. |
+| Flink | [Company reference](https://www.linkedin.com/company/goflink) | Berlin HQ confirmed only via its company LinkedIn page; site blocks automated access. |
+| Einhorn | [Company reference](https://einhorn.my/policies/legal-notice) | German word for "unicorn": product-only context keywords so startup "Einhorn" headlines do not count. |
+| Pitch | [Company reference](https://pitch.com/imprint) | "Pitch" is common in startup headlines; keywords avoid funding words, so some real mentions may be missed. |
+| Rasa | [Company reference](https://rasa.com/imprint) | Main entity in San Francisco; founded in Berlin with a Berlin GmbH. |
+| Merantix | [Company reference](https://www.merantix.com/imprint) | AI venture studio and campus. |
+| Juna.ai | [Company reference](https://juna.ai/imprint) | |
+| Vara | [Company reference](https://www.vara.ai/legal-disclosure) | |
+| Steady | [Company reference](https://steady.page/en/contact) | steadyhq.com now redirects to steady.page. |
+| Wunderflats | [Company reference](https://wunderflats.com/en/impressum) | |
+| Homeday | [Company reference](https://www.homeday.de/de/impressum/) | |
+| McMakler | [Company reference](https://www.mcmakler.de/impressum) | |
+| Cosuno | [Company reference](https://www.cosuno.com/de/impressum) | |
+| Lingoda | [Company reference](https://www.lingoda.com/en/imprint) | |
+| Tandem | [Company reference](https://tandem.net/imprint) | Registered in Hannover; Berlin office in its imprint. |
+| Ostrom | [Company reference](https://www.ostrom.de/imprint) | |
+| Klim | [Company reference](https://www.klim.eco/imprint) | |
+| Plan A | [Company reference](https://plana.earth/imprint) | |
+| vly | [Company reference](https://www.vlyfoods.com/policies/legal-notice) | Legal entity VF Nutrition GmbH. |
+| HomeToGo | [Company reference](https://www.hometogo.com/imprint/) | Listed scale-up. |
+| MILES | [Company reference](https://www.miles-mobility.com/de/impressum) | |
+| Nia Health | [Company reference](https://www.nia-health.de/impressum) | App now covers eczema only. |
+| Selfapy | [Company reference](https://www.selfapy.com/impressum) | |
+| HeyJobs | [Company reference](https://www.heyjobs.co/recruiting/impressum/) | |
+
+Not added from the same list:
+
+| Company | Reason |
+| --- | --- |
+| Zolar | In insolvency proceedings; its platform was sold to a company in Kleve. |
+| Mitte | The brand now belongs to a company in Baden-Württemberg; no Berlin company remains. |
+| InstaFreight | Brand discontinued; its technology continues as cargomotion (InstaTechnologies GmbH, Berlin). |
+| HelloBetter | Legally based in Hamburg; Berlin appears only among remote job locations. |
+| Bryter | Founded in and registered in Frankfurt am Main; no current Berlin office. |
+| Prisma | Now a fully remote US company; Berlin only as its early engineering base. |
+
 ## Further coverage
 
 [Startup Map Berlin](https://startup-map.berlin/intro), linked by [Berlin's startup unit](https://www.berlin.de/sen/wirtschaft/startups/artikel.1405088.php), is a much larger source for editorial research. Its Berlin-Brandenburg coverage is wider than this project's Berlin scope. Do not treat every company on it as eligible or assume public browsing grants bulk data/API rights. [Dealroom API access](https://dealroom.co/products/dealroom-api/) is a separate integration, with access and licensing to resolve before automated imports.
