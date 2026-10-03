@@ -1141,5 +1141,1611 @@
     "category": "Mobility",
     "domain": "vehi.de",
     "aliases": []
+  },
+  {
+    "id": "ai-coustics",
+    "name": "ai-coustics",
+    "description": "AI speech enhancement for voice applications.",
+    "category": "AI",
+    "domain": "ai-coustics.com",
+    "aliases": []
+  },
+  {
+    "id": "airhelp",
+    "name": "AirHelp",
+    "description": "Flight delay compensation claims for passengers.",
+    "category": "Legal tech",
+    "domain": "airhelp.com",
+    "aliases": []
+  },
+  {
+    "id": "g2-esports",
+    "name": "G2 Esports",
+    "description": "Esports organisation and entertainment brand.",
+    "category": "Media",
+    "domain": "g2esports.com",
+    "aliases": []
+  },
+  {
+    "id": "yepoda",
+    "name": "Yepoda",
+    "description": "Korean skincare brand with natural ingredients.",
+    "category": "E-commerce",
+    "domain": "yepoda.com",
+    "aliases": []
+  },
+  {
+    "id": "c1-green-chemicals",
+    "name": "C1 Green Chemicals",
+    "description": "Catalysis technology for green methanol.",
+    "category": "Climate tech",
+    "domain": "carbon.one",
+    "aliases": [
+      "Carbon One"
+    ],
+    "contextKeywords": [
+      "methanol",
+      "Methanol",
+      "green methanol",
+      "grünes Methanol",
+      "catalysis",
+      "Katalyse",
+      "chemistry",
+      "Chemie",
+      "chemicals",
+      "Chemikalien",
+      "startup",
+      "Startup",
+      "funding",
+      "Finanzierung",
+      "Adlershof"
+    ]
+  },
+  {
+    "id": "kaiko-systems",
+    "name": "Kaiko Systems",
+    "description": "AI inspection software for ship operations.",
+    "category": "Software",
+    "domain": "kaikosystems.com",
+    "aliases": []
+  },
+  {
+    "id": "cortea",
+    "name": "Cortea",
+    "description": "AI audit agents for audit firms.",
+    "category": "AI",
+    "domain": "cortea.ai",
+    "aliases": [
+      "Cortea AI"
+    ]
+  },
+  {
+    "id": "holy",
+    "name": "HOLY",
+    "description": "Low-sugar powdered energy drinks and iced teas.",
+    "category": "Food tech",
+    "domain": "holy.com",
+    "aliases": [
+      "HOLY Energy"
+    ],
+    "contextKeywords": [
+      "energy drink",
+      "energy drinks",
+      "Energydrink",
+      "Energy-Drink",
+      "Energy Drinks",
+      "iced tea",
+      "Eistee",
+      "drink",
+      "drinks",
+      "Getränk",
+      "Getränke",
+      "Softdrink",
+      "Softdrinks",
+      "powder",
+      "Pulver",
+      "beverage",
+      "startup",
+      "Startup",
+      "funding",
+      "Finanzierung",
+      "Umsatz"
+    ]
+  },
+  {
+    "id": "ucaneo",
+    "name": "Ucaneo",
+    "description": "Electrochemical direct air capture of CO2.",
+    "category": "Climate tech",
+    "domain": "ucaneo.com",
+    "aliases": []
+  },
+  {
+    "id": "axo-track",
+    "name": "AXO Track",
+    "description": "Predictive maintenance sensors for rail switches.",
+    "category": "Mobility",
+    "domain": "axotrack.de",
+    "aliases": [
+      "AXO"
+    ],
+    "contextKeywords": [
+      "rail",
+      "railway",
+      "railways",
+      "Bahn",
+      "Schiene",
+      "Schienen",
+      "Deutsche Bahn",
+      "switch",
+      "switches",
+      "Weiche",
+      "Weichen",
+      "predictive maintenance",
+      "Predictive Maintenance",
+      "Instandhaltung",
+      "train",
+      "trains",
+      "Zug",
+      "startup",
+      "Startup",
+      "funding",
+      "Finanzierung",
+      "Investment"
+    ]
+  },
+  {
+    "id": "needle",
+    "name": "Needle",
+    "description": "AI agents for sales outreach and pipeline.",
+    "category": "AI",
+    "domain": "needle.app",
+    "aliases": [],
+    "contextKeywords": [
+      "AI",
+      "KI",
+      "sales",
+      "Vertrieb",
+      "GTM",
+      "go-to-market",
+      "outbound",
+      "Slack",
+      "CRM",
+      "agent",
+      "agents",
+      "AI agent",
+      "KI-Agent",
+      "RAG",
+      "startup",
+      "Startup",
+      "seed",
+      "funding",
+      "Finanzierung"
+    ]
+  },
+  {
+    "id": "theion",
+    "name": "theion",
+    "description": "Lithium-sulfur crystal battery technology.",
+    "category": "Climate tech",
+    "domain": "theion.de",
+    "aliases": []
+  },
+  {
+    "id": "ecoligo",
+    "name": "ecoligo",
+    "description": "Solar-as-a-service for businesses in emerging markets.",
+    "category": "Climate tech",
+    "domain": "ecoligo.com",
+    "aliases": []
+  },
+  {
+    "id": "reportassistant",
+    "name": "ReportAssistant",
+    "description": "AI documentation and workflows for vet practices.",
+    "category": "Health tech",
+    "domain": "reportassistant.de",
+    "aliases": []
+  },
+  {
+    "id": "fion-energy",
+    "name": "FION Energy",
+    "description": "AI-run battery storage for industrial companies.",
+    "category": "Climate tech",
+    "domain": "fion-energy.com",
+    "aliases": [
+      "FION"
+    ],
+    "contextKeywords": [
+      "battery",
+      "batteries",
+      "battery storage",
+      "Batterie",
+      "Batteriespeicher",
+      "Speicher",
+      "storage",
+      "energy",
+      "Energie",
+      "Strom",
+      "industrial",
+      "Industrie",
+      "AI",
+      "KI",
+      "cleantech",
+      "startup",
+      "Startup",
+      "pre-seed",
+      "Pre-Seed",
+      "funding",
+      "Finanzierung"
+    ]
+  },
+  {
+    "id": "quirion",
+    "name": "quirion",
+    "description": "Robo-advisor for ETF portfolios.",
+    "category": "Fintech",
+    "domain": "quirion.de",
+    "aliases": []
+  },
+  {
+    "id": "ecolocked",
+    "name": "ecoLocked",
+    "description": "Biochar-based carbon-negative building materials.",
+    "category": "Climate tech",
+    "domain": "ecolocked.com",
+    "aliases": []
+  },
+  {
+    "id": "score4more",
+    "name": "score4more",
+    "description": "Sustainability data platform for businesses.",
+    "category": "Climate tech",
+    "domain": "score4more.eu",
+    "aliases": []
+  },
+  {
+    "id": "jacasa",
+    "name": "Jacasa",
+    "description": "Platform for comparing real estate agents.",
+    "category": "Proptech",
+    "domain": "jacasa.de",
+    "aliases": [],
+    "contextKeywords": [
+      "Makler",
+      "Immobilienmakler",
+      "real estate",
+      "Immobilien",
+      "Immobilienverkauf",
+      "property",
+      "agent",
+      "agents",
+      "Maklerportal",
+      "proptech",
+      "PropTech",
+      "startup",
+      "Startup",
+      "funding",
+      "Finanzierung"
+    ]
+  },
+  {
+    "id": "get2germany",
+    "name": "Get2Germany",
+    "description": "Helps foreign health workers get licensed in Germany.",
+    "category": "HR tech",
+    "domain": "get2germany.com",
+    "aliases": []
+  },
+  {
+    "id": "rex",
+    "name": "Rex",
+    "description": "Tech-enabled veterinary clinics.",
+    "category": "Health tech",
+    "domain": "rex.app",
+    "aliases": [],
+    "contextKeywords": [
+      "vet",
+      "vets",
+      "veterinary",
+      "Tierarzt",
+      "Tierärzte",
+      "Tierarztpraxis",
+      "Tierarztpraxen",
+      "Tiermedizin",
+      "pet",
+      "pets",
+      "Haustier",
+      "Haustiere",
+      "clinics",
+      "Praxen",
+      "startup",
+      "Start-up",
+      "funding",
+      "Finanzierung"
+    ]
+  },
+  {
+    "id": "concular",
+    "name": "Concular",
+    "description": "Circular construction and material passports.",
+    "category": "Climate tech",
+    "domain": "concular.de",
+    "aliases": []
+  },
+  {
+    "id": "viivi",
+    "name": "Viivi",
+    "description": "Online real estate brokerage for home sellers.",
+    "category": "Proptech",
+    "domain": "viivi.de",
+    "aliases": [],
+    "contextKeywords": [
+      "real estate",
+      "Immobilien",
+      "Immobilienmakler",
+      "Makler",
+      "property",
+      "proptech",
+      "home",
+      "homes",
+      "Wohnung",
+      "Haus",
+      "Hausverkauf",
+      "startup",
+      "Start-up",
+      "funding",
+      "Finanzierung"
+    ]
+  },
+  {
+    "id": "travelcircus",
+    "name": "Travelcircus",
+    "description": "Short-break and hotel package travel.",
+    "category": "Travel tech",
+    "domain": "travelcircus.de",
+    "aliases": []
+  },
+  {
+    "id": "flank",
+    "name": "Flank",
+    "description": "AI agents for in-house legal teams.",
+    "category": "Legal tech",
+    "domain": "flank.ai",
+    "aliases": [
+      "Flank AI"
+    ],
+    "contextKeywords": [
+      "legal",
+      "legal tech",
+      "legaltech",
+      "Legal-Tech",
+      "lawyers",
+      "Anwälte",
+      "Juristen",
+      "Rechtsabteilung",
+      "legal agents",
+      "AI agents",
+      "KI-Agenten",
+      "Insight Partners",
+      "startup",
+      "Start-up",
+      "funding",
+      "Finanzierung"
+    ]
+  },
+  {
+    "id": "new-soul",
+    "name": "New Soul",
+    "description": "Medical wellness massage studios.",
+    "category": "Health tech",
+    "domain": "newsoul.de",
+    "aliases": [],
+    "contextKeywords": [
+      "massage",
+      "massages",
+      "Massage",
+      "Massagen",
+      "wellness",
+      "medical wellness",
+      "Studio",
+      "Studios",
+      "Gorgas",
+      "startup",
+      "Start-up",
+      "funding",
+      "Finanzierung"
+    ]
+  },
+  {
+    "id": "juhi",
+    "name": "JUHI",
+    "description": "Home help for people with a care grade.",
+    "category": "Health tech",
+    "domain": "juhi.de",
+    "aliases": [],
+    "contextKeywords": [
+      "Haushaltshilfe",
+      "Haushaltshilfen",
+      "Pflege",
+      "Pflegegrad",
+      "Pflegebedürftige",
+      "Alltagshilfe",
+      "Entlastung",
+      "Entlastungsleistungen",
+      "care",
+      "home care",
+      "Senioren",
+      "Impact",
+      "startup",
+      "Start-up",
+      "funding",
+      "Finanzierung"
+    ]
+  },
+  {
+    "id": "joulee",
+    "name": "Joulee",
+    "description": "Subsidy service for energy-efficient renovation.",
+    "category": "Climate tech",
+    "domain": "joulee.de",
+    "aliases": [
+      "Joulee Tech"
+    ]
+  },
+  {
+    "id": "theo",
+    "name": "Theo",
+    "description": "AI-powered residential property management.",
+    "category": "Proptech",
+    "domain": "hallotheo.de",
+    "aliases": [
+      "hallo theo",
+      "hallotheo"
+    ],
+    "contextKeywords": [
+      "property management",
+      "Hausverwaltung",
+      "Hausverwaltungen",
+      "Immobilienverwaltung",
+      "Verwaltung",
+      "Immobilien",
+      "real estate",
+      "proptech",
+      "PropTech",
+      "WEG",
+      "landlords",
+      "Vermieter",
+      "Series A",
+      "startup",
+      "Start-up",
+      "funding",
+      "Finanzierung"
+    ]
+  },
+  {
+    "id": "cakewalk",
+    "name": "Cakewalk",
+    "description": "Access management for AI agents and employees.",
+    "category": "Software",
+    "domain": "cakewalk.security",
+    "aliases": [],
+    "contextKeywords": [
+      "identity",
+      "identities",
+      "identity governance",
+      "access",
+      "access management",
+      "Zugriff",
+      "Zugriffsrechte",
+      "Berechtigungen",
+      "IAM",
+      "AI agents",
+      "KI-Agenten",
+      "security",
+      "cybersecurity",
+      "IT-Sicherheit",
+      "SaaS",
+      "startup",
+      "Start-up",
+      "funding",
+      "Finanzierung"
+    ]
+  },
+  {
+    "id": "watergenics",
+    "name": "Watergenics",
+    "description": "Real-time water chemistry sensors for industry.",
+    "category": "Climate tech",
+    "domain": "watergenics.tech",
+    "aliases": []
+  },
+  {
+    "id": "nutrimed-biosciences",
+    "name": "NutriMed Biosciences",
+    "description": "Biofortified organic plants and foods.",
+    "category": "Food tech",
+    "domain": "nutrimed.bio",
+    "aliases": []
+  },
+  {
+    "id": "regpit",
+    "name": "Regpit",
+    "description": "Anti-money-laundering compliance software.",
+    "category": "Fintech",
+    "domain": "regpit.com",
+    "aliases": []
+  },
+  {
+    "id": "schienenjobs",
+    "name": "SchienenJobs",
+    "description": "Job portal for the rail industry.",
+    "category": "HR tech",
+    "domain": "schienenjobs.de",
+    "aliases": []
+  },
+  {
+    "id": "sphaira",
+    "name": "Sphaira",
+    "description": "Physical AI for robots in hospitals and buildings.",
+    "category": "AI",
+    "domain": "sphaira.com",
+    "aliases": [
+      "Sphaira Medical"
+    ],
+    "contextKeywords": [
+      "robot",
+      "robots",
+      "robotics",
+      "Roboter",
+      "Robotik",
+      "physical AI",
+      "hospital",
+      "hospitals",
+      "Krankenhaus",
+      "Klinik",
+      "Kliniken",
+      "Charité",
+      "MOBY",
+      "isolation",
+      "startup",
+      "Start-up",
+      "funding",
+      "Finanzierung"
+    ]
+  },
+  {
+    "id": "taktile",
+    "name": "Taktile",
+    "description": "AI decision platform for financial risk.",
+    "category": "Fintech",
+    "domain": "taktile.com",
+    "aliases": []
+  },
+  {
+    "id": "ctrl-s",
+    "name": "ctrl+s",
+    "description": "Scope 3 emissions management for supply chains.",
+    "category": "Climate tech",
+    "domain": "ctrl-s.io",
+    "aliases": [],
+    "contextKeywords": [
+      "Scope 3",
+      "emissions",
+      "Emissionen",
+      "CO2",
+      "carbon",
+      "Treibhausgas",
+      "supply chain",
+      "supply chains",
+      "Lieferkette",
+      "Lieferketten",
+      "procurement",
+      "Einkauf",
+      "climate",
+      "Klima",
+      "climate tech",
+      "ClimateTech",
+      "HTGF",
+      "startup",
+      "Start-up",
+      "funding",
+      "Finanzierung"
+    ]
+  },
+  {
+    "id": "ygo",
+    "name": "YGO",
+    "description": "AI infrastructure for travel booking.",
+    "category": "Travel tech",
+    "domain": "ygo.ai",
+    "aliases": [
+      "YGO Trips"
+    ],
+    "contextKeywords": [
+      "travel",
+      "Reise",
+      "Reisen",
+      "travel tech",
+      "traveltech",
+      "Reisebranche",
+      "tourism",
+      "Tourismus",
+      "booking",
+      "Buchung",
+      "Buchungen",
+      "airlines",
+      "Condor",
+      "FlixBus",
+      "HomeToGo",
+      "Series A",
+      "startup",
+      "Start-up",
+      "funding",
+      "Finanzierung"
+    ]
+  },
+  {
+    "id": "dsb",
+    "name": "dsb",
+    "description": "Digital planning for energy-efficient home renovations.",
+    "category": "Climate tech",
+    "domain": "deutsche-sanierungsberatung.de",
+    "aliases": [
+      "Deutsche Sanierungsberatung"
+    ],
+    "contextKeywords": [
+      "Sanierungsberatung",
+      "Sanierung",
+      "Sanierungen",
+      "renovation",
+      "renovations",
+      "Heizung",
+      "Wärmepumpe",
+      "Wärmepumpen",
+      "heat pump",
+      "Energieberatung",
+      "energy efficiency",
+      "Energieeffizienz",
+      "Sanierungsfahrplan",
+      "Hausbesitzer",
+      "homeowners",
+      "climate tech",
+      "Startup",
+      "Start-up"
+    ]
+  },
+  {
+    "id": "scale-energy",
+    "name": "Scale Energy",
+    "description": "Fully financed battery storage for industrial sites.",
+    "category": "Climate tech",
+    "domain": "scale-energy.eco",
+    "aliases": [],
+    "contextKeywords": [
+      "Climentum",
+      "Netzanschluss",
+      "Netzanschlüsse",
+      "grid connection",
+      "grid connections",
+      "Industriekunden",
+      "Gewerbe"
+    ]
+  },
+  {
+    "id": "asclea",
+    "name": "Ascléa",
+    "description": "AI early warning for ICU complications.",
+    "category": "Health tech",
+    "domain": "asclea.ai",
+    "aliases": [
+      "Asclea",
+      "x-cardiac"
+    ]
+  },
+  {
+    "id": "audiocure-pharma",
+    "name": "AudioCure Pharma",
+    "description": "Drug development for sudden hearing loss.",
+    "category": "Biotech",
+    "domain": "audiocure.com",
+    "aliases": [
+      "AudioCure"
+    ]
+  },
+  {
+    "id": "integral",
+    "name": "Integral",
+    "description": "AI-native accounting, tax and payroll for SMEs.",
+    "category": "Fintech",
+    "domain": "integral.de",
+    "aliases": [
+      "Integral Tax"
+    ],
+    "contextKeywords": [
+      "accounting",
+      "Buchhaltung",
+      "Steuerberatung",
+      "Steuerberater",
+      "Steuerkanzlei",
+      "tax",
+      "payroll",
+      "Lohnabrechnung",
+      "Lohnbuchhaltung",
+      "SMEs",
+      "SME",
+      "KMU",
+      "Mittelstand",
+      "Mosaic Ventures",
+      "Reid Hoffman",
+      "Cherry Ventures",
+      "General Catalyst",
+      "Series A",
+      "startup",
+      "Start-up",
+      "fintech"
+    ]
+  },
+  {
+    "id": "lanch",
+    "name": "LANCH",
+    "description": "Creator-led fast-food and snack brands.",
+    "category": "Food tech",
+    "domain": "lanch.com",
+    "aliases": [],
+    "contextKeywords": [
+      "food",
+      "foodtech",
+      "Gastronomie",
+      "restaurant",
+      "restaurants",
+      "Loco Chicken",
+      "Happy Slice",
+      "Happy Chips",
+      "Knossi",
+      "Trymacs",
+      "Luciano",
+      "creator",
+      "creators",
+      "Influencer",
+      "Pizza",
+      "Fast Food",
+      "Lieferdienst",
+      "delivery",
+      "Startup",
+      "Start-up",
+      "Finanzierung",
+      "funding",
+      "Series A"
+    ]
+  },
+  {
+    "id": "wyrld",
+    "name": "Wyrld",
+    "description": "Creator storefronts for social commerce.",
+    "category": "E-commerce",
+    "domain": "wyrld.de",
+    "aliases": []
+  },
+  {
+    "id": "hypatos",
+    "name": "Hypatos",
+    "description": "AI agents for back-office document processing.",
+    "category": "AI",
+    "domain": "hypatos.ai",
+    "aliases": []
+  },
+  {
+    "id": "spark-e-fuels",
+    "name": "Spark e-Fuels",
+    "description": "Load-flexible e-fuel production for aviation.",
+    "category": "Climate tech",
+    "domain": "sparkefuels.com",
+    "aliases": [
+      "Spark eFuels"
+    ]
+  },
+  {
+    "id": "institute-for-diversity-competence",
+    "name": "Institute for Diversity Competence",
+    "description": "AI tools against bias in hiring and HR systems.",
+    "category": "HR tech",
+    "domain": "diversity-competence.de",
+    "aliases": []
+  },
+  {
+    "id": "lexgraph",
+    "name": "LexGraph",
+    "description": "Knowledge-graph AI for legal case review.",
+    "category": "Legal tech",
+    "domain": "lexgraph.de",
+    "aliases": [],
+    "contextKeywords": [
+      "legal",
+      "legal tech",
+      "Legal-Tech",
+      "LegalTech",
+      "Recht",
+      "Rechtsprechung",
+      "case law",
+      "juristisch",
+      "Juristen",
+      "Kanzlei",
+      "Kanzleien",
+      "Anwälte",
+      "lawyers",
+      "law",
+      "KI",
+      "AI",
+      "EXIST",
+      "Startup",
+      "Start-up"
+    ]
+  },
+  {
+    "id": "platoniq",
+    "name": "platoniq",
+    "description": "Digital prevention program against loneliness.",
+    "category": "Health tech",
+    "domain": "platoniq.health",
+    "aliases": [],
+    "contextKeywords": [
+      "health",
+      "Einsamkeit",
+      "einsam",
+      "loneliness",
+      "lonely",
+      "Prävention",
+      "prevention",
+      "Präventionskurs",
+      "Krankenkasse",
+      "Krankenkassen",
+      "mental health",
+      "psychische Gesundheit",
+      "Gesundheit",
+      "App",
+      "Startup",
+      "Start-up"
+    ]
+  },
+  {
+    "id": "phera",
+    "name": "pHera",
+    "description": "Smartphone-read vaginal pH test.",
+    "category": "Health tech",
+    "domain": "pheratest.com",
+    "aliases": [],
+    "contextKeywords": [
+      "pH",
+      "pH-Test",
+      "femtech",
+      "women's health",
+      "Frauengesundheit",
+      "vaginal",
+      "Vaginalflora",
+      "diagnostics",
+      "Diagnostik",
+      "test",
+      "Startup",
+      "Start-up"
+    ]
+  },
+  {
+    "id": "neurorium",
+    "name": "Neurorium",
+    "description": "Biocomputing with lab-grown neural networks.",
+    "category": "Biotech",
+    "domain": "neurorium.ai",
+    "aliases": []
+  },
+  {
+    "id": "avaly",
+    "name": "AVALY",
+    "description": "Acceptance management for energy projects.",
+    "category": "Climate tech",
+    "domain": "theavaly.com",
+    "aliases": [],
+    "contextKeywords": [
+      "Akzeptanz",
+      "acceptance",
+      "erneuerbare",
+      "erneuerbaren",
+      "renewable",
+      "renewables",
+      "Energiewende",
+      "Netzbetreiber",
+      "Übertragungsnetzbetreiber",
+      "grid",
+      "Netzausbau",
+      "Windkraft",
+      "wind",
+      "Solar",
+      "energy",
+      "Energie",
+      "BEE",
+      "Startup",
+      "Start-up"
+    ]
+  },
+  {
+    "id": "voicari",
+    "name": "Voicari",
+    "description": "AI collar decoding dog emotions.",
+    "category": "AI",
+    "domain": "voicari.com",
+    "aliases": []
+  },
+  {
+    "id": "blindleister",
+    "name": "Blindleister",
+    "description": "Reactive power marketing for renewables.",
+    "category": "Climate tech",
+    "domain": "blindleister.de",
+    "aliases": []
+  },
+  {
+    "id": "genie-knowledge",
+    "name": "Genie.Knowledge",
+    "description": "AI business assistant for freight forwarders.",
+    "category": "AI",
+    "domain": "genie-knows.com",
+    "aliases": []
+  },
+  {
+    "id": "seqana",
+    "name": "Seqana",
+    "description": "Satellite-based soil carbon monitoring.",
+    "category": "Climate tech",
+    "domain": "seqana.com",
+    "aliases": []
+  },
+  {
+    "id": "sailwint",
+    "name": "SAILWINT",
+    "description": "Sailing wind-turbine ships making green hydrogen.",
+    "category": "Climate tech",
+    "domain": "sailwint.com",
+    "aliases": []
+  },
+  {
+    "id": "decen-space",
+    "name": "Decen Space",
+    "description": "Marketplace for satellite ground stations.",
+    "category": "Space tech",
+    "domain": "decenspace.com",
+    "aliases": [
+      "DecenSpace"
+    ]
+  },
+  {
+    "id": "moleqlar",
+    "name": "MoleQlar",
+    "description": "Longevity supplements and molecular health tests.",
+    "category": "Health tech",
+    "domain": "moleqlar.com",
+    "aliases": [
+      "MoleQlar Analytics"
+    ]
+  },
+  {
+    "id": "nodi-kids",
+    "name": "NODI kids",
+    "description": "Screen-free audio player for children.",
+    "category": "Media",
+    "domain": "nodi.kids",
+    "aliases": [
+      "NODI Flip"
+    ]
+  },
+  {
+    "id": "serensync",
+    "name": "SerenSync",
+    "description": "Non-invasive neuromodulation for anxiety.",
+    "category": "Health tech",
+    "domain": "serensync.com",
+    "aliases": []
+  },
+  {
+    "id": "inca",
+    "name": "INCA",
+    "description": "AI-run insurance claims handling for insurers.",
+    "category": "Insurtech",
+    "domain": "get-inca.com",
+    "aliases": [
+      "INCA Solutions"
+    ],
+    "contextKeywords": [
+      "insurance",
+      "insurer",
+      "insurers",
+      "insurtech",
+      "Versicherung",
+      "Versicherungen",
+      "Versicherer",
+      "claims",
+      "Schaden",
+      "Schäden",
+      "Schadenbearbeitung",
+      "Schadenregulierung",
+      "agentic AI",
+      "KI-Agenten",
+      "AI agents",
+      "TPA",
+      "pre-seed"
+    ]
+  },
+  {
+    "id": "yoona-ai",
+    "name": "yoona.ai",
+    "description": "Generative AI for fashion design.",
+    "category": "AI",
+    "domain": "yoona.ai",
+    "aliases": []
+  },
+  {
+    "id": "kinetic",
+    "name": "Kinetic",
+    "description": "Interactive shoppable emails for online stores.",
+    "category": "E-commerce",
+    "domain": "usekinetic.com",
+    "aliases": [
+      "Kinetic Software"
+    ],
+    "contextKeywords": [
+      "email",
+      "emails",
+      "E-Mail",
+      "E-Mails",
+      "Newsletter",
+      "inbox",
+      "Posteingang",
+      "Shopify",
+      "Klaviyo",
+      "e-commerce",
+      "ecommerce",
+      "Onlinehandel",
+      "DTC",
+      "Antler"
+    ]
+  },
+  {
+    "id": "orbion",
+    "name": "Orbion",
+    "description": "AI prediction of protein properties.",
+    "category": "Biotech",
+    "domain": "orbion.life",
+    "aliases": [],
+    "contextKeywords": [
+      "protein",
+      "proteins",
+      "Proteine",
+      "Proteindesign",
+      "biotech",
+      "Biotechnologie",
+      "drug discovery",
+      "Wirkstoff",
+      "Wirkstoffe",
+      "pharma",
+      "AI",
+      "KI",
+      "WHU"
+    ]
+  },
+  {
+    "id": "numa",
+    "name": "Numa",
+    "description": "Digital boutique apartments and hotels.",
+    "category": "Travel tech",
+    "domain": "numastays.com",
+    "aliases": [
+      "NUMA Group"
+    ],
+    "contextKeywords": [
+      "hotel",
+      "hotels",
+      "Hotellerie",
+      "hospitality",
+      "apartment",
+      "apartments",
+      "serviced apartments",
+      "Ferienwohnungen",
+      "Unterkunft",
+      "Unterkünfte",
+      "guests",
+      "Gäste",
+      "boutique",
+      "Startup",
+      "funding",
+      "Finanzierung"
+    ]
+  },
+  {
+    "id": "lano",
+    "name": "Lano",
+    "description": "Global payroll and contractor platform.",
+    "category": "HR tech",
+    "domain": "lano.io",
+    "aliases": [],
+    "contextKeywords": [
+      "payroll",
+      "Gehaltsabrechnung",
+      "Lohnabrechnung",
+      "contractor",
+      "contractors",
+      "freelancer",
+      "freelancers",
+      "Employer of Record",
+      "EOR",
+      "HR",
+      "compliance",
+      "Startup",
+      "funding",
+      "Finanzierung"
+    ]
+  },
+  {
+    "id": "monite",
+    "name": "Monite",
+    "description": "Embedded invoicing and payables API.",
+    "category": "Fintech",
+    "domain": "monite.com",
+    "aliases": []
+  },
+  {
+    "id": "swobbee",
+    "name": "Swobbee",
+    "description": "Battery swapping for light electric vehicles.",
+    "category": "Mobility",
+    "domain": "swobbee.com",
+    "aliases": []
+  },
+  {
+    "id": "baller-league",
+    "name": "Baller League",
+    "description": "Six-a-side football league and show.",
+    "category": "Media",
+    "domain": "ballerleague.de",
+    "aliases": []
+  },
+  {
+    "id": "green-city-solutions",
+    "name": "Green City Solutions",
+    "description": "Moss-based air-filtering city furniture.",
+    "category": "Climate tech",
+    "domain": "greencitysolutions.de",
+    "aliases": [
+      "CityTree"
+    ]
+  },
+  {
+    "id": "ultramarin",
+    "name": "Ultramarin",
+    "description": "AI models for equity investing.",
+    "category": "Fintech",
+    "domain": "ultramarin.ai",
+    "aliases": [
+      "Ultramarin Capital"
+    ],
+    "contextKeywords": [
+      "KI",
+      "AI",
+      "ETF",
+      "ETFs",
+      "Fonds",
+      "fund",
+      "funds",
+      "asset management",
+      "Asset Manager",
+      "Vermögensverwaltung",
+      "Anleger",
+      "Privatanleger",
+      "investors",
+      "Aktien",
+      "equities",
+      "equity"
+    ]
+  },
+  {
+    "id": "voila",
+    "name": "voilà",
+    "description": "Restaurant meal boxes delivered nationwide.",
+    "category": "Food tech",
+    "domain": "getvoila.com",
+    "aliases": [
+      "Voila",
+      "getvoila"
+    ],
+    "contextKeywords": [
+      "restaurant",
+      "restaurants",
+      "Kochbox",
+      "Kochboxen",
+      "Menü",
+      "Menüs",
+      "Sternekoch",
+      "Spitzenkoch",
+      "chef",
+      "chefs",
+      "Gastronomie",
+      "Gastro",
+      "Lieferdienst",
+      "delivery",
+      "fine dining",
+      "Startup",
+      "funding",
+      "Finanzierung",
+      "EQT Ventures"
+    ]
+  },
+  {
+    "id": "nosh-bio",
+    "name": "Nosh.bio",
+    "description": "Fungi-fermented proteins for food.",
+    "category": "Food tech",
+    "domain": "nosh.food",
+    "aliases": [
+      "Nosh Biofoods"
+    ]
+  },
+  {
+    "id": "jobufo",
+    "name": "JobUFO",
+    "description": "Video-based job applications and recruiting.",
+    "category": "HR tech",
+    "domain": "jobufo.com",
+    "aliases": []
+  },
+  {
+    "id": "nala-earth",
+    "name": "Nala Earth",
+    "description": "Crop supply risk intelligence for food buyers.",
+    "category": "Climate tech",
+    "domain": "nala.earth",
+    "aliases": []
+  },
+  {
+    "id": "menlo79",
+    "name": "Menlo79",
+    "description": "AI and automation software for rail operations.",
+    "category": "Mobility",
+    "domain": "menlo79.com",
+    "aliases": []
+  },
+  {
+    "id": "enapi",
+    "name": "ENAPI",
+    "description": "Roaming and settlement platform for EV charging.",
+    "category": "Mobility",
+    "domain": "enapi.com",
+    "aliases": []
+  },
+  {
+    "id": "tapline",
+    "name": "Tapline",
+    "description": "Non-dilutive financing for SaaS companies.",
+    "category": "Fintech",
+    "domain": "tapline.io",
+    "aliases": [],
+    "contextKeywords": [
+      "fintech",
+      "SaaS",
+      "financing",
+      "Finanzierung",
+      "revenue-based",
+      "non-dilutive",
+      "Flowpay",
+      "startup",
+      "funding",
+      "acquires",
+      "übernimmt",
+      "Übernahme"
+    ]
+  },
+  {
+    "id": "project-eaden",
+    "name": "Project Eaden",
+    "description": "Plant-based meat alternatives.",
+    "category": "Food tech",
+    "domain": "projecteaden.com",
+    "aliases": [
+      "Eaden"
+    ]
+  },
+  {
+    "id": "ingarden",
+    "name": "ingarden",
+    "description": "Smart indoor gardens for growing microgreens.",
+    "category": "Food tech",
+    "domain": "ingarden.de",
+    "aliases": []
+  },
+  {
+    "id": "green-fusion",
+    "name": "Green Fusion",
+    "description": "Energy management for heating systems.",
+    "category": "Climate tech",
+    "domain": "green-fusion.de",
+    "aliases": [],
+    "contextKeywords": [
+      "heating",
+      "Heizung",
+      "Heizungen",
+      "Wärme",
+      "Wärmewende",
+      "energy management",
+      "Energiemanagement",
+      "Immobilien",
+      "real estate",
+      "proptech",
+      "climate tech",
+      "Startup",
+      "funding",
+      "Finanzierung"
+    ]
+  },
+  {
+    "id": "nelly",
+    "name": "Nelly",
+    "description": "Admin automation for medical practices.",
+    "category": "Health tech",
+    "domain": "getnelly.de",
+    "aliases": [
+      "Nelly Solutions"
+    ],
+    "contextKeywords": [
+      "healthtech",
+      "health tech",
+      "Arztpraxis",
+      "Arztpraxen",
+      "Praxis",
+      "Praxen",
+      "medical practices",
+      "doctors",
+      "Ärzte",
+      "patients",
+      "Patienten",
+      "fintech",
+      "Startup",
+      "funding",
+      "Finanzierung",
+      "Series A",
+      "Series B"
+    ]
+  },
+  {
+    "id": "perseus",
+    "name": "Perseus",
+    "description": "Cybersecurity for small and medium businesses.",
+    "category": "Software",
+    "domain": "perseus.de",
+    "aliases": [
+      "Perseus Technologies"
+    ],
+    "contextKeywords": [
+      "cyber",
+      "cybersecurity",
+      "Cybersicherheit",
+      "Cyberangriff",
+      "Cyberangriffe",
+      "IT-Sicherheit",
+      "security",
+      "KMU",
+      "SMEs",
+      "Mittelstand",
+      "Startup",
+      "funding",
+      "Finanzierung"
+    ]
+  },
+  {
+    "id": "healthcaters",
+    "name": "HealthCaters",
+    "description": "Workplace health screenings.",
+    "category": "Health tech",
+    "domain": "healthcaters.ai",
+    "aliases": []
+  },
+  {
+    "id": "apheris",
+    "name": "Apheris",
+    "description": "Federated AI for drug discovery.",
+    "category": "AI",
+    "domain": "apheris.com",
+    "aliases": []
+  },
+  {
+    "id": "telli",
+    "name": "telli",
+    "description": "AI phone agents for consumer businesses.",
+    "category": "AI",
+    "domain": "telli.com",
+    "aliases": [],
+    "contextKeywords": [
+      "AI",
+      "KI",
+      "voice",
+      "voice AI",
+      "Sprach-KI",
+      "calls",
+      "phone",
+      "Telefon",
+      "Anrufe",
+      "agents",
+      "Agenten",
+      "Startup",
+      "funding",
+      "Finanzierung",
+      "seed",
+      "Y Combinator"
+    ]
+  },
+  {
+    "id": "dexter",
+    "name": "Dexter",
+    "description": "AI spend analytics for procurement teams.",
+    "category": "AI",
+    "domain": "getdexter.co",
+    "aliases": [],
+    "contextKeywords": [
+      "procurement",
+      "Einkauf",
+      "Beschaffung",
+      "spend",
+      "invoices",
+      "Rechnungen",
+      "suppliers",
+      "Lieferanten",
+      "Source-to-Pay",
+      "Y Combinator",
+      "AI",
+      "KI",
+      "Startup",
+      "funding",
+      "Finanzierung"
+    ]
+  },
+  {
+    "id": "mirantus-health",
+    "name": "Mirantus Health",
+    "description": "Eye screenings with telemedicine follow-up.",
+    "category": "Health tech",
+    "domain": "mirantus.com",
+    "aliases": [
+      "Mirantus"
+    ]
+  },
+  {
+    "id": "hashtag-you",
+    "name": "Hashtag You",
+    "description": "Influencer-led consumer brand builder.",
+    "category": "E-commerce",
+    "domain": "hashtag-you.com",
+    "aliases": [],
+    "contextKeywords": [
+      "brands",
+      "Marken",
+      "D2C",
+      "DTC",
+      "e-commerce",
+      "E-Commerce",
+      "influencer",
+      "Influencer",
+      "creator",
+      "Creator",
+      "Startup",
+      "funding",
+      "Finanzierung"
+    ]
+  },
+  {
+    "id": "ace-alternatives",
+    "name": "ACE Alternatives",
+    "description": "Fund administration for alternative investments.",
+    "category": "Fintech",
+    "domain": "ace-alternatives.com",
+    "aliases": [],
+    "contextKeywords": [
+      "fund",
+      "funds",
+      "Fonds",
+      "fund administration",
+      "Fondsverwaltung",
+      "venture capital",
+      "private equity",
+      "fintech",
+      "Startup",
+      "funding",
+      "Finanzierung",
+      "Series A"
+    ]
+  },
+  {
+    "id": "famedly",
+    "name": "Famedly",
+    "description": "Secure messaging for healthcare.",
+    "category": "Health tech",
+    "domain": "famedly.com",
+    "aliases": []
+  },
+  {
+    "id": "formo",
+    "name": "Formo",
+    "description": "Animal-free cheese alternatives.",
+    "category": "Food tech",
+    "domain": "formo.bio",
+    "aliases": [
+      "Formo Foods"
+    ],
+    "contextKeywords": [
+      "cheese",
+      "Käse",
+      "dairy",
+      "Milch",
+      "Milchprodukte",
+      "animal-free",
+      "tierfrei",
+      "plant-based",
+      "pflanzlich",
+      "fermentation",
+      "Fermentation",
+      "Koji",
+      "food tech",
+      "foodtech",
+      "Startup",
+      "funding",
+      "Finanzierung"
+    ]
+  },
+  {
+    "id": "mietz",
+    "name": "Mietz",
+    "description": "Rental management software for landlords.",
+    "category": "Proptech",
+    "domain": "mietz.com",
+    "aliases": [],
+    "contextKeywords": [
+      "proptech",
+      "rental",
+      "rent",
+      "Miete",
+      "Vermietung",
+      "Mieter",
+      "tenants",
+      "landlords",
+      "Vermieter",
+      "Immobilien",
+      "real estate",
+      "Wohnung",
+      "Wohnungen",
+      "Startup",
+      "funding",
+      "Finanzierung"
+    ]
+  },
+  {
+    "id": "frequenz",
+    "name": "Frequenz",
+    "description": "Energy management for decentralised assets.",
+    "category": "Climate tech",
+    "domain": "frequenz.com",
+    "aliases": [],
+    "contextKeywords": [
+      "energy",
+      "Energie",
+      "Energiemanagement",
+      "energy management",
+      "microgrid",
+      "battery",
+      "batteries",
+      "Batterie",
+      "Batteriespeicher",
+      "storage",
+      "Stromspeicher",
+      "flexibility",
+      "Flexibilität",
+      "Startup",
+      "funding",
+      "Finanzierung"
+    ]
   }
 ]
