@@ -2,6 +2,7 @@ package net.productberlin.presentation
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlinx.coroutines.CompletableDeferred
@@ -101,15 +102,42 @@ class AppTest : ComponentTest() {
             assertTrue(container.textContent.orEmpty().contains("New request"))
         }
 
-    private fun show(load: suspend () -> WeeklyRanking) {
+    private fun show(
+        confirmed: Boolean = false,
+        load: suspend () -> WeeklyRanking,
+    ) {
         val useCase =
             GetWeeklyRanking(
                 object : StartupRepository {
                     override suspend fun getWeeklyRanking() = load()
                 },
             )
-        render(App.create { getRanking = useCase })
+        render(
+            App.create {
+                getRanking = useCase
+                subscriptionConfirmed = confirmed
+            },
+        )
     }
+
+    @Test
+    fun confirmedSubscribersSeeADismissibleBannerAboveTheHeaderAndNotBesideThePill() =
+        runTest {
+            show(confirmed = true) { ranking }
+            val banner = assertNotNull(container.querySelector(".confirmation .pb-banner"))
+            assertEquals(SUBSCRIPTION_CONFIRMED, banner.querySelector(".pb-banner-message")?.textContent)
+            assertNotNull(container.querySelector(".confirmation + header"), "Banner sits directly above the header")
+            assertEquals("", container.querySelector(".pb-email-signup-message")?.textContent)
+            flushSync { banner.querySelector("button").unsafeCast<HTMLButtonElement>().click() }
+            assertNull(container.querySelector(".pb-banner"))
+        }
+
+    @Test
+    fun regularVisitsShowNoBanner() =
+        runTest {
+            show { ranking }
+            assertNull(container.querySelector(".pb-banner"))
+        }
 
     // React effects use the real browser scheduler, not the coroutine test scheduler.
     private suspend fun tick() = withContext(Dispatchers.Default) { delay(10) }

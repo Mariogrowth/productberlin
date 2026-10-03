@@ -45,7 +45,7 @@ The design system has two reusable layers and a separate catalogue:
 | `components` | `badges` | `Badge` |
 | `layouts` | `cards` | `Card` |
 | `layouts` | `filters` | `FilterBar`, `FilterOption` |
-| `layouts` | `feedback` | `EmptyState` |
+| `layouts` | `feedback` | `Banner`, `EmptyState` |
 | `layouts` | `forms` | `EmailSignup`, `EmailSignupStatus` |
 | `layouts` | `ranking` | `RankedResult`, `RankedResultRow`, `RankedResults` |
 | `layouts` | `tables` | `DenseTable`, `TableColumn`, `TableRow` |
@@ -77,7 +77,7 @@ div {
 
 - `Text`: seven type styles, regular/medium/bold weights, muted option. It renders a span so callers retain ownership of semantic headings/paragraphs.
 - `Button`: primary, secondary and tertiary; regular or small; native disabled and explicit submit type (defaults to `button`). Supply `accessibleLabel` for icon-only actions.
-- `Icon`: search, filter, back, verified, list, grid, help, more, chevron, check. Enclosing controls must provide labels. Compact component contexts scale the 24 px icon view box.
+- `Icon`: search, filter, back, verified, list, grid, help, more, chevron, check, close. Enclosing controls must provide labels. Compact component contexts scale the 24 px icon view box.
 - `TextField`: controlled value/callback, visible label, optional placeholder, help/error text, disabled state, trailing help action. `search = true` supplies the compact search variant and search icon. Without an action callback the icon is decorative. With a callback, `actionLabel` is required.
 - `FilterBar`: controlled single selection; stable option IDs and `aria-pressed`. This is a button group, not a tab panel.
 - `NavigationItem`: native link with `aria-current="page"` for the active destination; compose inside a labelled `nav`.
@@ -86,6 +86,7 @@ div {
 - `Card`: bordered surface with optional elevation, a rounded 40 px shape variant and arbitrary children.
 - `RankedResults` / `RankedResultRow`: supplied order and ranks, identity, description, movement and an expandable reason. Stable React keys come from presentation IDs; disclosure IDs remain unique across repeated lists. These components neither fetch nor compute rankings.
 - `DenseTable`: semantic caption/header/body, numeric alignment, 52 px rows and horizontal overflow. Each row must match the column count.
+- `Banner`: neutral, full-width notice with a check icon, the caller's message and a dismiss action (labelled by `dismissLabel`, default "Dismiss"). It is a polite `status` region, scrolls with the page rather than sticking, and never hides itself on a timer. Grey surface, hairline border and spacing come from the shared tokens; the radius and 44 px dismiss target are estimates.
 - `EmptyState`: explanation and one recovery callback; the caller owns retained filters and clearing behavior.
 - `EmailSignup`: pill-shaped email field with an inline submit, the visible title as its label, `autocomplete="email"`, and caller-supplied `EmailSignupStatus` and message. Invalid input is marked `aria-invalid` and described by the message. Every message appears beneath the pill in one persistent polite live region, and the pill stays in place after success. Errors use the error colour; other messages stay neutral. Submitting disables the action and ignores repeated submits. An optional `privacyHref` adds a small privacy-policy link beneath the messages. The layout neither validates nor sends addresses. The action is white. Focusing the field or the action darkens only the pill's outer edge to neutral grey; neither control draws its own outline, and no brand colour is used. Its pill radius, 420 px maximum width and spacing are estimates; the reference screenshots do not include a sign-up form.
 

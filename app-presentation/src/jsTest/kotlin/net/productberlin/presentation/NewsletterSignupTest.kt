@@ -46,15 +46,7 @@ class NewsletterSignupTest : ComponentTest() {
 
     private fun message() = container.querySelector(".pb-email-signup-message")?.textContent.orEmpty()
 
-    private fun mount(
-        repository: Fake,
-        confirmed: Boolean = false,
-    ) = render(
-        NewsletterSignup.create {
-            subscribe = SubscribeToNewsletter(repository)
-            this.confirmed = confirmed
-        },
-    )
+    private fun mount(repository: Fake) = render(NewsletterSignup.create { subscribe = SubscribeToNewsletter(repository) })
 
     private suspend fun submit(value: String) {
         flushSync { enterValue(field(), value) }
@@ -120,14 +112,6 @@ class NewsletterSignupTest : ComponentTest() {
             repository.gate?.complete(Unit)
             waitFor { message().isNotEmpty() }
             assertEquals(false, button().disabled)
-        }
-
-    @Test
-    fun returningFromTheConfirmationLinkWelcomesTheVisitorBeneathThePill() =
-        runTest {
-            mount(Fake(), confirmed = true)
-            assertEquals("You’re in. Welcome to Berlin’s builder community.", message())
-            assertNotNull(container.querySelector(".pb-email-signup-pill"))
         }
 
     @Test

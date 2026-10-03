@@ -42,6 +42,7 @@ val Icon =
                             IconName.More -> "M4 12h.01M12 12h.01M20 12h.01"
                             IconName.Chevron -> "m7 10 5 5 5-5"
                             IconName.Check -> "m5 12 4 4L19 6"
+                            IconName.Close -> "M6 6l12 12M18 6 6 18"
                         }
                 }
             }
