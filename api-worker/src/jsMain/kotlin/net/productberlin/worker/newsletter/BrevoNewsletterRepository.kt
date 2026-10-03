@@ -64,8 +64,10 @@ internal class BrevoNewsletterRepository(
             }
 
             else -> {
-                // Logged without the address; the visitor only learns that sign-ups are temporarily unavailable.
-                val failure = "Brevo returned HTTP $status${code?.let { " ($it)" } ?: ""}"
+                // Brevo's explanation names the rejected parameter. The address is redacted from it before logging;
+                // the visitor only learns that sign-ups are temporarily unavailable.
+                val detail = message.replace(email.value, "[email]", ignoreCase = true).take(200)
+                val failure = "Brevo returned HTTP $status${code?.let { " ($it)" } ?: ""}${if (detail.isNotBlank()) ": $detail" else ""}"
                 console.error(failure)
                 error(failure)
             }

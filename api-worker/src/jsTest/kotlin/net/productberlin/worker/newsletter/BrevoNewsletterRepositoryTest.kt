@@ -83,4 +83,21 @@ class BrevoNewsletterRepositoryTest {
                 ) { repository(MockEngine { respond(body, status) }).requestSubscription(email) }
             }
         }
+
+    @Test
+    fun failuresCarryBrevosExplanationWithoutTheAddress() =
+        runTest {
+            val failure =
+                assertFailsWith<IllegalStateException> {
+                    repository(
+                        MockEngine {
+                            respond(
+                                """{"code":"invalid_parameter","message":"Template 1 is inactive for Name@Domain.de"}""",
+                                HttpStatusCode.BadRequest,
+                            )
+                        },
+                    ).requestSubscription(email)
+                }
+            assertEquals("Brevo returned HTTP 400 (invalid_parameter): Template 1 is inactive for [email]", failure.message)
+        }
 }
