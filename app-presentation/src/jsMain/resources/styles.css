@@ -97,3 +97,4 @@ footer > p { font-size: 10px; color: #a0a0a7; margin: 9px 0 13px; }
 .privacy h2 { margin: 28px 0 8px; font-size: 16px; }
 .privacy p, .privacy li { font-size: 14px; line-height: 1.7; color: #4a4a52; }
 .privacy ul { padding-left: 20px; }
+.privacy article a { color: inherit; text-underline-offset: 3px; }

@@ -13,11 +13,10 @@ import react.dom.html.ReactHTML.section
 import react.dom.html.ReactHTML.ul
 import web.cssom.ClassName
 
-/** Operator identity shown on the privacy page. Fill in before this page is published. */
+/** The person responsible for the site and the weekly email. */
 private object Operator {
-    const val NAME = "[Operator name]"
-    const val ADDRESS = "[Street and number, postcode Berlin, Germany]"
-    const val EMAIL = "[contact email]"
+    const val NAME = "Mario Garcia"
+    const val EMAIL = "Mario@product.berlin"
 }
 
 /** Plain-language privacy notice for the website and the weekly email. */
@@ -35,14 +34,21 @@ val PrivacyPage =
                 p { +"Last updated: 3 October 2026" }
                 section {
                     h2 { +"Who is responsible" }
-                    p { +"${Operator.NAME}, ${Operator.ADDRESS}. Email: ${Operator.EMAIL}." }
+                    p {
+                        +"${Operator.NAME}. Email: "
+                        a {
+                            href = "mailto:${Operator.EMAIL}"
+                            +Operator.EMAIL
+                        }
+                        +"."
+                    }
                 }
                 section {
                     h2 { +"Weekly email" }
                     p {
                         +(
-                            "If you sign up, we store your email address to send you one email a week with the " +
-                                "ranking. We only add you after you confirm by clicking the link in the confirmation " +
+                            "If you sign up, we store your email address to send you emails about the latest news " +
+                                "on the city. We only add you after you confirm by clicking the link in the confirmation " +
                                 "email (double opt-in). The legal basis is your consent (Art. 6(1)(a) GDPR)."
                         )
                     }
