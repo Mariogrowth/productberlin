@@ -2747,5 +2747,679 @@
       "funding",
       "Finanzierung"
     ]
+  },
+  {
+    "id": "moss",
+    "name": "Moss",
+    "description": "Spend management and corporate cards.",
+    "category": "Fintech",
+    "domain": "getmoss.com",
+    "aliases": [],
+    "contextKeywords": [
+      "fintech",
+      "spend management",
+      "Ausgabenmanagement",
+      "corporate card",
+      "corporate cards",
+      "Firmenkreditkarte",
+      "Firmenkreditkarten",
+      "Firmenkarten",
+      "Kreditkarte",
+      "SMEs",
+      "KMU",
+      "Mittelstand",
+      "startup",
+      "Startup",
+      "funding",
+      "Finanzierung"
+    ]
+  },
+  {
+    "id": "billie",
+    "name": "Billie",
+    "description": "Buy now, pay later for B2B purchases.",
+    "category": "Fintech",
+    "domain": "billie.io",
+    "aliases": [],
+    "contextKeywords": [
+      "BNPL",
+      "buy now pay later",
+      "B2B",
+      "payments",
+      "Zahlungen",
+      "Rechnungskauf",
+      "invoice",
+      "fintech",
+      "Klarna",
+      "Startup",
+      "startup",
+      "funding",
+      "Finanzierung"
+    ]
+  },
+  {
+    "id": "vivid-money",
+    "name": "Vivid Money",
+    "description": "Mobile banking and investing app.",
+    "category": "Fintech",
+    "domain": "vivid.money",
+    "aliases": [
+      "Vivid"
+    ],
+    "contextKeywords": [
+      "fintech",
+      "Neobank",
+      "bank",
+      "banking",
+      "Banklizenz",
+      "app",
+      "Konto",
+      "Girokonto",
+      "investing",
+      "Trading",
+      "Broker",
+      "Zinsen",
+      "Startup",
+      "startup",
+      "funding",
+      "Finanzierung"
+    ]
+  },
+  {
+    "id": "candis",
+    "name": "Candis",
+    "description": "Invoice and accounts-payable automation.",
+    "category": "Fintech",
+    "domain": "candis.io",
+    "aliases": [],
+    "contextKeywords": [
+      "accounting",
+      "Buchhaltung",
+      "invoice",
+      "invoices",
+      "Rechnung",
+      "Rechnungen",
+      "Rechnungsverarbeitung",
+      "accounts payable",
+      "DATEV",
+      "fintech",
+      "SaaS",
+      "SMEs",
+      "KMU",
+      "Mittelstand",
+      "Startup",
+      "startup",
+      "funding",
+      "Finanzierung"
+    ]
+  },
+  {
+    "id": "circula",
+    "name": "Circula",
+    "description": "Travel expense and employee benefits software.",
+    "category": "Fintech",
+    "domain": "circula.com",
+    "aliases": [],
+    "contextKeywords": [
+      "expense",
+      "expenses",
+      "expense management",
+      "Reisekosten",
+      "Reisekostenabrechnung",
+      "Spesen",
+      "benefits",
+      "Benefits",
+      "Mitarbeiterbenefits",
+      "Sachbezug",
+      "HR",
+      "fintech",
+      "SaaS",
+      "Startup",
+      "startup",
+      "funding",
+      "Finanzierung"
+    ]
+  },
+  {
+    "id": "banxware",
+    "name": "Banxware",
+    "description": "Embedded lending for platforms.",
+    "category": "Fintech",
+    "domain": "banxware.com",
+    "aliases": []
+  },
+  {
+    "id": "holvi",
+    "name": "Holvi",
+    "description": "Business banking for freelancers and SMEs.",
+    "category": "Fintech",
+    "domain": "holvi.com",
+    "aliases": []
+  },
+  {
+    "id": "smava",
+    "name": "smava",
+    "description": "Online consumer-loan comparison.",
+    "category": "Fintech",
+    "domain": "smava.de",
+    "aliases": []
+  },
+  {
+    "id": "sumup",
+    "name": "SumUp",
+    "description": "Card terminals and payments for merchants.",
+    "category": "Fintech",
+    "domain": "sumup.com",
+    "aliases": []
+  },
+  {
+    "id": "delivery-hero",
+    "name": "Delivery Hero",
+    "description": "Global food and quick-commerce delivery.",
+    "category": "Food tech",
+    "domain": "deliveryhero.com",
+    "aliases": []
+  },
+  {
+    "id": "zalando",
+    "name": "Zalando",
+    "description": "Online fashion and lifestyle platform.",
+    "category": "E-commerce",
+    "domain": "zalando.com",
+    "aliases": []
+  },
+  {
+    "id": "hellofresh",
+    "name": "HelloFresh",
+    "description": "Meal-kit delivery.",
+    "category": "Food tech",
+    "domain": "hellofresh.com",
+    "aliases": []
+  },
+  {
+    "id": "flink",
+    "name": "Flink",
+    "description": "Quick-commerce grocery delivery.",
+    "category": "Food tech",
+    "domain": "goflink.com",
+    "aliases": [],
+    "contextKeywords": [
+      "grocery",
+      "groceries",
+      "Lebensmittel",
+      "Lebensmittellieferdienst",
+      "Lieferdienst",
+      "Lieferung",
+      "delivery",
+      "quick commerce",
+      "Quick-Commerce",
+      "q-commerce",
+      "Supermarkt",
+      "Rewe",
+      "rider",
+      "riders",
+      "Fahrer",
+      "Getir",
+      "Startup",
+      "startup",
+      "funding",
+      "Finanzierung"
+    ]
+  },
+  {
+    "id": "einhorn",
+    "name": "Einhorn",
+    "description": "Sustainable condoms and period products.",
+    "category": "E-commerce",
+    "domain": "einhorn.my",
+    "aliases": [
+      "einhorn products"
+    ],
+    "contextKeywords": [
+      "Kondom",
+      "Kondome",
+      "condom",
+      "condoms",
+      "Periode",
+      "Periodenprodukte",
+      "Periodenunterwäsche",
+      "period",
+      "period products",
+      "Menstruation",
+      "Tampons",
+      "Binden",
+      "Waldemar Zeiler",
+      "Philip Siefer",
+      "Fairstainability",
+      "nachhaltig",
+      "sustainable"
+    ]
+  },
+  {
+    "id": "pitch",
+    "name": "Pitch",
+    "description": "Collaborative presentation software.",
+    "category": "Software",
+    "domain": "pitch.com",
+    "aliases": [],
+    "contextKeywords": [
+      "presentation",
+      "presentations",
+      "presentation software",
+      "Präsentation",
+      "Präsentationen",
+      "Präsentationssoftware",
+      "slides",
+      "PowerPoint",
+      "Christian Reber"
+    ]
+  },
+  {
+    "id": "rasa",
+    "name": "Rasa",
+    "description": "Conversational AI platform.",
+    "category": "AI",
+    "domain": "rasa.com",
+    "aliases": [
+      "Rasa Technologies"
+    ],
+    "contextKeywords": [
+      "conversational AI",
+      "chatbot",
+      "chatbots",
+      "AI",
+      "KI",
+      "AI agents",
+      "assistant",
+      "voice",
+      "open source",
+      "startup",
+      "funding",
+      "Finanzierung",
+      "Series C"
+    ]
+  },
+  {
+    "id": "merantix",
+    "name": "Merantix",
+    "description": "AI venture studio and AI campus.",
+    "category": "AI",
+    "domain": "merantix.com",
+    "aliases": [
+      "Merantix AI Campus",
+      "Merantix Momentum"
+    ]
+  },
+  {
+    "id": "juna-ai",
+    "name": "Juna.ai",
+    "description": "AI for industrial production optimisation.",
+    "category": "AI",
+    "domain": "juna.ai",
+    "aliases": [
+      "Juna"
+    ],
+    "contextKeywords": [
+      "AI",
+      "KI",
+      "industrial",
+      "Industrie",
+      "manufacturing",
+      "Produktion",
+      "factory",
+      "factories",
+      "Fabrik",
+      "energy",
+      "startup",
+      "funding",
+      "Finanzierung",
+      "seed"
+    ]
+  },
+  {
+    "id": "vara",
+    "name": "Vara",
+    "description": "AI for breast cancer screening.",
+    "category": "Health tech",
+    "domain": "vara.ai",
+    "aliases": [],
+    "contextKeywords": [
+      "breast cancer",
+      "Brustkrebs",
+      "mammography",
+      "Mammographie",
+      "Mammografie",
+      "screening",
+      "radiology",
+      "Radiologie",
+      "radiologists",
+      "KI",
+      "health",
+      "medtech"
+    ]
+  },
+  {
+    "id": "steady",
+    "name": "Steady",
+    "description": "Membership platform for creators and publishers.",
+    "category": "Media",
+    "domain": "steady.page",
+    "aliases": [
+      "Steady Media",
+      "steadyHQ"
+    ],
+    "contextKeywords": [
+      "creator",
+      "creators",
+      "publisher",
+      "publishers",
+      "Verlage",
+      "Medienmacher",
+      "membership",
+      "memberships",
+      "Mitgliedschaft",
+      "Mitgliedschaften",
+      "subscription",
+      "Abo",
+      "journalism",
+      "Journalismus",
+      "podcast",
+      "podcaster",
+      "newsletter"
+    ]
+  },
+  {
+    "id": "wunderflats",
+    "name": "Wunderflats",
+    "description": "Furnished mid-term apartment rentals.",
+    "category": "Proptech",
+    "domain": "wunderflats.com",
+    "aliases": []
+  },
+  {
+    "id": "homeday",
+    "name": "Homeday",
+    "description": "Online real estate brokerage.",
+    "category": "Proptech",
+    "domain": "homeday.de",
+    "aliases": []
+  },
+  {
+    "id": "mcmakler",
+    "name": "McMakler",
+    "description": "Hybrid real estate brokerage.",
+    "category": "Proptech",
+    "domain": "mcmakler.de",
+    "aliases": []
+  },
+  {
+    "id": "cosuno",
+    "name": "Cosuno",
+    "description": "Tendering and procurement software for construction.",
+    "category": "Proptech",
+    "domain": "cosuno.com",
+    "aliases": []
+  },
+  {
+    "id": "lingoda",
+    "name": "Lingoda",
+    "description": "Online language school with live classes.",
+    "category": "Education",
+    "domain": "lingoda.com",
+    "aliases": []
+  },
+  {
+    "id": "tandem",
+    "name": "Tandem",
+    "description": "Language exchange app.",
+    "category": "Education",
+    "domain": "tandem.net",
+    "aliases": [
+      "Tandem app"
+    ],
+    "contextKeywords": [
+      "language exchange",
+      "language learning",
+      "language app",
+      "languages",
+      "Sprachaustausch",
+      "Sprachen lernen",
+      "Sprachlern App",
+      "Sprachpartner",
+      "Sprachen",
+      "Tripod Technology"
+    ]
+  },
+  {
+    "id": "ostrom",
+    "name": "Ostrom",
+    "description": "Green electricity with dynamic tariffs.",
+    "category": "Climate tech",
+    "domain": "ostrom.de",
+    "aliases": [],
+    "contextKeywords": [
+      "electricity",
+      "Strom",
+      "Stromanbieter",
+      "Ökostrom",
+      "green energy",
+      "energy",
+      "Energie",
+      "dynamic tariff",
+      "dynamischer Stromtarif",
+      "Stromtarif",
+      "tariff",
+      "Tarif",
+      "smart meter",
+      "Smart Meter",
+      "energy startup",
+      "Startup",
+      "Start-up",
+      "funding",
+      "Finanzierung",
+      "Series A",
+      "Series B"
+    ]
+  },
+  {
+    "id": "klim",
+    "name": "Klim",
+    "description": "Regenerative agriculture platform for farms and brands.",
+    "category": "Climate tech",
+    "domain": "klim.eco",
+    "aliases": [],
+    "contextKeywords": [
+      "regenerative",
+      "regenerative agriculture",
+      "regenerative Landwirtschaft",
+      "Landwirtschaft",
+      "agriculture",
+      "farmers",
+      "farming",
+      "Landwirte",
+      "Bauern",
+      "soil",
+      "Boden",
+      "carbon",
+      "CO2",
+      "Scope 3",
+      "insetting",
+      "agtech",
+      "climate tech",
+      "Startup",
+      "Start-up",
+      "funding",
+      "Finanzierung"
+    ]
+  },
+  {
+    "id": "plan-a",
+    "name": "Plan A",
+    "description": "Carbon accounting and ESG software.",
+    "category": "Climate tech",
+    "domain": "plana.earth",
+    "aliases": [
+      "PlanA.Earth",
+      "Plan A Earth"
+    ],
+    "contextKeywords": [
+      "carbon",
+      "carbon accounting",
+      "CO2",
+      "emissions",
+      "Emissionen",
+      "decarbonisation",
+      "decarbonization",
+      "Dekarbonisierung",
+      "ESG",
+      "CSRD",
+      "sustainability",
+      "Nachhaltigkeit",
+      "climate",
+      "Klima",
+      "net zero",
+      "software",
+      "SaaS",
+      "climate tech",
+      "Lubomila Jordanova",
+      "startup",
+      "Startup",
+      "funding",
+      "Finanzierung",
+      "Series A",
+      "Series B"
+    ]
+  },
+  {
+    "id": "vly",
+    "name": "vly",
+    "description": "Plant-based milk alternatives from pea protein.",
+    "category": "Food tech",
+    "domain": "vlyfoods.com",
+    "aliases": [
+      "vly foods"
+    ],
+    "contextKeywords": [
+      "milk",
+      "Milch",
+      "Milchalternative",
+      "Milchalternativen",
+      "dairy",
+      "dairy-free",
+      "plant-based",
+      "pflanzlich",
+      "pflanzliche",
+      "vegan",
+      "pea",
+      "pea protein",
+      "Erbse",
+      "Erbsen",
+      "Erbsenprotein",
+      "Joghurt",
+      "yogurt",
+      "food",
+      "foodtech",
+      "Lebensmittel",
+      "Startup",
+      "Start-up",
+      "funding",
+      "Finanzierung"
+    ]
+  },
+  {
+    "id": "hometogo",
+    "name": "HomeToGo",
+    "description": "Vacation rental search and booking marketplace.",
+    "category": "Travel tech",
+    "domain": "hometogo.com",
+    "aliases": [
+      "Home To Go"
+    ]
+  },
+  {
+    "id": "miles",
+    "name": "MILES",
+    "description": "Car sharing and van rental billed per kilometre.",
+    "category": "Mobility",
+    "domain": "miles-mobility.com",
+    "aliases": [
+      "MILES Mobility"
+    ],
+    "contextKeywords": [
+      "car sharing",
+      "carsharing",
+      "Carsharing",
+      "Carsharing-Anbieter",
+      "car rental",
+      "Autovermietung",
+      "van",
+      "vans",
+      "Transporter",
+      "Mietwagen",
+      "rental",
+      "per kilometre",
+      "pro Kilometer",
+      "mobility",
+      "Mobilität",
+      "e-cars",
+      "E-Autos",
+      "Elektroautos",
+      "fleet",
+      "Flotte",
+      "Startup",
+      "Start-up",
+      "funding",
+      "Finanzierung"
+    ]
+  },
+  {
+    "id": "nia-health",
+    "name": "Nia Health",
+    "description": "Digital therapy app for eczema.",
+    "category": "Health tech",
+    "domain": "nia-health.de",
+    "aliases": [
+      "Nia"
+    ],
+    "contextKeywords": [
+      "eczema",
+      "atopic dermatitis",
+      "Neurodermitis",
+      "dermatology",
+      "Dermatologie",
+      "skin",
+      "Haut",
+      "Hautkrankheit",
+      "app",
+      "App",
+      "DiGA",
+      "digital health",
+      "digitale Gesundheit",
+      "healthtech",
+      "Charité",
+      "Krankenkasse",
+      "Startup",
+      "Start-up",
+      "funding",
+      "Finanzierung"
+    ]
+  },
+  {
+    "id": "selfapy",
+    "name": "Selfapy",
+    "description": "Prescribable online courses for mental health.",
+    "category": "Health tech",
+    "domain": "selfapy.com",
+    "aliases": []
+  },
+  {
+    "id": "heyjobs",
+    "name": "HeyJobs",
+    "description": "Job platform for skilled and blue-collar workers.",
+    "category": "HR tech",
+    "domain": "heyjobs.co",
+    "aliases": [
+      "Hey Jobs"
+    ]
   }
 ]

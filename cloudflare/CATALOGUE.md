@@ -251,6 +251,59 @@ Not added from the same list:
 | NEX Aero | Current imprint is in Munich; Berlin origin documented only by third parties. |
 | info.link | Operated by a Hamburg-registered company; the Berlin link is weak. |
 
+## Expansion reviewed on 2026-10-04
+
+Thirty-five well-known Berlin companies missing from the catalogue, suggested from memory and checked on their own sites. Delivery Hero, Zalando and HelloFresh are large listed companies, not startups, and were included at the operator's request. The research session had exhausted its web-search quota, so Berlin connections were confirmed on first-party pages but recent acquisitions or insolvencies were not searched for: **status not re-verified** for this batch.
+
+| Company | Berlin connection source | Note |
+| --- | --- | --- |
+| Moss | [Company reference](https://www.getmoss.com/imprint) | Legal entity Nufin GmbH. |
+| Billie | [Company reference](https://www.billie.io/en/imprint) | |
+| Vivid Money | [Company reference](https://vivid.money/en-eu/imprint/) | |
+| Candis | [Company reference](https://www.candis.io/en/legal-notice) | |
+| Circula | [Company reference](https://www.circula.com/en/imprint) | |
+| Banxware | [Company reference](https://www.banxware.com/legal-notice) | |
+| Holvi | [Company reference](https://holvi.teamtailor.com/) | Registered in Helsinki; Berlin office. |
+| smava | [Company reference](https://www.smava.de/impressum/) | |
+| SumUp | [Company reference](https://www.sumup.com/careers/locations/berlin/) | Headquartered in Dublin/London; large Berlin hub. |
+| Delivery Hero | [Company reference](https://careers.deliveryhero.com/) | Large listed company, not a startup; included at the operator's request. |
+| Zalando | [Company reference](https://corporate.zalando.com/en/legal-notice) | Large listed company, not a startup; included at the operator's request. |
+| HelloFresh | [Company reference](https://www.hellofreshgroup.com/en/imprint/) | Large listed company, not a startup; included at the operator's request. |
+| Flink | [Company reference](https://www.linkedin.com/company/goflink) | Berlin HQ confirmed only via its company LinkedIn page; site blocks automated access. |
+| Einhorn | [Company reference](https://einhorn.my/policies/legal-notice) | German word for "unicorn": product-only context keywords so startup "Einhorn" headlines do not count. |
+| Pitch | [Company reference](https://pitch.com/imprint) | "Pitch" is common in startup headlines; keywords avoid funding words, so some real mentions may be missed. |
+| Rasa | [Company reference](https://rasa.com/imprint) | Main entity in San Francisco; founded in Berlin with a Berlin GmbH. |
+| Merantix | [Company reference](https://www.merantix.com/imprint) | AI venture studio and campus. |
+| Juna.ai | [Company reference](https://juna.ai/imprint) | |
+| Vara | [Company reference](https://www.vara.ai/legal-disclosure) | |
+| Steady | [Company reference](https://steady.page/en/contact) | steadyhq.com now redirects to steady.page. |
+| Wunderflats | [Company reference](https://wunderflats.com/en/impressum) | |
+| Homeday | [Company reference](https://www.homeday.de/de/impressum/) | |
+| McMakler | [Company reference](https://www.mcmakler.de/impressum) | |
+| Cosuno | [Company reference](https://www.cosuno.com/de/impressum) | |
+| Lingoda | [Company reference](https://www.lingoda.com/en/imprint) | |
+| Tandem | [Company reference](https://tandem.net/imprint) | Registered in Hannover; Berlin office in its imprint. |
+| Ostrom | [Company reference](https://www.ostrom.de/imprint) | |
+| Klim | [Company reference](https://www.klim.eco/imprint) | |
+| Plan A | [Company reference](https://plana.earth/imprint) | |
+| vly | [Company reference](https://www.vlyfoods.com/policies/legal-notice) | Legal entity VF Nutrition GmbH. |
+| HomeToGo | [Company reference](https://www.hometogo.com/imprint/) | Listed scale-up. |
+| MILES | [Company reference](https://www.miles-mobility.com/de/impressum) | |
+| Nia Health | [Company reference](https://www.nia-health.de/impressum) | App now covers eczema only. |
+| Selfapy | [Company reference](https://www.selfapy.com/impressum) | |
+| HeyJobs | [Company reference](https://www.heyjobs.co/recruiting/impressum/) | |
+
+Not added from the same list:
+
+| Company | Reason |
+| --- | --- |
+| Zolar | In insolvency proceedings; its platform was sold to a company in Kleve. |
+| Mitte | The brand now belongs to a company in Baden-Württemberg; no Berlin company remains. |
+| InstaFreight | Brand discontinued; its technology continues as cargomotion (InstaTechnologies GmbH, Berlin). |
+| HelloBetter | Legally based in Hamburg; Berlin appears only among remote job locations. |
+| Bryter | Founded in and registered in Frankfurt am Main; no current Berlin office. |
+| Prisma | Now a fully remote US company; Berlin only as its early engineering base. |
+
 ## Further coverage
 
 [Startup Map Berlin](https://startup-map.berlin/intro), linked by [Berlin's startup unit](https://www.berlin.de/sen/wirtschaft/startups/artikel.1405088.php), is a much larger source for editorial research. Its Berlin-Brandenburg coverage is wider than this project's Berlin scope. Do not treat every company on it as eligible or assume public browsing grants bulk data/API rights. [Dealroom API access](https://dealroom.co/products/dealroom-api/) is a separate integration, with access and licensing to resolve before automated imports.
