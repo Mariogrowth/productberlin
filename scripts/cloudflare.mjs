@@ -1,6 +1,7 @@
 import { spawnSync } from 'node:child_process';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
-import { dirname, resolve } from 'node:path';
+import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { mockSeedSql } from './seed.mjs';
 
@@ -41,6 +42,7 @@ if (command === 'config') {
 } else {
   const target = environment === 'local' ? '--local' : '--remote';
   let args;
+  let secretsDirectory;
   if (command === 'migrate') args = ['d1', 'migrations', 'apply', 'DB', target];
   if (command === 'seed') {
     const seedPath = resolve(root, '.wrangler/mock-seed.sql');
@@ -49,10 +51,26 @@ if (command === 'config') {
     args = ['d1', 'execute', 'DB', target, '--file', seedPath, '--yes'];
   }
   if (command === 'deploy-check') args = ['deploy', '--dry-run'];
-  if (command === 'deploy') args = ['deploy', '--message', `Git ${process.env.BUILD_SHA}`];
-  const result = spawnSync(process.execPath, [resolve(root, 'node_modules/wrangler/bin/wrangler.js'), ...args, '--config', configPath], {
-    cwd: root, stdio: 'inherit', env: { ...process.env, CI: 'true', WRANGLER_SEND_METRICS: 'false' },
-  });
+  if (command === 'deploy') {
+    args = ['deploy', '--message', `Git ${process.env.BUILD_SHA}`];
+    // Secrets ship with the same Worker version as the code. The file is private, temporary and never logged.
+    if (process.env.BREVO_API_KEY) {
+      secretsDirectory = await mkdtemp(join(tmpdir(), 'productberlin-secrets-'));
+      const secretsPath = join(secretsDirectory, 'secrets.json');
+      await writeFile(secretsPath, JSON.stringify({ BREVO_API_KEY: process.env.BREVO_API_KEY }), { mode: 0o600 });
+      args.push('--secrets-file', secretsPath);
+    } else {
+      console.warn('BREVO_API_KEY is not set; the existing Worker secret, if any, is kept.');
+    }
+  }
+  let result;
+  try {
+    result = spawnSync(process.execPath, [resolve(root, 'node_modules/wrangler/bin/wrangler.js'), ...args, '--config', configPath], {
+      cwd: root, stdio: 'inherit', env: { ...process.env, BREVO_API_KEY: '', CI: 'true', WRANGLER_SEND_METRICS: 'false' },
+    });
+  } finally {
+    if (secretsDirectory) await rm(secretsDirectory, { recursive: true, force: true });
+  }
   if (result.error) throw result.error;
   process.exitCode = result.status ?? 1;
 }

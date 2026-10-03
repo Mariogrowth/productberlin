@@ -5,9 +5,12 @@ import kotlin.test.Test
 import kotlin.test.assertNotSame
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
+import net.productberlin.data.repository.KtorNewsletterRepository
 import net.productberlin.data.repository.KtorStartupRepository
+import net.productberlin.domain.repository.NewsletterRepository
 import net.productberlin.domain.repository.StartupRepository
 import net.productberlin.domain.usecase.GetWeeklyRanking
+import net.productberlin.domain.usecase.SubscribeToNewsletter
 
 class AppModuleTest {
     @Test
@@ -33,6 +36,19 @@ class AppModuleTest {
             second.koin.get<GetWeeklyRanking>()
         } finally {
             second.close()
+        }
+    }
+
+    @Test
+    fun compositionResolvesTheNewsletterUseCaseOverTheSharedClient() {
+        val container = createAppContainer()
+        try {
+            val repository = container.koin.get<NewsletterRepository>()
+            assertTrue(repository is KtorNewsletterRepository)
+            assertSame(repository, container.koin.get<NewsletterRepository>())
+            assertNotSame(container.koin.get<SubscribeToNewsletter>(), container.koin.get<SubscribeToNewsletter>())
+        } finally {
+            container.close()
         }
     }
 }

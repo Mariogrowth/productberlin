@@ -18,6 +18,8 @@ import net.productberlin.presentation.designsystem.layouts.cards.Card
 import net.productberlin.presentation.designsystem.layouts.feedback.EmptyState
 import net.productberlin.presentation.designsystem.layouts.filters.FilterBar
 import net.productberlin.presentation.designsystem.layouts.filters.FilterOption
+import net.productberlin.presentation.designsystem.layouts.forms.EmailSignup
+import net.productberlin.presentation.designsystem.layouts.forms.EmailSignupStatus
 import net.productberlin.presentation.designsystem.layouts.news.NewsFeed
 import net.productberlin.presentation.designsystem.layouts.news.NewsStory
 import net.productberlin.presentation.designsystem.layouts.ranking.RankedResult
@@ -83,6 +85,8 @@ val DesignSystemShowcase =
         var radio by useState("one")
         var enabled by useState(true)
         var actionCount by useState(0)
+        var signupEmail by useState("")
+        var signupSubmitted by useState(false)
         val filters =
             listOf(
                 FilterOption("all", "View all"),
@@ -616,6 +620,19 @@ val DesignSystemShowcase =
                                 className = ClassName("pb-showcase-note")
                                 +"Example: search, filter, compare, then inspect the rationale behind each ranking."
                             }
+                        }
+                    }
+                    Card {
+                        EmailSignup {
+                            title = "Get next Monday’s ten in your inbox"
+                            value = signupEmail
+                            placeholder = "you@company.com"
+                            actionLabel = "Notify me"
+                            note = "Sample form. Nothing is sent from the catalogue."
+                            status = if (signupSubmitted) EmailSignupStatus.Succeeded else EmailSignupStatus.Idle
+                            message = if (signupSubmitted) "Sample confirmation: check your inbox." else null
+                            onValueChange = { signupEmail = it }
+                            onSubmit = { signupSubmitted = true }
                         }
                     }
                     NewsFeed {

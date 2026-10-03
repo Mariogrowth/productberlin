@@ -57,6 +57,8 @@ h4 { font-size: 12px; line-height: 1.6; font-weight: 550; margin: 6px 0 0; }
 .margin-note p { margin: 0; font-size: 22px; line-height: 1.2; letter-spacing: -.65px; font-weight: 650; transform: rotate(-4deg); }
 .note-arrow { display: block; width: 107px; height: 84px; margin: 13px 0 0 -20px; }
 footer { text-align: center; padding: 29px 0 36px; }
+.newsletter { margin: 40px auto 0; padding: 0 16px; max-width: 520px; }
+.newsletter-trap { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
 .demo-label { display: flex; justify-content: center; align-items: center; gap: 6px; color: #88888f; font-size: 10px; }
 .demo-dot { background: #b5b5bd; width: 4px; height: 4px; }
 footer > p { font-size: 10px; color: #a0a0a7; margin: 9px 0 13px; }
@@ -87,3 +89,12 @@ footer > p { font-size: 10px; color: #a0a0a7; margin: 9px 0 13px; }
 
 .why-content { background: transparent; padding: 0; }
 @media (max-width: 540px) { .why-content { grid-column: 1 / -1; padding: 0; } }
+.footer-link { display: inline-block; margin-top: 10px; font-size: 9px; letter-spacing: .5px; color: #a0a0a7; text-underline-offset: 3px; }
+.privacy { max-width: 640px; margin: 0 auto; padding: 48px 24px 72px; color: #2a2a31; }
+.privacy-home { font-size: 13px; color: #717179; text-decoration: none; }
+.privacy h1 { margin: 32px 0 6px; font-size: 32px; letter-spacing: -1px; }
+.privacy h1 + p { margin: 0 0 24px; font-size: 12px; color: #85858b; }
+.privacy h2 { margin: 28px 0 8px; font-size: 16px; }
+.privacy p, .privacy li { font-size: 14px; line-height: 1.7; color: #4a4a52; }
+.privacy ul { padding-left: 20px; }
+.privacy article a { color: inherit; text-underline-offset: 3px; }

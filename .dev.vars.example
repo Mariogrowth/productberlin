@@ -1,0 +1,3 @@
+# Copy to .dev.vars (git-ignored) to test newsletter sign-ups locally with a real Brevo key.
+# Without it, POST /api/subscriptions answers 503 and the form asks visitors to try again later.
+BREVO_API_KEY=

@@ -2,6 +2,7 @@ package net.productberlin.presentation
 
 import net.productberlin.domain.state.RankingState
 import net.productberlin.domain.usecase.GetWeeklyRanking
+import net.productberlin.domain.usecase.SubscribeToNewsletter
 import react.FC
 import react.Key
 import react.Props
@@ -31,6 +32,8 @@ import web.html.button
 
 external interface AppProps : Props {
     var getRanking: GetWeeklyRanking
+    var subscribe: SubscribeToNewsletter
+    var subscriptionConfirmed: Boolean?
 }
 
 val App =
@@ -134,6 +137,10 @@ val App =
                     }
                 }
             }
+            NewsletterSignup {
+                subscribe = props.subscribe
+                confirmed = props.subscriptionConfirmed
+            }
             footer {
                 div {
                     className = ClassName("demo-label")
@@ -168,6 +175,11 @@ val App =
                 span {
                     className = ClassName("made-in")
                     +"Made for the city that keeps making."
+                }
+                a {
+                    className = ClassName("footer-link")
+                    href = "/privacy"
+                    +"Privacy"
                 }
             }
         }
