@@ -26,9 +26,25 @@ class BootstrapTest {
             verifyRoute("/design-system/", false)
         }
 
+    @Test
+    fun privacyRouteRendersThePolicyWithoutCallingTheApi() =
+        runTest {
+            verifyRoute("/privacy", false, "Privacy policy")
+        }
+
+    @Test
+    fun confirmationReturnShowsTheCommunityMessageAndCleansTheAddress() =
+        runTest {
+            verifyRoute("/?subscribed=1&ref=mail", true, "Welcome to Berlin’s builder community") {
+                assertEquals("/?ref=mail", window.location.pathname + window.location.search)
+            }
+        }
+
     private suspend fun verifyRoute(
         path: String,
         loadsApi: Boolean,
+        expectedText: String = if (loadsApi) "Bootstrap week" else "design system",
+        afterMount: () -> Unit = {},
     ) {
         val global = js("globalThis")
         val originalFetch = global.fetch
@@ -52,8 +68,8 @@ class BootstrapTest {
             flushSync { root = mountApplication() }
             withContext(Dispatchers.Default) {
                 repeat(100) {
-                    if (loadsApi && element.textContent.orEmpty().contains("Bootstrap week")) return@withContext
-                    if (!loadsApi && element.textContent.orEmpty().contains("design system", ignoreCase = true)) return@withContext
+                    val text = element.textContent.orEmpty()
+                    if (text.contains(expectedText, ignoreCase = true) && (!loadsApi || text.contains("Bootstrap week"))) return@withContext
                     delay(10)
                 }
             }
@@ -62,9 +78,10 @@ class BootstrapTest {
                 assertTrue(element.textContent.orEmpty().contains("Bootstrap week"))
                 assertTrue(element.textContent.orEmpty().contains("A quiet week"))
             } else {
-                assertTrue(element.textContent.orEmpty().contains("design system", ignoreCase = true))
                 assertTrue(requests.isEmpty())
             }
+            assertTrue(element.textContent.orEmpty().contains(expectedText, ignoreCase = true), expectedText)
+            afterMount()
         } finally {
             flushSync { root?.unmount() }
             element.remove()

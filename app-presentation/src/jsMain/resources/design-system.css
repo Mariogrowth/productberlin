@@ -217,5 +217,6 @@
 .pb-email-signup-message { font-size: 13px; line-height: 1.4; color: var(--pb-muted); }
 .pb-email-signup-message:not(:empty) { margin-top: var(--pb-space-2); }
 .pb-email-signup-message.pb-error { color: var(--pb-error); }
-.pb-email-signup-message.pb-success { color: var(--pb-success); }
+.pb-email-signup-message.pb-success { color: var(--pb-ink); }
+.pb-theme .pb-email-signup-privacy { margin-top: var(--pb-space-2); font-size: 11px; line-height: 1.4; color: var(--pb-muted); text-underline-offset: 3px; }
 .pb-theme .pb-email-signup-note { margin-top: var(--pb-space-2); font-size: 11px; line-height: 1.4; color: var(--pb-muted); }

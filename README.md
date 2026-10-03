@@ -64,11 +64,18 @@ Repositories, use cases, states, entities, DTOs, and per-type mappers stay in se
 | --- | --- |
 | `GET /api/rankings/weekly` | Latest complete published snapshot, up to ten startups and their news; empty before seeding/collection |
 | `GET /api/health` | Checks D1 connectivity and returns the deployed Git SHA |
-| `HEAD` on either route | Same status/headers with no body |
+| `POST /api/subscriptions` | Newsletter sign-up: same-origin JSON `{"email": …}` only. `202` sends a Brevo double opt-in email, `400` for an invalid address or body, `403` cross-origin, `405`/`413`/`415` for other misuse, `503` when Brevo is unavailable or not configured |
+| `HEAD` on either ranking route | Same status/headers with no body |
 | Unknown `/api/*` | JSON 404, never the SPA shell |
 | Other methods on known API routes | JSON 405 |
 
-Database failures return 503; the UI shows its retry state. The response includes news eagerly because there are only ten startups and a small feed per company. There is no public write or seed endpoint.
+Database failures return 503; the UI shows its retry state. The response includes news eagerly because there are only ten startups and a small feed per company. The only public write endpoint is the newsletter sign-up; there is no seed endpoint.
+
+### Newsletter sign-ups
+
+The email pill below the ranking calls `POST /api/subscriptions`. The Worker validates the address with the shared domain rule and asks [Brevo's double opt-in API](https://developers.brevo.com/reference/createdoicontact) to send template `BREVO_DOI_TEMPLATE_ID` for list `BREVO_LIST_ID` (both in `wrangler.json`). Contacts join the list only after clicking the confirmation link, which must use `{{ params.DOIurl }}` in the template. The link returns them to `/?subscribed=1` on the same site, where the page shows a welcome message beneath the pill and removes the marker from the address bar. Repeated or already-known addresses get the same reply as new ones. Every outcome is shown beneath the pill.
+
+`BREVO_API_KEY` is a Worker **secret**, never a committed var. Deployments read the GitHub secret `BREVO_API` and upload it with the same Worker version as the code (`wrangler deploy --secrets-file`, via a temporary private file). For local sign-ups, copy `.dev.vars.example` to the git-ignored `.dev.vars`. Without a key, the endpoint answers `503` and the form asks visitors to try again. Integration tests run with an invalid list ID, so they can never reach Brevo. The endpoint accepts only same-origin `application/json` bodies up to 1 KB, and the form has a hidden spam-trap field. `/privacy` describes the data the site and the email process.
 
 ### Company logos
 

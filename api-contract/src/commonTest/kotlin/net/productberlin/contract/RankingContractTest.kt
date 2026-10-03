@@ -63,4 +63,10 @@ class RankingContractTest {
         val json = Json { ignoreUnknownKeys = true }
         assertEquals(Json.decodeFromString<RankingDto>(legacy), json.decodeFromString<RankingDto>(legacy.dropLast(1) + ",\"future\":42}"))
     }
+
+    @Test
+    fun subscriptionRequestRequiresAnEmail() {
+        assertEquals("""{"email":"a@b.de"}""", Json.encodeToString(SubscriptionRequestDto("a@b.de")))
+        assertFailsWith<SerializationException> { Json.decodeFromString<SubscriptionRequestDto>("{}") }
+    }
 }

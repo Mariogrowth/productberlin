@@ -21,7 +21,9 @@
   ],
   "vars": {
     "BUILD_SHA": "local",
-    "BRANDFETCH_CLIENT_ID": "1idVlgkCIW8K520_bqV"
+    "BRANDFETCH_CLIENT_ID": "1idVlgkCIW8K520_bqV",
+    "BREVO_LIST_ID": "3",
+    "BREVO_DOI_TEMPLATE_ID": "1"
   },
   "observability": {
     "enabled": true

@@ -49,7 +49,9 @@ before(async () => {
   const port = portFinder.address().port;
   await new Promise(resolve => portFinder.close(resolve));
   origin = `http://127.0.0.1:${port}`;
-  server = spawn(process.execPath, [wrangler, 'dev', '--local', '--ip', '127.0.0.1', '--port', String(port), '--inspector-port', '0', '--persist-to', state], { env });
+  server = spawn(process.execPath, [wrangler, 'dev', '--local', '--ip', '127.0.0.1', '--port', String(port), '--inspector-port', '0', '--persist-to', state,
+    // Leave sign-ups unconfigured so no test can reach Brevo, even when a developer has a local .dev.vars key.
+    '--var', 'BREVO_LIST_ID:0'], { env });
   server.stdout.on('data', chunk => { logs += chunk; });
   server.stderr.on('data', chunk => { logs += chunk; });
   for (let i = 0; i < 120; i++) {
@@ -143,4 +145,21 @@ test('D1 failures return a retryable service error, never a successful empty ran
   const response = await fetch(`${origin}/api/rankings/weekly`);
   assert.equal(response.status, 503);
   assert.deepEqual(await response.json(), { error: 'Data temporarily unavailable' });
+});
+
+test('newsletter sign-ups accept only same-origin JSON and fail closed without provider configuration', async () => {
+  const post = (body, headers = {}) => fetch(`${origin}/api/subscriptions`, {
+    method: 'POST', body, headers: { Origin: origin, 'Content-Type': 'application/json', ...headers },
+  });
+  const json = async response => [response.status, await response.json(), response.headers.get('cache-control')];
+  const get = await fetch(`${origin}/api/subscriptions`);
+  assert.deepEqual(await json(get), [405, { error: 'method_not_allowed' }, 'no-store']);
+  assert.equal(get.headers.get('allow'), 'POST');
+  assert.equal((await post('{"email":"name@domain.de"}', { Origin: 'https://evil.test' })).status, 403);
+  assert.equal((await post('email=name@domain.de', { 'Content-Type': 'application/x-www-form-urlencoded' })).status, 415);
+  assert.deepEqual(await json(await post('{"email":"name@"}')), [400, { error: 'invalid_email' }, 'no-store']);
+  assert.deepEqual(await json(await post('not json')), [400, { error: 'invalid_request' }, 'no-store']);
+  assert.deepEqual(await json(await post('{"email":"name@domain.de"}')), [503, { error: 'unavailable' }, 'no-store']);
+  assert.match(logs, /Newsletter sign-up is not configured/);
+  assert.doesNotMatch(logs, /name@domain\.de/);
 });

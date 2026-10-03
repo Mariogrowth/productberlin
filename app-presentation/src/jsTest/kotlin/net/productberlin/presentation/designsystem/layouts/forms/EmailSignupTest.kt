@@ -16,6 +16,7 @@ class EmailSignupTest : DesignSystemTest() {
     private fun signup(
         status: EmailSignupStatus = EmailSignupStatus.Idle,
         message: String? = null,
+        privacy: String? = null,
     ) = EmailSignup.create {
         title = "Get the list"
         value = "a@b.co"
@@ -26,6 +27,7 @@ class EmailSignupTest : DesignSystemTest() {
         note = "One email a week."
         this.status = status
         this.message = message
+        privacyHref = privacy
     }
 
     @Test
@@ -68,15 +70,25 @@ class EmailSignupTest : DesignSystemTest() {
     }
 
     @Test
-    fun successReplacesTheFieldWithTheMessageInTheSameLiveRegion() {
+    fun successKeepsThePillAndShowsTheMessageBeneathItInNeutralText() {
         themed()
-        render(signup(EmailSignupStatus.Succeeded, "Check your inbox to confirm."))
-        assertNull(container.querySelector("input"))
-        assertNull(container.querySelector(".pb-email-signup-note"))
+        render(signup(EmailSignupStatus.Succeeded, "Verify you are human, check your inbox"))
+        val pill = assertNotNull(container.querySelector(".pb-email-signup-pill"))
         val message = assertNotNull(container.querySelector(".pb-email-signup-message"))
-        assertEquals("Check your inbox to confirm.", message.textContent)
+        assertNotNull(container.querySelector("input"))
+        assertEquals("Verify you are human, check your inbox", message.textContent)
         assertEquals("polite", message.getAttribute("aria-live"))
-        assertEquals("rgb(22, 134, 59)", getComputedStyle(message).color, "Success text uses the success token")
+        assertTrue(message.getBoundingClientRect().top >= pill.getBoundingClientRect().bottom, "Message sits beneath the pill")
+        assertEquals("rgb(17, 17, 17)", getComputedStyle(message).color, "No extra colour for success")
+    }
+
+    @Test
+    fun optionalPrivacyLinkFollowsTheMessages() {
+        themed()
+        render(signup(privacy = "/privacy"))
+        val link = assertNotNull(container.querySelector("a.pb-email-signup-privacy"))
+        assertEquals("/privacy", link.getAttribute("href"))
+        assertEquals("Privacy policy", link.textContent)
     }
 
     @Test

@@ -7,6 +7,7 @@ import react.FC
 import react.Props
 import react.dom.aria.AriaInvalid
 import react.dom.aria.AriaLive
+import react.dom.html.ReactHTML.a
 import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.form
 import react.dom.html.ReactHTML.input
@@ -32,11 +33,12 @@ external interface EmailSignupProps : Props {
     var actionLabel: String
     var submittingLabel: String?
     var note: String?
+    var privacyHref: String?
 }
 
 /**
- * A pill-shaped email field with an inline submit action. The title is the field's visible label. Status messages
- * are announced through a persistent live region; a successful submission replaces the field with its message.
+ * A pill-shaped email field with an inline submit action. The title is the field's visible label. Every status
+ * message appears beneath the pill in one persistent live region; the field stays in place after success.
  */
 val EmailSignup =
     FC<EmailSignupProps> { props ->
@@ -58,28 +60,26 @@ val EmailSignup =
                     className = ClassName("pb-email-signup-title")
                     +props.title
                 }
-                if (status != EmailSignupStatus.Succeeded) {
-                    div {
-                        className = ClassName("pb-email-signup-pill")
-                        input {
-                            id = fieldId
-                            type = InputType.email
-                            name = "email"
-                            autoComplete = unsafeCast<AutoFill>("email")
-                            required = true
-                            value = props.value
-                            placeholder = props.placeholder
-                            readOnly = submitting
-                            ariaInvalid = if (status == EmailSignupStatus.Invalid) AriaInvalid.`true` else null
-                            ariaDescribedBy = if (message != null) messageId else null
-                            onChange = { props.onValueChange(it.target.value) }
-                        }
-                        Button {
-                            variant = ButtonVariant.Primary
-                            type = ButtonType.submit
-                            disabled = submitting
-                            +(if (submitting) props.submittingLabel ?: props.actionLabel else props.actionLabel)
-                        }
+                div {
+                    className = ClassName("pb-email-signup-pill")
+                    input {
+                        id = fieldId
+                        type = InputType.email
+                        name = "email"
+                        autoComplete = unsafeCast<AutoFill>("email")
+                        required = true
+                        value = props.value
+                        placeholder = props.placeholder
+                        readOnly = submitting
+                        ariaInvalid = if (status == EmailSignupStatus.Invalid) AriaInvalid.`true` else null
+                        ariaDescribedBy = if (message != null) messageId else null
+                        onChange = { props.onValueChange(it.target.value) }
+                    }
+                    Button {
+                        variant = ButtonVariant.Primary
+                        type = ButtonType.submit
+                        disabled = submitting
+                        +(if (submitting) props.submittingLabel ?: props.actionLabel else props.actionLabel)
                     }
                 }
             }
@@ -98,11 +98,16 @@ val EmailSignup =
                 if (message != null) +message
             }
             props.note?.let {
-                if (status != EmailSignupStatus.Succeeded) {
-                    p {
-                        className = ClassName("pb-email-signup-note")
-                        +it
-                    }
+                p {
+                    className = ClassName("pb-email-signup-note")
+                    +it
+                }
+            }
+            props.privacyHref?.let {
+                a {
+                    className = ClassName("pb-email-signup-privacy")
+                    href = it
+                    +"Privacy policy"
                 }
             }
         }

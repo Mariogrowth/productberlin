@@ -45,6 +45,7 @@ For local operation, module responsibilities, API behavior, or deployment detail
 - Keep D1 migrations numbered and backward-compatible with the currently deployed Worker. Add a migration rather than editing an already-applied one. Migrations and seeding are separate operations; ordinary push deployments must not seed.
 - The scheduled Worker collects Google News RSS weekly and matches headlines against `cloudflare/startups.json`. Keep ranking deterministic, deduplicate articles, and publish D1 snapshots atomically. Every scheduled event resolves to the most recent complete Monday–Sunday UTC week, so off-schedule or retried events cannot replace a published edition mid-week. Preserve the previous ranking on failed or empty collections. Mock seeds and `/design-system` stay visibly labeled; live rankings must not be labeled as demo data. Keep tests independent of upstream news services.
 - Company logos are hotlinked from Brandfetch by the browser. The Worker builds logo URLs only for companies in the ranking response; it never fetches, caches or proxies logos, and UI falls back to letter marks.
+- Newsletter sign-ups go through the Worker's `POST /api/subscriptions`, which calls Brevo double opt-in. Keep the Brevo API key a Worker secret supplied at deploy time, never a committed var or browser value. Tests must not call Brevo.
 - Use the existing local launcher; stop temporary servers you start. Do not kill another IDE/server process to free a port.
 
 ## Code Review Rules
