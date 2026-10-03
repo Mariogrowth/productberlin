@@ -14,6 +14,7 @@ h1 { margin: 17px 0 11px; font-size: 50px; font-weight: 780; letter-spacing: -2.
 .brand-dot { color: #2424ff; }
 .tagline { margin: 0; color: #85878c; font-size: 14px; letter-spacing: .1px; }
 .page-content { width: min(600px, calc(100% - 48px)); margin: 0 auto; }
+.confirmation { width: min(600px, calc(100% - 32px)); margin: 16px auto 0; }
 .ranking-meta { display: flex; align-items: center; justify-content: space-between; padding: 0 6px; margin-bottom: 15px; gap: 12px; }
 .ranking-meta h2 { margin: 0; font-size: 11px; text-transform: uppercase; letter-spacing: 1.3px; font-weight: 650; }
 .ranking-meta > span { color: #929397; font-size: 11px; }

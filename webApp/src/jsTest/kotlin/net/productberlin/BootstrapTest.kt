@@ -33,9 +33,9 @@ class BootstrapTest {
         }
 
     @Test
-    fun confirmationReturnShowsTheCommunityMessageAndCleansTheAddress() =
+    fun confirmationReturnShowsTheVerifiedBannerAndCleansTheAddress() =
         runTest {
-            verifyRoute("/?subscribed=1&ref=mail", true, "Welcome to Berlin’s builder community") {
+            verifyRoute("/?subscribed=1&ref=mail", true, "Email Verified. Expect a weekly roundup") {
                 assertEquals("/?ref=mail", window.location.pathname + window.location.search)
             }
         }

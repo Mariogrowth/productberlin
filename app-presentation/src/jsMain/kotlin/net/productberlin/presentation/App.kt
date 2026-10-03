@@ -3,6 +3,7 @@ package net.productberlin.presentation
 import net.productberlin.domain.state.RankingState
 import net.productberlin.domain.usecase.GetWeeklyRanking
 import net.productberlin.domain.usecase.SubscribeToNewsletter
+import net.productberlin.presentation.designsystem.layouts.feedback.Banner
 import react.FC
 import react.Key
 import react.Props
@@ -39,6 +40,7 @@ external interface AppProps : Props {
 val App =
     FC<AppProps> { props ->
         var attempt by useState(0)
+        var showConfirmation by useState(props.subscriptionConfirmed == true)
         val state = useWeeklyRanking(props.getRanking, attempt)
         val ranking = (state as? RankingState.Ready)?.ranking
 
@@ -46,6 +48,15 @@ val App =
             className = ClassName("skip-link")
             href = "#rankings"
             +"Skip to rankings"
+        }
+        if (showConfirmation) {
+            div {
+                className = ClassName("pb-theme confirmation")
+                Banner {
+                    message = SUBSCRIPTION_CONFIRMED
+                    onDismiss = { showConfirmation = false }
+                }
+            }
         }
         header {
             className = ClassName("masthead")
@@ -137,10 +148,7 @@ val App =
                     }
                 }
             }
-            NewsletterSignup {
-                subscribe = props.subscribe
-                confirmed = props.subscriptionConfirmed
-            }
+            NewsletterSignup { subscribe = props.subscribe }
             footer {
                 div {
                     className = ClassName("demo-label")
@@ -184,3 +192,7 @@ val App =
             }
         }
     }
+
+/** Shown once, after a visitor returns from the double opt-in link in the confirmation email. */
+internal const val SUBSCRIPTION_CONFIRMED =
+    "Email Verified. Expect a weekly roundup of Berlin’s top tech news, startup highlights, and ecosystem updates 🚀"

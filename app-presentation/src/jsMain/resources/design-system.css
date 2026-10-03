@@ -220,3 +220,9 @@
 .pb-email-signup-message.pb-success { color: var(--pb-ink); }
 .pb-theme .pb-email-signup-privacy { margin-top: var(--pb-space-2); font-size: 11px; line-height: 1.4; color: var(--pb-muted); text-underline-offset: 3px; }
 .pb-theme .pb-email-signup-note { margin-top: var(--pb-space-2); font-size: 11px; line-height: 1.4; color: var(--pb-muted); }
+.pb-banner { display: flex; align-items: center; gap: var(--pb-space-3); padding: var(--pb-space-2) var(--pb-space-2) var(--pb-space-2) var(--pb-space-4); background: var(--pb-subtle); border: 1px solid var(--pb-line); border-radius: var(--pb-radius-control); color: var(--pb-ink); }
+.pb-banner > .pb-icon { width: 20px; height: 20px; flex-basis: 20px; }
+.pb-theme .pb-banner-message { flex: 1; min-width: 0; font-size: 13px; line-height: 1.5; }
+.pb-banner > .pb-button { flex: none; min-width: 44px; min-height: 44px; padding: 0; border-radius: var(--pb-radius-control); }
+.pb-banner > .pb-button .pb-icon { width: 20px; height: 20px; flex-basis: 20px; }
+.pb-theme .pb-banner > .pb-button:focus-visible { outline-color: var(--pb-ink); outline-offset: 0; }

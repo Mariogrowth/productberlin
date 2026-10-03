@@ -15,6 +15,7 @@ import net.productberlin.presentation.designsystem.components.toggles.Checkbox
 import net.productberlin.presentation.designsystem.components.toggles.Radio
 import net.productberlin.presentation.designsystem.components.toggles.Switch
 import net.productberlin.presentation.designsystem.layouts.cards.Card
+import net.productberlin.presentation.designsystem.layouts.feedback.Banner
 import net.productberlin.presentation.designsystem.layouts.feedback.EmptyState
 import net.productberlin.presentation.designsystem.layouts.filters.FilterBar
 import net.productberlin.presentation.designsystem.layouts.filters.FilterOption
@@ -87,6 +88,7 @@ val DesignSystemShowcase =
         var actionCount by useState(0)
         var signupEmail by useState("")
         var signupSubmitted by useState(false)
+        var bannerShown by useState(true)
         val filters =
             listOf(
                 FilterOption("all", "View all"),
@@ -620,6 +622,12 @@ val DesignSystemShowcase =
                                 className = ClassName("pb-showcase-note")
                                 +"Example: search, filter, compare, then inspect the rationale behind each ranking."
                             }
+                        }
+                    }
+                    if (bannerShown) {
+                        Banner {
+                            message = "Sample notice: email verified."
+                            onDismiss = { bannerShown = false }
                         }
                     }
                     Card {

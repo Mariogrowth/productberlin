@@ -19,9 +19,6 @@ import web.html.text
 
 external interface NewsletterSignupProps : Props {
     var subscribe: SubscribeToNewsletter
-
-    /** The visitor has just followed the double opt-in link from the confirmation email. */
-    var confirmed: Boolean?
 }
 
 private data class Submission(
@@ -36,8 +33,8 @@ val NewsletterSignup =
         var spamTrap by useState("")
         var attempts by useState(0)
         var submission by useState<Submission?>(null)
-        var status by useState(if (props.confirmed == true) EmailSignupStatus.Succeeded else EmailSignupStatus.Idle)
-        var message by useState(if (props.confirmed == true) CONFIRMED else null)
+        var status by useState(EmailSignupStatus.Idle)
+        var message by useState<String?>(null)
 
         useEffect(submission) {
             val current = submission ?: return@useEffect
@@ -102,8 +99,6 @@ val NewsletterSignup =
             }
         }
     }
-
-private const val CONFIRMED = "You’re in. Welcome to Berlin’s builder community."
 
 private fun SubscriptionResult.message() =
     when (this) {
