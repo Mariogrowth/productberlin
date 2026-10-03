@@ -163,3 +163,15 @@ test('newsletter sign-ups accept only same-origin JSON and fail closed without p
   assert.match(logs, /Newsletter sign-up is not configured/);
   assert.doesNotMatch(logs, /name@domain\.de/);
 });
+
+test('the privacy policy is served but marked noindex; other pages stay indexable', async () => {
+  for (const path of ['/privacy', '/privacy/']) {
+    const response = await fetch(`${origin}${path}`);
+    assert.equal(response.status, 200, path);
+    assert.equal(response.headers.get('x-robots-tag'), 'noindex', path);
+  }
+  for (const path of ['/', '/design-system']) {
+    assert.equal((await fetch(`${origin}${path}`)).headers.get('x-robots-tag'), null, path);
+  }
+  assert.doesNotMatch(await (await fetch(`${origin}/_headers`)).text(), /X-Robots-Tag/, 'header rules are not published');
+});
