@@ -35,7 +35,7 @@ fun handleScheduled(
             }
         try {
             val result =
-                WeeklyCollector(GoogleNewsSource(client, RssParser(parseXml)), D1CollectionRepository(database))
+                WeeklyCollector(GoogleNewsSource(client, RssParser(parseXml = parseXml)), D1CollectionRepository(database))
                     .refresh(
                         parseCatalogue(catalogueJson),
                         CollectionWindow.latestCompleteWeek(scheduledTime),

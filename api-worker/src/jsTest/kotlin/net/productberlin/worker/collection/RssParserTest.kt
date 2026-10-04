@@ -106,4 +106,20 @@ class RssParserTest {
             }.parse("")
         assertEquals(emptyList(), result)
     }
+
+    @Test
+    fun dropsItemsFromDisallowedPublishersUsingTheSourceSite() {
+        val feed =
+            """{"rss":{"channel":{"item":[
+              {"title":"mika raises seed - FF News","source":{"#text":"FF News","@_url":"https://ffnews.com"},
+                "link":"https://news.google.com/rss/articles/a","pubDate":"Fri, 25 Sep 2026 12:00:00 GMT"},
+              {"title":"Mika Suansing on funding - politiko","source":{"#text":"politiko","@_url":"https://politiko.com.ph"},
+                "link":"https://news.google.com/rss/articles/b","pubDate":"Fri, 25 Sep 2026 12:00:00 GMT"},
+              {"title":"Joe and Mika - YouTube","source":{"#text":"YouTube","@_url":"https://www.youtube.com"},
+                "link":"https://news.google.com/rss/articles/c","pubDate":"Fri, 25 Sep 2026 12:00:00 GMT"}
+            ]}}}"""
+        val articles = RssParser { JSON.parse<dynamic>(feed) }.parse("")
+        assertEquals(listOf("mika raises seed"), articles.map { it.headline })
+        assertEquals(3, RssParser({ _, _ -> true }) { JSON.parse<dynamic>(feed) }.parse("").size)
+    }
 }
