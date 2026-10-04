@@ -51,7 +51,7 @@ fun handleApi(
             } else {
                 val domains = catalogueDomains(catalogue)
                 val logo = BrandfetchLogo(brandfetchClientId)
-                val ranking = GetWeeklyRanking(D1StartupRepository(database) { logo.url(domains[it]) })()
+                val ranking = GetWeeklyRanking(D1StartupRepository(database) { logo.urls(domains[it]) })()
                 response(200, wireJson.encodeToString(ranking.toDto()))
             }
         } catch (error: Throwable) {

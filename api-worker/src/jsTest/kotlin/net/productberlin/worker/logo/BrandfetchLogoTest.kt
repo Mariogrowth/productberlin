@@ -2,22 +2,24 @@ package net.productberlin.worker.logo
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNull
 
 class BrandfetchLogoTest {
     @Test
-    fun buildsSizedIconUrlWithNotFoundFallbackAndClientId() {
+    fun buildsSizedIconAndFullLogoUrlsWithNotFoundFallbackAndClientId() {
         assertEquals(
-            "https://cdn.brandfetch.io/domain/n26.com/w/80/h/80/fallback/404/type/icon?c=client_ID-1",
-            BrandfetchLogo("client_ID-1").url("n26.com"),
+            CompanyLogos(
+                "https://cdn.brandfetch.io/domain/helsing.ai/w/80/h/80/fallback/404/type/icon?c=client_ID-1",
+                "https://cdn.brandfetch.io/domain/helsing.ai/w/80/h/80/fallback/404/type/logo?c=client_ID-1",
+            ),
+            BrandfetchLogo("client_ID-1").urls("helsing.ai"),
         )
     }
 
     @Test
-    fun omitsLogoWithoutDomainOrUsableClientId() {
-        assertNull(BrandfetchLogo("client").url(null))
+    fun omitsLogosWithoutDomainOrUsableClientId() {
+        assertEquals(CompanyLogos(), BrandfetchLogo("client").urls(null))
         for (clientId in listOf(null, "", " ", "a&b=c", "a/b")) {
-            assertNull(BrandfetchLogo(clientId).url("n26.com"))
+            assertEquals(CompanyLogos(), BrandfetchLogo(clientId).urls("n26.com"))
         }
     }
 }
