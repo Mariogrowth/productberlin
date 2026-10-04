@@ -118,7 +118,7 @@ class RssParserTest {
               {"title":"Joe and Mika - YouTube","source":{"#text":"YouTube","@_url":"https://www.youtube.com"},
                 "link":"https://news.google.com/rss/articles/c","pubDate":"Fri, 25 Sep 2026 12:00:00 GMT"}
             ]}}}"""
-        val articles = RssParser { JSON.parse<dynamic>(feed) }.parse("")
+        val articles = RssParser(TrustedPublishers(listOf("ffnews.com"))::allows) { JSON.parse<dynamic>(feed) }.parse("")
         assertEquals(listOf("mika raises seed"), articles.map { it.headline })
         assertEquals(3, RssParser({ _, _ -> true }) { JSON.parse<dynamic>(feed) }.parse("").size)
     }

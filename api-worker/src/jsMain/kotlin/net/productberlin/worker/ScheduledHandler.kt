@@ -15,6 +15,7 @@ import net.productberlin.worker.collection.GoogleNewsSource
 import net.productberlin.worker.collection.RssParser
 import net.productberlin.worker.collection.WeeklyCollector
 import net.productberlin.worker.collection.parseCatalogue
+import net.productberlin.worker.collection.parsePublishers
 import net.productberlin.worker.repository.D1CollectionRepository
 
 @JsExport
@@ -22,6 +23,7 @@ fun handleScheduled(
     database: dynamic,
     scheduledTime: Double,
     catalogueJson: String,
+    publishersJson: String,
     parseXml: (String) -> dynamic,
 ): Promise<String> =
     CoroutineScope(EmptyCoroutineContext).promise {
@@ -35,13 +37,15 @@ fun handleScheduled(
             }
         try {
             val result =
-                WeeklyCollector(GoogleNewsSource(client, RssParser(parseXml = parseXml)), D1CollectionRepository(database))
-                    .refresh(
-                        parseCatalogue(catalogueJson),
-                        CollectionWindow.latestCompleteWeek(scheduledTime),
-                        Date().toISOString(),
-                        js("globalThis.crypto.randomUUID()").unsafeCast<String>(),
-                    )
+                WeeklyCollector(
+                    GoogleNewsSource(client, RssParser(parsePublishers(publishersJson)::allows, parseXml)),
+                    D1CollectionRepository(database),
+                ).refresh(
+                    parseCatalogue(catalogueJson),
+                    CollectionWindow.latestCompleteWeek(scheduledTime),
+                    Date().toISOString(),
+                    js("globalThis.crypto.randomUUID()").unsafeCast<String>(),
+                )
             console.log("Weekly Google News collection: $result")
             result
         } finally {

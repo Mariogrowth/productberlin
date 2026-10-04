@@ -9,13 +9,23 @@ import { Miniflare, convertV4MiniflareOptions } from 'miniflare';
 let mf, db, directory, mode = 'success', calls = [];
 const catalogue = JSON.parse(await readFile('cloudflare/startups.json', 'utf8')).slice(0, 12);
 const weekOne = Date.parse('2026-09-28T06:00:00Z');
+// Searches the Worker makes for the real bundled catalogue: names (plus distinct aliases) packed into ≤28-word groups.
+const fullCatalogue = JSON.parse(await readFile('cloudflare/startups.json', 'utf8'));
+const normalised = s => ` ${s.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim()} `;
+const CATALOGUE_SEARCHES = 2 * fullCatalogue.reduce((groups, c) => {
+  const terms = [c.name, ...c.aliases.filter(a => a.trim() && !normalised(a).includes(normalised(c.name)))].map(t => `"${t.replaceAll('"', '')}"`).join(' OR ');
+  const last = groups.at(-1);
+  if (last && `${last} OR ${terms}`.split(' ').filter(Boolean).length <= 28) groups[groups.length - 1] = `${last} OR ${terms}`;
+  else groups.push(terms);
+  return groups;
+}, []).length;
 let activeWeek = weekOne;
 let discoveryGate, discoveryStarted;
 let takeoverDone = false;
 const xml = value => value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('"', '&quot;');
 function item(company, id, day = 1) {
   const date = new Date(activeWeek - day * 86_400_000).toUTCString();
-  return `<item><title>${xml(company.name)} ${company.contextKeywords?.[0] ?? ""} launches product ${id} - Publisher</title><source url="https://publisher.test">Publisher</source><guid isPermaLink="false">${id}</guid><link>https://news.google.com/rss/articles/${id}?oc=5</link><pubDate>${date}</pubDate></item>`;
+  return `<item><title>${xml(company.name)} ${company.contextKeywords?.[0] ?? ""} launches product ${id} - Publisher</title><source url="https://www.handelsblatt.com">Publisher</source><guid isPermaLink="false">${id}</guid><link>https://news.google.com/rss/articles/${id}?oc=5</link><pubDate>${date}</pubDate></item>`;
 }
 // Fixture stories are dated relative to the Monday 06:00 UTC that starts the event's week.
 const DAY = 86_400_000;
@@ -25,9 +35,11 @@ function itemFrom(company, id, source, site, title = `${company.name} ${company.
   const date = new Date(activeWeek - 86_400_000).toUTCString();
   return `<item><title>${xml(title)} - ${xml(source)}</title><source url="${site}">${xml(source)}</source><guid isPermaLink="false">${id}</guid><link>https://news.google.com/rss/articles/${id}?oc=5</link><pubDate>${date}</pubDate></item>`;
 }
+// Publishers outside cloudflare/publishers.json: video, a foreign site and an untrusted generic one.
 const blockedItems = company => [
   itemFrom(company, `${company.id}-video`, 'YouTube', 'https://www.youtube.com'),
   itemFrom(company, `${company.id}-ph`, 'politiko', 'https://politiko.com.ph'),
+  itemFrom(company, `${company.id}-deal`, 'Popular Science', 'https://www.popsci.com'),
 ].join('');
 async function scheduled(time) {
   activeWeek = mondayOf(time);
@@ -62,29 +74,35 @@ before(async () => {
         discoveryStarted();
         await discoveryGate;
       }
-      if (mode === 'lost-lease' && !takeoverDone && !query.startsWith('(Berlin')) {
+      if (mode === 'lost-lease' && !takeoverDone) {
         takeoverDone = true;
         await db.prepare("UPDATE collection_runs SET lease_token='new-owner',lease_until='2099-01-01T00:00:00.000Z' WHERE status='running'").run();
       }
-      if (mode === 'enrichment-failure' && !query.startsWith('(Berlin')) return new Response('Unavailable', { status: 503 });
+      if (mode === 'partial-failure' && calls.length > 1) return new Response('Unavailable', { status: 503 });
       if (mode === 'unavailable') return new Response('Unavailable', { status: 503 });
       if (mode === 'malformed') return new Response('<rss><channel></rss>');
+      // Every search is a grouped catalogue search with the date first: after:… before:… ("A" OR "B" …)
+      assert.match(query, /^after:\d{4}-\d{2}-\d{2} before:\d{4}-\d{2}-\d{2} \(".+\)$/);
+      assert.ok(query.split(' ').length <= 30, query);
       let items = '';
       if (mode !== 'empty') {
-        if (query.startsWith('(Berlin OR Berliner)')) {
-          // Same articles in each daily feed must not multiply counts. Each company has a distinct count.
-          items = (mode === 'sparse' ? catalogue.slice(0, 2) : catalogue).flatMap((company, i) => Array.from({ length: 12 - i }, (_, n) => item(company, `${company.id}-${n}`, 2))).join('');
-          if (language === 'de') items += item(catalogue[0], 'german-only', 2);
-          if (mode === 'publishers') items += blockedItems(catalogue[0]);
-        } else {
-          const company = catalogue.find(c => query.startsWith(`"${c.name}"`));
-          assert.ok(company, query);
-          items = Array.from({ length: 7 }, (_, n) => item(company, `${company.id}-related-${n}`, n + 1)).join('');
-          if (mode === 'publishers') {
-            const title = `${company.name} ${company.contextKeywords?.[0] ?? ''} wins syndicated award`;
-            items = blockedItems(company) + itemFrom(company, `${company.id}-syndicated-1`, 'Xpert.Digital - Author', 'https://xpert.digital', title)
-              + itemFrom(company, `${company.id}-syndicated-2`, 'xpert.digital', 'https://xpert.digital', title) + items;
-          }
+        // The Worker searches the whole bundled catalogue; groups without any of the 12 test companies are empty.
+        // Each test company gets a distinct number of articles (12 - position) plus seven more, so counts differ.
+        const group = catalogue.filter(c => query.includes(`"${c.name}"`) && (mode !== 'sparse' || catalogue.indexOf(c) < 2));
+        items = group.flatMap(c => {
+          const i = catalogue.indexOf(c);
+          return [
+            ...Array.from({ length: 12 - i }, (_, n) => item(c, `${c.id}-${n}`, 2)),
+            ...Array.from({ length: 7 }, (_, n) => item(c, `${c.id}-related-${n}`, n + 1)),
+          ];
+        }).join('');
+        if (language === 'de' && group.includes(catalogue[0])) items += item(catalogue[0], 'german-only', 2);
+        if (mode === 'publishers') {
+          items = group.map(c => {
+            const title = `${c.name} ${c.contextKeywords?.[0] ?? ''} wins syndicated award`;
+            return blockedItems(c) + itemFrom(c, `${c.id}-syndicated-1`, 'Xpert.Digital - Author', 'https://xpert.digital', title)
+              + itemFrom(c, `${c.id}-syndicated-2`, 'xpert.digital', 'https://xpert.digital', title);
+          }).join('') + items;
         }
       }
       return new Response(`<rss version="2.0"><channel>${items}</channel></rss>`, { headers: { 'content-type': 'application/rss+xml' } });
@@ -120,17 +138,19 @@ test('scheduled collector publishes ten ranked companies and at most five dated 
   const result = await ranking();
   assert.equal(result.isMock, false);
   assert.equal(result.startups.length, 10);
-  assert.equal(result.articleCount, 79);
+  // 79 articles with distinct per-company counts plus 7 more for each of the 12 test companies.
+  assert.equal(result.articleCount, 79 + 12 * 7);
   assert.deepEqual(result.startups.map(s => s.id), catalogue.slice(0, 10).map(s => s.id));
-  assert.deepEqual(result.startups.map(s => s.mentionCount), [13, 11, 10, 9, 8, 7, 6, 5, 4, 3]);
-  assert.equal(calls.length, 34);
+  assert.deepEqual(result.startups.map(s => s.mentionCount), [13, 11, 10, 9, 8, 7, 6, 5, 4, 3].map(n => n + 7));
+  // Every company in the bundled catalogue, packed into ≤30-word groups, in two languages.
+  assert.equal(calls.length, CATALOGUE_SEARCHES);
   for (const startup of result.startups) {
     assert.equal(startup.news.length, 5);
     assert.equal(startup.movement, null);
     assert.match(startup.news[0].url, /^https:\/\/news.google.com\/rss\/articles\//);
     assert.equal(startup.news[0].source, 'Publisher');
   }
-  assert.equal((await db.prepare("SELECT status FROM collection_runs WHERE week_start='2026-09-28-bilingual-v2'").first()).status, 'succeeded');
+  assert.equal((await db.prepare("SELECT status FROM collection_runs WHERE week_start='2026-09-28-trusted-v1'").first()).status, 'succeeded');
 });
 
 test('duplicate events skip collection, and a failed next week retains the previous published snapshot', async () => {
@@ -142,7 +162,7 @@ test('duplicate events skip collection, and a failed next week retains the previ
   mode = 'unavailable';
   assert.notEqual((await scheduled(weekOne + 7 * 86_400_000)).outcome, 'ok');
   assert.deepEqual(await ranking(), previous);
-  assert.equal((await db.prepare("SELECT status FROM collection_runs WHERE week_start='2026-10-05-bilingual-v2'").first()).status, 'failed');
+  assert.equal((await db.prepare("SELECT status FROM collection_runs WHERE week_start='2026-10-05-trusted-v1'").first()).status, 'failed');
 });
 
 test('off-schedule events during a week neither refetch nor replace the published edition', async () => {
@@ -163,7 +183,7 @@ test('a failed Monday collection is retried for the same week by a later event t
   mode = 'success';
   assert.equal((await scheduled(weekOne + 3 * DAY)).outcome, 'ok');
   assert.equal((await ranking()).weekLabel, '2026-09-21 – 2026-09-27');
-  assert.equal((await db.prepare("SELECT status FROM collection_runs WHERE week_start='2026-09-28-bilingual-v2'").first()).status, 'succeeded');
+  assert.equal((await db.prepare("SELECT status FROM collection_runs WHERE week_start='2026-09-28-trusted-v1'").first()).status, 'succeeded');
 });
 
 test('D1 publication rolls back all writes on failure, then a retry publishes with movement', async () => {
@@ -189,11 +209,11 @@ test('empty and malformed feeds retain data; an active lease skips and an expire
     assert.notEqual((await scheduled(next)).outcome, 'ok');
     assert.deepEqual(await ranking(), previous);
   }
-  await db.prepare("UPDATE collection_runs SET status='running',lease_until='2099-01-01T00:00:00.000Z' WHERE week_start='2026-10-12-bilingual-v2'").run();
+  await db.prepare("UPDATE collection_runs SET status='running',lease_until='2099-01-01T00:00:00.000Z' WHERE week_start='2026-10-12-trusted-v1'").run();
   const count = calls.length;
   assert.equal((await scheduled(next)).outcome, 'ok');
   assert.equal(calls.length, count);
-  await db.prepare("UPDATE collection_runs SET lease_until='2000-01-01T00:00:00.000Z' WHERE week_start='2026-10-12-bilingual-v2'").run();
+  await db.prepare("UPDATE collection_runs SET lease_until='2000-01-01T00:00:00.000Z' WHERE week_start='2026-10-12-trusted-v1'").run();
   mode = 'success';
   assert.equal((await scheduled(next)).outcome, 'ok');
   assert.equal((await ranking()).weekLabel, '2026-10-05 – 2026-10-11');
@@ -221,7 +241,7 @@ test('every stage of the D1 batch is atomic, including the final success audit w
       assert.notEqual((await scheduled(weekOne + 7 * 86_400_000)).outcome, 'ok', target);
       assert.deepEqual(await contents(), stored, target);
       assert.deepEqual(await ranking(), previous, target);
-      const run = await db.prepare("SELECT status,error FROM collection_runs WHERE week_start='2026-10-05-bilingual-v2'").first();
+      const run = await db.prepare("SELECT status,error FROM collection_runs WHERE week_start='2026-10-05-trusted-v1'").first();
       assert.equal(run.status, 'failed');
       assert.ok(run.error.length > 0 && run.error.length <= 500);
     } finally {
@@ -231,13 +251,13 @@ test('every stage of the D1 batch is atomic, including the final success audit w
   assert.equal((await scheduled(weekOne + 7 * 86_400_000)).outcome, 'ok');
 });
 
-test('failure while fetching winner news retains all previous DB content', async () => {
+test('a failure partway through the searches retains all previous DB content', async () => {
   assert.equal((await scheduled(weekOne)).outcome, 'ok');
   const stored = await contents();
-  const beforeCalls = calls.length;
-  mode = 'enrichment-failure';
+  calls = [];
+  mode = 'partial-failure'; // the first search succeeds, the second fails
   assert.notEqual((await scheduled(weekOne + 7 * 86_400_000)).outcome, 'ok');
-  assert.equal(calls.length - beforeCalls, 15);
+  assert.equal(calls.length, 2);
   assert.deepEqual(await contents(), stored);
 });
 
@@ -247,7 +267,7 @@ test('a worker whose lease was replaced cannot publish or mark the new owner fai
   mode = 'lost-lease';
   assert.notEqual((await scheduled(weekOne + 7 * 86_400_000)).outcome, 'ok');
   assert.deepEqual(await contents(), stored);
-  const run = await db.prepare("SELECT lease_token,status,error FROM collection_runs WHERE week_start='2026-10-05-bilingual-v2'").first();
+  const run = await db.prepare("SELECT lease_token,status,error FROM collection_runs WHERE week_start='2026-10-05-trusted-v1'").first();
   assert.deepEqual(run, { lease_token: 'new-owner', status: 'running', error: null });
 });
 
@@ -263,7 +283,7 @@ test('overlapping scheduled deliveries have exactly one fetch and publication ow
     assert.equal(calls.length, 1);
   } finally { release(); }
   assert.equal((await first).outcome, 'ok');
-  assert.equal(calls.length, 34);
+  assert.equal(calls.length, CATALOGUE_SEARCHES);
   assert.equal((await db.prepare('SELECT COUNT(*) AS count FROM ranking_snapshots').first()).count, 1);
   assert.equal((await ranking()).startups.length, 10);
 });
@@ -273,8 +293,8 @@ test('a sparse valid week publishes its actual positive count and ordered newest
   assert.equal((await scheduled(weekOne)).outcome, 'ok');
   const result = await ranking();
   assert.equal(result.startups.length, 2);
-  assert.equal(result.articleCount, 24);
-  assert.equal(calls.length, 18);
+  assert.equal(result.articleCount, 24 + 2 * 7);
+  assert.equal(calls.length, CATALOGUE_SEARCHES);
   assert.equal((await db.prepare('SELECT expected_count FROM ranking_snapshots').first()).expected_count, 2);
   for (const company of result.startups) {
     assert.equal(company.news.length, 5);
@@ -296,16 +316,18 @@ test('rank movement ignores newer mock, draft and incomplete earlier-week snapsh
   assert.ok((await ranking()).startups.every(s => s.movement === 0));
 });
 
-test('foreign-country and video publishers neither count nor show, and syndicated headlines show once', async () => {
+test('untrusted publishers neither count nor show, and syndicated headlines show once', async () => {
   assert.equal((await scheduled(weekOne)).outcome, 'ok');
   const baseline = Object.fromEntries((await ranking()).startups.map(s => [s.id, s.mentionCount]));
   await db.batch(['news_articles', 'ranking_entries', 'ranking_snapshots', 'startups', 'collection_runs'].map(table => db.prepare(`DELETE FROM ${table}`)));
   mode = 'publishers';
   assert.equal((await scheduled(weekOne)).outcome, 'ok');
   const filtered = await ranking();
-  assert.deepEqual(Object.fromEntries(filtered.startups.map(s => [s.id, s.mentionCount])), baseline);
+  // Untrusted items add nothing. The two syndicated copies (trusted, differently spelled publisher) still count
+  // separately, as documented, but are shown once.
+  assert.deepEqual(Object.fromEntries(filtered.startups.map(s => [s.id, s.mentionCount])), Object.fromEntries(Object.entries(baseline).map(([id, n]) => [id, n + 2])));
   for (const startup of filtered.startups) {
-    assert.ok(startup.news.every(n => !['YouTube', 'politiko'].includes(n.source)), startup.id);
+    assert.ok(startup.news.every(n => !['YouTube', 'politiko', 'Popular Science'].includes(n.source)), startup.id);
     const headlines = startup.news.map(n => n.headline.toLowerCase());
     assert.equal(new Set(headlines).size, headlines.length, startup.id);
     assert.equal(headlines.filter(h => h.includes('syndicated award')).length, 1, startup.id);

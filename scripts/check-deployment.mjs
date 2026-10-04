@@ -15,6 +15,7 @@ for (const path of [
   'api-worker/entry.mjs',
   'api-worker/rss-parser.mjs',
   'cloudflare/startups.json',
+  'cloudflare/publishers.json',
   'cloudflare/migrations/0002_weekly_collection.sql',
   'api-worker/build/dist/js/productionLibrary/Productberlin-api-worker.mjs',
   'webApp/build/dist/js/productionExecutable/index.html',

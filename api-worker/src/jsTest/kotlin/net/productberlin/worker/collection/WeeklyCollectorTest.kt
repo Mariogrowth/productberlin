@@ -23,7 +23,7 @@ class WeeklyCollectorTest {
     ) = NewsArticle(id, "mika announces accounting product $id", "Publisher", date, "https://news.google.com/rss/articles/$id")
 
     @Test
-    fun usesSevenCompleteUtcDaysAndFiveNewestStoriesWithoutInflatingMentions() =
+    fun countsInWeekCatalogueSearchArticlesOnceAndShowsTheFiveNewest() =
         runTest {
             val repository = RecordingRepository()
             val queries = mutableListOf<NewsSearch>()
@@ -31,22 +31,19 @@ class WeeklyCollectorTest {
                 object : NewsSource {
                     override suspend fun search(search: NewsSearch): List<NewsArticle> {
                         queries += search
-                        return if (search.query.startsWith("(Berlin")) {
-                            listOf(story("one"), story("old", "2026-09-20T23:59:59.000Z"), story("future", window.end))
-                        } else {
+                        return listOf(story("one"), story("old", "2026-09-20T23:59:59.000Z"), story("future", window.end)) +
                             (1..8).map { story("related$it", "2026-09-26T12:00:0$it.000Z") }
-                        }
                     }
                 }
             assertEquals("published", WeeklyCollector(source, repository).refresh(catalogue, window, window.end, "token"))
             val result = repository.published!!
             assertEquals("2026-09-21 – 2026-09-27", result.weekLabel)
-            assertEquals(14, queries.count { it.query.startsWith("(Berlin") })
             assertEquals(setOf(NewsLanguage.English, NewsLanguage.German), queries.map { it.language }.toSet())
-            assertEquals(16, queries.size)
-            assertTrue(queries.last().query.contains("(\"accounting\" OR \"fintech\")"))
-            assertEquals(1, result.articleCount)
-            assertEquals(1, result.startups.single().mentionCount)
+            assertEquals(2, queries.size)
+            assertTrue(queries.all { it.query == "after:2026-09-21 before:2026-09-28 (\"mika\")" })
+            // Every in-week article naming the company counts once, however many searches return it.
+            assertEquals(9, result.articleCount)
+            assertEquals(9, result.startups.single().mentionCount)
             assertEquals(2, result.startups.single().movement)
             assertEquals(
                 listOf("related8", "related7", "related6", "related5", "related4"),
@@ -67,7 +64,7 @@ class WeeklyCollectorTest {
                     object : NewsSource {
                         override suspend fun search(search: NewsSearch): List<NewsArticle> {
                             if (empty) return emptyList()
-                            check(search.query.startsWith("(Berlin")) { "Feed unavailable" }
+                            check(search.language == NewsLanguage.English) { "Feed unavailable" }
                             return listOf(story("one"))
                         }
                     }
@@ -126,13 +123,19 @@ class WeeklyCollectorTest {
         }
 
     @Test
-    fun emptyFollowupsKeepDiscoveryEvidenceAndDoNotInventFiveArticles() =
+    fun fewMatchesShowOnlyRealArticles() =
         runTest {
             val repository = RecordingRepository()
             val source =
                 object : NewsSource {
                     override suspend fun search(search: NewsSearch) =
-                        if (search.query.startsWith("(Berlin")) listOf(story("one")) else emptyList()
+                        if (search.language ==
+                            NewsLanguage.English
+                        ) {
+                            listOf(story("one"))
+                        } else {
+                            emptyList()
+                        }
                 }
             WeeklyCollector(source, repository).refresh(catalogue, window, window.end, "token")
             assertEquals(
@@ -146,7 +149,7 @@ class WeeklyCollectorTest {
         }
 
     @Test
-    fun failureHalfwayThroughDiscoveryDoesNotPublishPartialResults() =
+    fun failureHalfwayThroughTheSearchesDoesNotPublishPartialResults() =
         runTest {
             val repository = RecordingRepository()
             var calls = 0
@@ -154,12 +157,12 @@ class WeeklyCollectorTest {
                 object : NewsSource {
                     override suspend fun search(search: NewsSearch): List<NewsArticle> {
                         calls++
-                        check(calls < 7) { "German feed failed" }
+                        check(calls < 2) { "German feed failed" }
                         return listOf(story("one"))
                     }
                 }
             assertFailsWith<IllegalStateException> { WeeklyCollector(source, repository).refresh(catalogue, window, window.end, "token") }
-            assertEquals(7, calls)
+            assertEquals(2, calls)
             assertTrue(repository.failed)
             assertEquals(null, repository.published)
         }

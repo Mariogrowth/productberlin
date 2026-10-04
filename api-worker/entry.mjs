@@ -1,13 +1,15 @@
 // Only the Cloudflare module-worker adapter is JavaScript; application logic is Kotlin/JS.
 import catalogue from '../cloudflare/startups.json';
+import publishers from '../cloudflare/publishers.json';
 import { parseRssXml } from './rss-parser.mjs';
 import { handleApi, handleScheduled, handleSubscription } from './build/dist/js/productionLibrary/Productberlin-api-worker.mjs';
 
 const catalogueJson = JSON.stringify(catalogue);
+const publishersJson = JSON.stringify(publishers);
 
 export default {
   async scheduled(controller, env) {
-    await handleScheduled(env.DB, controller.scheduledTime, catalogueJson, parseRssXml);
+    await handleScheduled(env.DB, controller.scheduledTime, catalogueJson, publishersJson, parseRssXml);
   },
   async fetch(request, env) {
     const url = new URL(request.url);
