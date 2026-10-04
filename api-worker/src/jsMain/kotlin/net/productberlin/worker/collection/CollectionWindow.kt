@@ -11,32 +11,69 @@ internal data class CollectionWindow(
     val startMillis: Double get() = Date.parse(start)
     val endMillis: Double get() = Date.parse(end)
     val label: String get() = "${start.take(10)} – ${Date(endMillis - 1).toISOString().take(10)}"
-    val query: String get() = "$DISCOVERY_QUERY after:${start.take(10)} before:${end.take(10)} [en,de]"
-    val discoverySearches: List<NewsSearch> get() =
-        (0 until 7).flatMap { day ->
-            val from = Date(startMillis + day * DAY).toISOString().take(10)
-            val to = Date(startMillis + (day + 1) * DAY).toISOString().take(10)
-            NewsLanguage.entries.map { language ->
-                NewsSearch("$DISCOVERY_QUERY after:$from before:$to", language)
+    val query: String get() = "Catalogue company names in trusted publishers $dateRange [en,de]"
+
+    private val dateRange: String get() = "after:${start.take(10)} before:${end.take(10)}"
+
+    /**
+     * Searches every catalogue company by name (and distinct aliases) over the whole week, in both languages. Google
+     * reads only about the first 32 words of a query, so the date range comes first and company names are packed into
+     * groups of at most [MAX_GROUP_WORDS] words. Fails rather than silently skipping companies when the catalogue
+     * needs more than [MAX_SEARCHES] requests (the Workers free plan allows 50 subrequests per run).
+     */
+    fun catalogueSearches(catalogue: List<StartupCandidate>): List<NewsSearch> {
+        val groups = mutableListOf<MutableList<String>>()
+        for (terms in catalogue.map(::companyTerms)) {
+            val current = groups.lastOrNull()
+            if (current == null || words((current + terms).joinToString(" OR ")) > MAX_GROUP_WORDS) {
+                groups += mutableListOf(terms)
+            } else {
+                current += terms
             }
         }
-
-    fun companySearches(company: StartupCandidate): List<NewsSearch> = NewsLanguage.entries.map { NewsSearch(companyQuery(company), it) }
-
-    private fun companyQuery(company: StartupCandidate): String {
-        val keywords = company.contextKeywords.filter { it.isNotBlank() }
-        val context = if (keywords.isEmpty()) "" else keywords.joinToString(" OR ", " (", ")") { quoted(it) }
-        return "${quoted(company.name)}$context after:${start.take(10)} before:${end.take(10)}"
+        val searches =
+            groups.flatMap { group ->
+                val query = "$dateRange (${group.joinToString(" OR ")})"
+                NewsLanguage.entries.map { NewsSearch(query, it) }
+            }
+        check(searches.size <= MAX_SEARCHES) {
+            "Catalogue needs ${searches.size} searches; the per-run budget is $MAX_SEARCHES. Reduce aliases or companies."
+        }
+        return searches
     }
+
+    private fun companyTerms(company: StartupCandidate): String {
+        // An alias that already contains the name (as the matcher normalises it) would add nothing to the search.
+        val name = normalised(company.name)
+        val aliases = company.aliases.filter { it.isNotBlank() && !normalised(it).contains(name) }
+        return (listOf(company.name) + aliases).joinToString(" OR ") { quoted(it) }
+    }
+
+    private fun words(value: String): Int = value.split(' ').count { it.isNotBlank() }
+
+    private fun normalised(value: String): String =
+        " " +
+            value
+                .lowercase()
+                .map { if (it.isLetterOrDigit()) it else ' ' }
+                .joinToString(
+                    "",
+                ).split(' ')
+                .filter { it.isNotEmpty() }
+                .joinToString(" ") +
+            " "
 
     private fun quoted(value: String): String = "\"${value.replace("\"", "")}\""
 
     companion object {
-        const val POLICY_VERSION = "bilingual-v2"
-        const val DISCOVERY_QUERY =
-            "(Berlin OR Berliner) (startup OR startups OR \"start-up\" OR \"start-ups\" OR " +
-                "funding OR Finanzierung OR Finanzierungsrunde OR Gründer)"
+        const val POLICY_VERSION = "trusted-v1"
         const val DAY = 86_400_000.0
+
+        /** Google ignores query words beyond about 32; two are taken by the date range. */
+        const val MAX_GROUP_WORDS = 28
+
+        /** Within the Workers free plan's 50 subrequests per run, with room to spare. */
+        const val MAX_SEARCHES = 48
 
         /**
          * The Monday–Sunday UTC week that ended at the most recent Monday 00:00 UTC. Any event during a week, whether

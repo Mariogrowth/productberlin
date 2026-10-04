@@ -20,13 +20,8 @@ class CollectionWindowTest {
             assertEquals(start + "T00:00:00.000Z", window.start)
             assertEquals(end + "T00:00:00.000Z", window.end)
             assertEquals(7 * CollectionWindow.DAY, window.endMillis - window.startMillis)
-            assertEquals(14, window.discoverySearches.distinct().size)
-            for ((day, searches) in window.discoverySearches.chunked(2).withIndex()) {
-                val from = Date(window.startMillis + day * CollectionWindow.DAY).toISOString().take(10)
-                val to = Date(window.startMillis + (day + 1) * CollectionWindow.DAY).toISOString().take(10)
-                assertEquals(NewsLanguage.entries.toSet(), searches.map { it.language }.toSet())
-                assertTrue(searches.all { it.query.endsWith("after:$from before:$to") })
-            }
+            val search = window.catalogueSearches(listOf(StartupCandidate("one", "One", "D", "C"))).first()
+            assertTrue(search.query.startsWith("after:$start before:$end "), search.query)
         }
     }
 
@@ -58,13 +53,30 @@ class CollectionWindowTest {
     }
 
     @Test
-    fun followupsQuoteCompanyNamesAndIgnoreBlankContext() {
+    fun catalogueSearchesPutTheDateFirstAndKeepEveryQueryWithinGooglesWordLimit() {
         val window = CollectionWindow.latestCompleteWeek(Date.parse("2026-09-28T06:00:00Z"))
-        val company = StartupCandidate("one", "One \"AI\"", "Description", "Tech", contextKeywords = listOf("", "AI tools"))
-        assertEquals("\"One AI\" (\"AI tools\") after:2026-09-21 before:2026-09-28", window.companySearches(company).first().query)
-        assertEquals(
-            "\"One AI\" after:2026-09-21 before:2026-09-28",
-            window.companySearches(company.copy(contextKeywords = emptyList())).first().query,
-        )
+        val catalogue =
+            (1..60).map { StartupCandidate("c$it", "Company $it", "Description", "Tech") } +
+                StartupCandidate("q", "One \"AI\"", "Description", "Tech", aliases = listOf("One AI GmbH", "OneAI", " "))
+        val searches = window.catalogueSearches(catalogue)
+        assertEquals(NewsLanguage.entries.toSet(), searches.map { it.language }.toSet())
+        assertEquals(searches.size / 2, searches.count { it.language == NewsLanguage.English })
+        for (search in searches) {
+            assertTrue(search.query.startsWith("after:2026-09-21 before:2026-09-28 ("), search.query)
+            val words = search.query.split(' ').count { it.isNotBlank() }
+            assertTrue(words <= 2 + CollectionWindow.MAX_GROUP_WORDS, "$words words: ${search.query}")
+        }
+        val english = searches.filter { it.language == NewsLanguage.English }.joinToString(" ") { it.query }
+        for (company in (1..60)) assertEquals(1, Regex("\"Company $company\"").findAll(english).count(), "Company $company")
+        assertTrue(english.contains("\"One AI\" OR \"OneAI\""), "Distinct aliases are searched; quotes are stripped")
+        assertTrue(!english.contains("One AI GmbH"), "Aliases containing the name add nothing")
+        assertEquals(emptyList(), window.catalogueSearches(emptyList()))
+    }
+
+    @Test
+    fun aCatalogueTooLargeForTheRequestBudgetFailsInsteadOfSkippingCompanies() {
+        val window = CollectionWindow.latestCompleteWeek(Date.parse("2026-09-28T06:00:00Z"))
+        val huge = (1..400).map { StartupCandidate("c$it", "Company Name $it", "Description", "Tech") }
+        assertFailsWith<IllegalStateException> { window.catalogueSearches(huge) }
     }
 }

@@ -5,10 +5,11 @@ import net.productberlin.domain.entity.NewsArticle
 
 /**
  * The XML library handles structure/entities; only plain text and safe Google links cross this boundary. Items from
- * publishers that [allowPublisher] rejects (by name and site URL) are dropped before they can count or be shown.
+ * publishers that [allowPublisher] rejects (by name and site URL) are dropped before they can count or be shown; the
+ * scheduled collector passes the trusted publisher list.
  */
 internal class RssParser(
-    private val allowPublisher: (source: String, sourceUrl: String?) -> Boolean = PublisherPolicy::allows,
+    private val allowPublisher: (source: String, sourceUrl: String?) -> Boolean = { _, _ -> true },
     private val parseXml: (String) -> dynamic,
 ) {
     fun parse(xml: String): List<NewsArticle> {

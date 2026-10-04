@@ -20,20 +20,17 @@ internal class WeeklyCollector(
     ): String {
         if (!repository.acquire(window.collectionKey, now, token)) return "skipped"
         try {
-            val discovery = mutableListOf<NewsArticle>()
-            for (query in window.discoverySearches) discovery += source.search(query)
-            val articles = validArticles(discovery, window)
-            val rank = RankStartupMentions()
-            val top = rank(catalogue, articles)
+            // Every catalogue company searched by name; the parser keeps trusted publishers only.
+            val fetched = mutableListOf<NewsArticle>()
+            for (query in window.catalogueSearches(catalogue)) fetched += source.search(query)
+            val articles = validArticles(fetched, window)
+            val top = RankStartupMentions()(catalogue, articles)
             check(top.isNotEmpty()) { "No catalogue companies mentioned; retaining the previous ranking" }
             val previous = repository.previousPositions(window.start.take(10))
             val startups =
                 top.mapIndexed { index, entry ->
-                    val related = mutableListOf<NewsArticle>()
-                    for (search in window.companySearches(entry.company)) related += source.search(search)
                     val stories =
-                        validArticles(related + entry.articles, window)
-                            .filter { rank.mentions(entry.company, it) }
+                        entry.articles
                             .sortedWith(compareByDescending<NewsArticle> { it.publishedAt }.thenBy { it.id })
                             // The same headline syndicated under differently spelled publisher names is shown once.
                             .distinctBy { it.headline.lowercase().trim() }
@@ -47,7 +44,7 @@ internal class WeeklyCollector(
                         previous[company.id]?.minus(index + 1),
                         "${entry.mentionCount} distinct Google News article${if (entry.mentionCount == 1) "" else "s"} " +
                             "mentioned ${company.name} " +
-                            "in English and German Berlin startup and business news during ${window.label}. Ranked by distinct article mentions.",
+                            "in trusted startup, tech and business publications during ${window.label}. Ranked by distinct article mentions.",
                         stories,
                         entry.mentionCount,
                     )

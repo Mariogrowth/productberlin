@@ -1,0 +1,332 @@
+[
+  {
+    "domain": "deutsche-startups.de",
+    "name": "deutsche-startups.de",
+    "type": "startup"
+  },
+  {
+    "domain": "gruenderszene.de",
+    "name": "Gründerszene",
+    "type": "startup"
+  },
+  {
+    "domain": "businessinsider.de",
+    "name": "Business Insider Deutschland (Gründerszene)",
+    "type": "startup"
+  },
+  {
+    "domain": "startbase.de",
+    "name": "Startbase",
+    "type": "startup"
+  },
+  {
+    "domain": "berlinvalley.com",
+    "name": "Berlin Valley",
+    "type": "startup"
+  },
+  {
+    "domain": "gruenderfreunde.de",
+    "name": "Gründerfreunde",
+    "type": "startup"
+  },
+  {
+    "domain": "startupvalley.news",
+    "name": "StartupValley",
+    "type": "startup"
+  },
+  {
+    "domain": "brutkasten.com",
+    "name": "brutkasten",
+    "type": "startup"
+  },
+  {
+    "domain": "trendingtopics.eu",
+    "name": "Trending Topics",
+    "type": "startup"
+  },
+  {
+    "domain": "startupticker.ch",
+    "name": "Startupticker",
+    "type": "startup"
+  },
+  {
+    "domain": "sifted.eu",
+    "name": "Sifted",
+    "type": "startup"
+  },
+  {
+    "domain": "techcrunch.com",
+    "name": "TechCrunch",
+    "type": "startup"
+  },
+  {
+    "domain": "tech.eu",
+    "name": "Tech.eu",
+    "type": "startup"
+  },
+  {
+    "domain": "eu-startups.com",
+    "name": "EU-Startups",
+    "type": "startup"
+  },
+  {
+    "domain": "siliconcanals.com",
+    "name": "Silicon Canals",
+    "type": "startup"
+  },
+  {
+    "domain": "techfundingnews.com",
+    "name": "Tech Funding News",
+    "type": "startup"
+  },
+  {
+    "domain": "thenextweb.com",
+    "name": "The Next Web",
+    "type": "startup"
+  },
+  {
+    "domain": "venturebeat.com",
+    "name": "VentureBeat",
+    "type": "startup"
+  },
+  {
+    "domain": "dealroom.co",
+    "name": "Dealroom",
+    "type": "startup"
+  },
+  {
+    "domain": "the-berliner.com",
+    "name": "The Berliner",
+    "type": "startup"
+  },
+  {
+    "domain": "quasa.io",
+    "name": "quasa.io",
+    "type": "startup"
+  },
+  {
+    "domain": "financefwd.com",
+    "name": "Finance Forward",
+    "type": "trade"
+  },
+  {
+    "domain": "finanz-szene.de",
+    "name": "Finanz-Szene",
+    "type": "trade"
+  },
+  {
+    "domain": "ffnews.com",
+    "name": "FF News",
+    "type": "trade"
+  },
+  {
+    "domain": "fintech.global",
+    "name": "FinTech Global",
+    "type": "trade"
+  },
+  {
+    "domain": "financemagnates.com",
+    "name": "Finance Magnates",
+    "type": "trade"
+  },
+  {
+    "domain": "leadersleague.com",
+    "name": "Leaders League",
+    "type": "trade"
+  },
+  {
+    "domain": "globallegalpost.com",
+    "name": "The Global Legal Post",
+    "type": "trade"
+  },
+  {
+    "domain": "produktion.de",
+    "name": "Produktion",
+    "type": "trade"
+  },
+  {
+    "domain": "t3n.de",
+    "name": "t3n",
+    "type": "tech"
+  },
+  {
+    "domain": "heise.de",
+    "name": "heise online",
+    "type": "tech"
+  },
+  {
+    "domain": "golem.de",
+    "name": "Golem",
+    "type": "tech"
+  },
+  {
+    "domain": "computerwoche.de",
+    "name": "Computerwoche",
+    "type": "tech"
+  },
+  {
+    "domain": "xpert.digital",
+    "name": "Xpert.Digital",
+    "type": "tech"
+  },
+  {
+    "domain": "wired.com",
+    "name": "Wired",
+    "type": "tech"
+  },
+  {
+    "domain": "theverge.com",
+    "name": "The Verge",
+    "type": "tech"
+  },
+  {
+    "domain": "handelsblatt.com",
+    "name": "Handelsblatt",
+    "type": "business"
+  },
+  {
+    "domain": "wiwo.de",
+    "name": "WirtschaftsWoche",
+    "type": "business"
+  },
+  {
+    "domain": "manager-magazin.de",
+    "name": "manager magazin",
+    "type": "business"
+  },
+  {
+    "domain": "capital.de",
+    "name": "Capital",
+    "type": "business"
+  },
+  {
+    "domain": "faz.net",
+    "name": "FAZ",
+    "type": "business"
+  },
+  {
+    "domain": "sueddeutsche.de",
+    "name": "Süddeutsche Zeitung",
+    "type": "business"
+  },
+  {
+    "domain": "sz.de",
+    "name": "Süddeutsche Zeitung",
+    "type": "business"
+  },
+  {
+    "domain": "zeit.de",
+    "name": "ZEIT ONLINE",
+    "type": "business"
+  },
+  {
+    "domain": "spiegel.de",
+    "name": "DER SPIEGEL",
+    "type": "business"
+  },
+  {
+    "domain": "welt.de",
+    "name": "WELT",
+    "type": "business"
+  },
+  {
+    "domain": "tagesspiegel.de",
+    "name": "Tagesspiegel",
+    "type": "business"
+  },
+  {
+    "domain": "berliner-zeitung.de",
+    "name": "Berliner Zeitung",
+    "type": "business"
+  },
+  {
+    "domain": "morgenpost.de",
+    "name": "Berliner Morgenpost",
+    "type": "business"
+  },
+  {
+    "domain": "rbb24.de",
+    "name": "rbb24",
+    "type": "business"
+  },
+  {
+    "domain": "tagesschau.de",
+    "name": "tagesschau",
+    "type": "business"
+  },
+  {
+    "domain": "mdr.de",
+    "name": "MDR",
+    "type": "business"
+  },
+  {
+    "domain": "t-online.de",
+    "name": "t-online",
+    "type": "business"
+  },
+  {
+    "domain": "n-tv.de",
+    "name": "n-tv",
+    "type": "business"
+  },
+  {
+    "domain": "augsburger-allgemeine.de",
+    "name": "Augsburger Allgemeine",
+    "type": "business"
+  },
+  {
+    "domain": "handelszeitung.ch",
+    "name": "Handelszeitung",
+    "type": "business"
+  },
+  {
+    "domain": "finanznachrichten.de",
+    "name": "FinanzNachrichten.de",
+    "type": "business"
+  },
+  {
+    "domain": "aktien.news",
+    "name": "aktien.news",
+    "type": "business"
+  },
+  {
+    "domain": "reuters.com",
+    "name": "Reuters",
+    "type": "business"
+  },
+  {
+    "domain": "bloomberg.com",
+    "name": "Bloomberg",
+    "type": "business"
+  },
+  {
+    "domain": "ft.com",
+    "name": "Financial Times",
+    "type": "business"
+  },
+  {
+    "domain": "cnbc.com",
+    "name": "CNBC",
+    "type": "business"
+  },
+  {
+    "domain": "forbes.com",
+    "name": "Forbes",
+    "type": "business"
+  },
+  {
+    "domain": "wsj.com",
+    "name": "The Wall Street Journal",
+    "type": "business"
+  },
+  {
+    "domain": "theinformation.com",
+    "name": "The Information",
+    "type": "business"
+  },
+  {
+    "domain": "businessinsider.com",
+    "name": "Business Insider",
+    "type": "business"
+  }
+]
