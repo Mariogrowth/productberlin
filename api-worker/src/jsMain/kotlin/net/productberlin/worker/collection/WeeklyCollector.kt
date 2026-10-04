@@ -35,6 +35,8 @@ internal class WeeklyCollector(
                         validArticles(related + entry.articles, window)
                             .filter { rank.mentions(entry.company, it) }
                             .sortedWith(compareByDescending<NewsArticle> { it.publishedAt }.thenBy { it.id })
+                            // The same headline syndicated under differently spelled publisher names is shown once.
+                            .distinctBy { it.headline.lowercase().trim() }
                             .take(5)
                     val company = entry.company
                     Startup(

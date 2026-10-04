@@ -3,8 +3,12 @@ package net.productberlin.worker.collection
 import kotlin.js.Date
 import net.productberlin.domain.entity.NewsArticle
 
-/** The XML library handles structure/entities; only plain text and safe Google links cross this boundary. */
+/**
+ * The XML library handles structure/entities; only plain text and safe Google links cross this boundary. Items from
+ * publishers that [allowPublisher] rejects (by name and site URL) are dropped before they can count or be shown.
+ */
 internal class RssParser(
+    private val allowPublisher: (source: String, sourceUrl: String?) -> Boolean = PublisherPolicy::allows,
     private val parseXml: (String) -> dynamic,
 ) {
     fun parse(xml: String): List<NewsArticle> {
@@ -21,10 +25,14 @@ internal class RssParser(
             val url = text(item.link)
             val time = Date.parse(text(item.pubDate))
             if (headline.isBlank() || source.isBlank() || !time.isFinite() || !safeGoogleLink(url)) return@mapNotNull null
+            if (!allowPublisher(source, sourceUrl(item.source))) return@mapNotNull null
             val id = nodeText(item.guid).ifBlank { url.substringBefore('?') }
             NewsArticle(id.take(1000), headline.take(500), source.take(160), Date(time).toISOString(), url)
         }
     }
+
+    private fun sourceUrl(value: dynamic): String? =
+        if (value != null && jsTypeOf(value) == "object") text(value["@_url"]).ifBlank { null } else null
 
     private fun nodeText(value: dynamic): String = text(if (value != null && jsTypeOf(value) == "object") value["#text"] else value)
 

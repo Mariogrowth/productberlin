@@ -20,6 +20,15 @@ function item(company, id, day = 1) {
 // Fixture stories are dated relative to the Monday 06:00 UTC that starts the event's week.
 const DAY = 86_400_000;
 const mondayOf = time => { const midnight = Math.floor(time / DAY) * DAY; return midnight - ((new Date(midnight).getUTCDay() + 6) % 7) * DAY + 6 * 3_600_000; };
+// An item from a specific publisher, to exercise the publisher policy and headline de-duplication.
+function itemFrom(company, id, source, site, title = `${company.name} ${company.contextKeywords?.[0] ?? ''} launches product ${id}`) {
+  const date = new Date(activeWeek - 86_400_000).toUTCString();
+  return `<item><title>${xml(title)} - ${xml(source)}</title><source url="${site}">${xml(source)}</source><guid isPermaLink="false">${id}</guid><link>https://news.google.com/rss/articles/${id}?oc=5</link><pubDate>${date}</pubDate></item>`;
+}
+const blockedItems = company => [
+  itemFrom(company, `${company.id}-video`, 'YouTube', 'https://www.youtube.com'),
+  itemFrom(company, `${company.id}-ph`, 'politiko', 'https://politiko.com.ph'),
+].join('');
 async function scheduled(time) {
   activeWeek = mondayOf(time);
   const worker = await mf.getWorker();
@@ -66,10 +75,16 @@ before(async () => {
           // Same articles in each daily feed must not multiply counts. Each company has a distinct count.
           items = (mode === 'sparse' ? catalogue.slice(0, 2) : catalogue).flatMap((company, i) => Array.from({ length: 12 - i }, (_, n) => item(company, `${company.id}-${n}`, 2))).join('');
           if (language === 'de') items += item(catalogue[0], 'german-only', 2);
+          if (mode === 'publishers') items += blockedItems(catalogue[0]);
         } else {
           const company = catalogue.find(c => query.startsWith(`"${c.name}"`));
           assert.ok(company, query);
           items = Array.from({ length: 7 }, (_, n) => item(company, `${company.id}-related-${n}`, n + 1)).join('');
+          if (mode === 'publishers') {
+            const title = `${company.name} ${company.contextKeywords?.[0] ?? ''} wins syndicated award`;
+            items = blockedItems(company) + itemFrom(company, `${company.id}-syndicated-1`, 'Xpert.Digital - Author', 'https://xpert.digital', title)
+              + itemFrom(company, `${company.id}-syndicated-2`, 'xpert.digital', 'https://xpert.digital', title) + items;
+          }
         }
       }
       return new Response(`<rss version="2.0"><channel>${items}</channel></rss>`, { headers: { 'content-type': 'application/rss+xml' } });
@@ -279,4 +294,20 @@ test('rank movement ignores newer mock, draft and incomplete earlier-week snapsh
   }
   assert.equal((await scheduled(weekOne + 7 * 86_400_000)).outcome, 'ok');
   assert.ok((await ranking()).startups.every(s => s.movement === 0));
+});
+
+test('foreign-country and video publishers neither count nor show, and syndicated headlines show once', async () => {
+  assert.equal((await scheduled(weekOne)).outcome, 'ok');
+  const baseline = Object.fromEntries((await ranking()).startups.map(s => [s.id, s.mentionCount]));
+  await db.batch(['news_articles', 'ranking_entries', 'ranking_snapshots', 'startups', 'collection_runs'].map(table => db.prepare(`DELETE FROM ${table}`)));
+  mode = 'publishers';
+  assert.equal((await scheduled(weekOne)).outcome, 'ok');
+  const filtered = await ranking();
+  assert.deepEqual(Object.fromEntries(filtered.startups.map(s => [s.id, s.mentionCount])), baseline);
+  for (const startup of filtered.startups) {
+    assert.ok(startup.news.every(n => !['YouTube', 'politiko'].includes(n.source)), startup.id);
+    const headlines = startup.news.map(n => n.headline.toLowerCase());
+    assert.equal(new Set(headlines).size, headlines.length, startup.id);
+    assert.equal(headlines.filter(h => h.includes('syndicated award')).length, 1, startup.id);
+  }
 });
