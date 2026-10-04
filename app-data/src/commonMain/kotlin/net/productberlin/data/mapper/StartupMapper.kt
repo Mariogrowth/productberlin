@@ -16,4 +16,5 @@ internal fun StartupDto.toDomain() =
         },
         mentionCount,
         logoUrl,
+        logoFallbackUrl,
     )

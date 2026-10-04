@@ -34,8 +34,11 @@ val StartupRow =
     FC<StartupRowProps> { props ->
         val company = props.company
         var expanded by useState(false)
-        var failedLogo by useState<String?>(null)
-        val logo = company.logoUrl?.takeIf { it != failedLogo && SAFE_LOGO.matches(it) }
+        // Square icon first, then the full logo, then the letter mark; each failed URL is skipped.
+        var failedLogos by useState(emptySet<String>())
+        val logo =
+            listOfNotNull(company.logoUrl, company.logoFallbackUrl)
+                .firstOrNull { it !in failedLogos && SAFE_LOGO.matches(it) }
         val whyButton = useRef<HTMLButtonElement>(null)
         li {
             className = ClassName("startup-row")
@@ -54,7 +57,7 @@ val StartupRow =
                         width = 40.0
                         height = 40.0
                         referrerPolicy = ReferrerPolicy.strictOriginWhenCrossOrigin
-                        onError = { failedLogo = logo }
+                        onError = { failedLogos = failedLogos + logo }
                     }
                     return@div
                 }

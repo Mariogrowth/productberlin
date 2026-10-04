@@ -6,6 +6,7 @@ import net.productberlin.domain.entity.NewsArticle
 import net.productberlin.domain.entity.Startup
 import net.productberlin.domain.entity.WeeklyRanking
 import net.productberlin.domain.repository.StartupRepository
+import net.productberlin.worker.logo.CompanyLogos
 
 /**
  * Reads one complete, published snapshot in one SQL statement. No partial refresh can leak into the UI.
@@ -13,7 +14,7 @@ import net.productberlin.domain.repository.StartupRepository
  */
 internal class D1StartupRepository(
     private val database: dynamic,
-    private val logoUrl: (startupId: String) -> String? = { null },
+    private val logos: (startupId: String) -> CompanyLogos = { CompanyLogos() },
 ) : StartupRepository {
     override suspend fun getWeeklyRanking(): WeeklyRanking {
         val result =
@@ -35,7 +36,8 @@ internal class D1StartupRepository(
                     movement = (row.movement as Number?)?.toInt(),
                     reason = row.reason as String,
                     mentionCount = (row.mention_count as Number?)?.toInt(),
-                    logoUrl = logoUrl(row.startup_id as String),
+                    logoUrl = logos(row.startup_id as String).icon,
+                    logoFallbackUrl = logos(row.startup_id as String).fullLogo,
                     news =
                         entries.filter { it.news_id != null }.map {
                             NewsArticle(

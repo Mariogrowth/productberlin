@@ -22,6 +22,7 @@ class RankingContractTest {
         assertNull(ranking.startups.single().movement)
         assertNull(ranking.startups.single().mentionCount)
         assertNull(ranking.startups.single().logoUrl)
+        assertNull(ranking.startups.single().logoFallbackUrl)
         assertTrue(
             ranking.startups
                 .single()
@@ -41,7 +42,19 @@ class RankingContractTest {
                 "https://news.google.com/rss/articles/a?oc=5",
                 "A summary",
             )
-        val startup = StartupDto("one", "One", "Description", "Tech", -2, "Reason", listOf(news), 7, "https://cdn.example.com/one.webp")
+        val startup =
+            StartupDto(
+                "one",
+                "One",
+                "Description",
+                "Tech",
+                -2,
+                "Reason",
+                listOf(news),
+                7,
+                "https://cdn.example.com/one.webp",
+                "https://cdn.example.com/one-full.webp",
+            )
         val ranking = RankingDto("Weekly", listOf(startup), false, "2026-09-28T06:00:00Z", "Berlin startup", 33)
         assertEquals(ranking, Json.decodeFromString<RankingDto>(Json.encodeToString(ranking)))
     }

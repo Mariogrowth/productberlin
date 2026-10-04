@@ -11,4 +11,6 @@ data class Startup(
     val news: List<NewsArticle>,
     val mentionCount: Int? = null,
     val logoUrl: String? = null,
+    /** Tried when [logoUrl] is missing or fails to load. */
+    val logoFallbackUrl: String? = null,
 )

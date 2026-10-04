@@ -134,6 +134,35 @@ class StartupRowTest : ComponentTest() {
     }
 
     @Test
+    fun missingIconFallsBackToTheFullLogoAndThenTheLetterMark() {
+        render(
+            StartupRow.create {
+                company = this@StartupRowTest.company.copy(logoUrl = LOGO, logoFallbackUrl = FULL_LOGO)
+                position = 1
+            },
+        )
+        val icon = assertNotNull(container.querySelector(".company-mark img"))
+        assertEquals(LOGO, icon.getAttribute("src"))
+        flushSync { icon.dispatchEvent(Event(EventType("error"))) }
+        val full = assertNotNull(container.querySelector(".company-mark img"))
+        assertEquals(FULL_LOGO, full.getAttribute("src"))
+        flushSync { full.dispatchEvent(Event(EventType("error"))) }
+        assertNull(container.querySelector(".company-mark img"))
+        assertEquals("a", container.querySelector(".company-mark.mark-almedia")?.textContent)
+    }
+
+    @Test
+    fun fullLogoIsUsedWhenThereIsNoIconUrl() {
+        render(
+            StartupRow.create {
+                company = this@StartupRowTest.company.copy(logoFallbackUrl = FULL_LOGO)
+                position = 1
+            },
+        )
+        assertEquals(FULL_LOGO, container.querySelector(".company-mark img")?.getAttribute("src"))
+    }
+
+    @Test
     fun missingOrUnsafeLogoKeepsTheLetterMark() {
         for (logo in listOf(null, "http://cdn.example.com/logo.webp", "javascript:alert(1)", "//cdn.example.com/logo.webp")) {
             render(
@@ -149,5 +178,6 @@ class StartupRowTest : ComponentTest() {
 
     private companion object {
         const val LOGO = "https://cdn.brandfetch.io/domain/almedia.co/w/80/h/80/fallback/404/type/icon?c=id"
+        const val FULL_LOGO = "https://cdn.brandfetch.io/domain/almedia.co/w/80/h/80/fallback/404/type/logo?c=id"
     }
 }

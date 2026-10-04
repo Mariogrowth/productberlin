@@ -13,4 +13,5 @@ data class StartupDto(
     val news: List<NewsDto> = emptyList(),
     val mentionCount: Int? = null,
     val logoUrl: String? = null,
+    val logoFallbackUrl: String? = null,
 )

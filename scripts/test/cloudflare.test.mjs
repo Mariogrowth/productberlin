@@ -29,9 +29,9 @@ async function seed() {
 const catalogue = JSON.parse(await readFile('cloudflare/startups.json', 'utf8'));
 const { BRANDFETCH_CLIENT_ID } = JSON.parse(await readFile('wrangler.json', 'utf8')).vars;
 // Catalogued companies get a hotlinked Brandfetch icon; uncatalogued ones (the demo's Personio) keep their letter mark.
-function logoUrl(id) {
+function logoUrl(id, type = 'icon') {
   const domain = catalogue.find(company => company.id === id)?.domain;
-  return domain ? `https://cdn.brandfetch.io/domain/${domain}/w/80/h/80/fallback/404/type/icon?c=${BRANDFETCH_CLIENT_ID}` : null;
+  return domain ? `https://cdn.brandfetch.io/domain/${domain}/w/80/h/80/fallback/404/type/${type}?c=${BRANDFETCH_CLIENT_ID}` : null;
 }
 async function ranking() {
   const response = await fetch(`${origin}/api/rankings/weekly`);
@@ -86,7 +86,7 @@ test('seeded D1 serves exactly the shared mock contract and is idempotent', asyn
   assert.deepEqual(actual, {
     ...expected, isMock: true, updatedAt: '2026-09-13T00:00:00Z', searchQuery: null, articleCount: null,
     startups: expected.startups.map(s => ({
-      ...s, mentionCount: null, logoUrl: logoUrl(s.id), news: s.news.map(n => ({ ...n, url: null, summary: null })),
+      ...s, mentionCount: null, logoUrl: logoUrl(s.id), logoFallbackUrl: logoUrl(s.id, 'logo'), news: s.news.map(n => ({ ...n, url: null, summary: null })),
     })),
   });
   await seed();
