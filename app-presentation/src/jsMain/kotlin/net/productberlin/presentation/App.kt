@@ -180,15 +180,6 @@ val App =
                         )
                     }
                 }
-                span {
-                    className = ClassName("made-in")
-                    +"Made for the city that keeps making."
-                }
-                a {
-                    className = ClassName("footer-link")
-                    href = "/privacy"
-                    +"Privacy"
-                }
             }
         }
     }

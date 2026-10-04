@@ -16,8 +16,12 @@ class RankStartupMentions {
             .map { company ->
                 MentionRanking(company, unique.filter { mentions(company, it) })
             }.filter { it.mentionCount > 0 }
-            .sortedWith(compareByDescending<MentionRanking> { it.mentionCount }.thenBy { it.company.id })
-            .take(10)
+            // Ties go to the most recent coverage (ISO-8601 UTC timestamps sort chronologically), then the stable ID.
+            .sortedWith(
+                compareByDescending<MentionRanking> { it.mentionCount }
+                    .thenByDescending { ranking -> ranking.articles.maxOf { it.publishedAt } }
+                    .thenBy { it.company.id },
+            ).take(10)
     }
 
     fun mentions(
