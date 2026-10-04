@@ -2,7 +2,7 @@ package net.productberlin.worker.collection
 
 /**
  * Which news publishers may count and be shown. Video platforms are excluded. Publishers on a country-code domain
- * outside the EU, Canada, the US, the UK and Australia are excluded; generic domains (.com, .org, .news, …) are
+ * outside the EU, Switzerland, Canada, the US, the UK and Australia are excluded; generic domains (.com, .org, .news, …) are
  * allowed, as are country codes commonly used generically (.io, .ai, .co, .me, .tv, .fm, .gg).
  */
 internal object PublisherPolicy {
@@ -37,7 +37,7 @@ internal object PublisherPolicy {
             "sk",
             "eu",
         )
-    private val OTHER_ALLOWED = setOf("ca", "us", "uk", "au")
+    private val OTHER_ALLOWED = setOf("ch", "ca", "us", "uk", "au")
     private val USED_GENERICALLY = setOf("io", "ai", "co", "me", "tv", "fm", "gg")
     private val VIDEO_HOSTS = setOf("youtube.com", "youtu.be")
 

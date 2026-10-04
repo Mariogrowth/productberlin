@@ -6,12 +6,13 @@ import kotlin.test.assertTrue
 
 class PublisherPolicyTest {
     @Test
-    fun allowsEuropeanNorthAmericanBritishAustralianAndGenericPublishers() {
+    fun allowsEuropeanSwissNorthAmericanBritishAustralianAndGenericPublishers() {
         for (url in listOf(
             "https://www.handelsblatt.de",
             "https://brutkasten.com",
             "https://www.derstandard.at",
             "https://www.lemonde.fr",
+            "https://www.nzz.ch",
             "https://sifted.eu",
             "https://www.bbc.co.uk",
             "https://www.theglobeandmail.ca",
@@ -39,7 +40,6 @@ class PublisherPolicyTest {
             "https://politiko.com.ph",
             "https://www.timesofindia.in",
             "https://example.com.br",
-            "https://example.ch",
             "https://example.no",
             "https://example.jp",
             "https://example.cn",
