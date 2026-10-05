@@ -9,6 +9,7 @@ import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.js.Date
 import kotlin.js.Promise
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.promise
 import net.productberlin.worker.collection.CollectionWindow
 import net.productberlin.worker.collection.GoogleNewsSource
@@ -25,8 +26,10 @@ fun handleScheduled(
     catalogueJson: String,
     publishersJson: String,
     parseXml: (String) -> dynamic,
+    searchPauseMillis: Int,
 ): Promise<String> =
     CoroutineScope(EmptyCoroutineContext).promise {
+        if (!CollectionWindow.firstAttemptDue(scheduledTime)) return@promise "waiting"
         val client =
             HttpClient(Js) {
                 install(HttpTimeout) {
@@ -40,6 +43,7 @@ fun handleScheduled(
                 WeeklyCollector(
                     GoogleNewsSource(client, RssParser(parsePublishers(publishersJson)::allows, parseXml)),
                     D1CollectionRepository(database),
+                    pause = { delay(searchPauseMillis.coerceIn(0, 10_000).toLong()) },
                 ).refresh(
                     parseCatalogue(catalogueJson),
                     CollectionWindow.latestCompleteWeek(scheduledTime),
@@ -48,6 +52,10 @@ fun handleScheduled(
                 )
             console.log("Weekly Google News collection: $result")
             result
+        } catch (failure: Throwable) {
+            // Cloudflare cannot print Kotlin exceptions (it shows "#<Object>"), so log the message explicitly.
+            console.error("Weekly Google News collection failed: ${failure.message}")
+            throw failure
         } finally {
             client.close()
         }

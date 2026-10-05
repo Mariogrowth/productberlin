@@ -76,9 +76,20 @@ internal data class CollectionWindow(
         const val MAX_SEARCHES = 48
 
         /**
+         * The hourly trigger retries failed weeks all week, but a new week's first attempt waits until Monday 06:00 UTC,
+         * leaving time for late Sunday coverage to be indexed.
+         */
+        fun firstAttemptDue(scheduledTime: Double): Boolean {
+            val time = Date(scheduledTime)
+            return time.getUTCDay() != 1 || time.getUTCHours() >= FIRST_ATTEMPT_HOUR
+        }
+
+        const val FIRST_ATTEMPT_HOUR = 6
+
+        /**
          * The Monday–Sunday UTC week that ended at the most recent Monday 00:00 UTC. Any event during a week, whether
-         * the Monday cron, a retry or a manual trigger, resolves to the same window and collection key, so a published
-         * edition stays unchanged until the next Monday.
+         * the first Monday attempt, an hourly retry or a manual trigger, resolves to the same window and collection key,
+         * so a published edition stays unchanged until the next Monday.
          */
         fun latestCompleteWeek(scheduledTime: Double): CollectionWindow {
             require(scheduledTime.isFinite())

@@ -185,6 +185,71 @@ class WeeklyCollectorTest {
                 assertEquals(null, repository.published)
             }
         }
+
+    private val bigCatalogue =
+        (1..120).map { StartupCandidate("c$it", "Company $it", "Description", "Tech") } + catalogue
+
+    @Test
+    fun aFewFailedSearchesStillPublishAndArePacedAndLogged() =
+        runTest {
+            val searches = window.catalogueSearches(bigCatalogue).size
+            val allowed = minOf(4, searches / 10)
+            assertTrue(allowed >= 2, "test catalogue must allow failures, got $searches searches")
+            var calls = 0
+            var pauses = 0
+            val logged = mutableListOf<String>()
+            val repository = RecordingRepository()
+            val source =
+                object : NewsSource {
+                    override suspend fun search(search: NewsSearch): List<NewsArticle> {
+                        calls++
+                        check(calls > allowed) { "Google News returned HTTP 503" }
+                        return listOf(story("one"))
+                    }
+                }
+            assertEquals(
+                "published",
+                WeeklyCollector(
+                    source,
+                    repository,
+                    pause = { pauses++ },
+                    log = { logged += it },
+                ).refresh(bigCatalogue, window, window.end, "token"),
+            )
+            assertEquals(searches, calls)
+            assertEquals(searches - 1, pauses, "a pause between consecutive searches, none before the first")
+            assertTrue(logged.single().contains("$allowed failed searches"), logged.toString())
+            assertEquals(
+                1,
+                repository.published!!
+                    .startups
+                    .single()
+                    .mentionCount,
+            )
+        }
+
+    @Test
+    fun tooManyFailedSearchesStopEarlyAndKeepThePreviousEdition() =
+        runTest {
+            val allowed = minOf(4, window.catalogueSearches(bigCatalogue).size / 10)
+            var calls = 0
+            val repository = RecordingRepository()
+            val source =
+                object : NewsSource {
+                    override suspend fun search(search: NewsSearch): List<NewsArticle> {
+                        calls++
+                        error("Google News returned HTTP 503")
+                    }
+                }
+            val failure =
+                assertFailsWith<IllegalStateException> {
+                    WeeklyCollector(source, repository, pause = {}).refresh(bigCatalogue, window, window.end, "token")
+                }
+            assertEquals(allowed + 1, calls, "stops at the first failure beyond the allowance")
+            assertTrue(failure.message!!.contains("HTTP 503"), failure.message)
+            assertTrue(repository.failed)
+            assertEquals(null, repository.published)
+        }
 }
 
 private class RecordingRepository(

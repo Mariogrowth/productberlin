@@ -9,7 +9,9 @@ const publishersJson = JSON.stringify(publishers);
 
 export default {
   async scheduled(controller, env) {
-    await handleScheduled(env.DB, controller.scheduledTime, catalogueJson, publishersJson, parseRssXml);
+    await handleScheduled(
+      env.DB, controller.scheduledTime, catalogueJson, publishersJson, parseRssXml, Number(env.SEARCH_PAUSE_MS ?? 1500),
+    );
   },
   async fetch(request, env) {
     const url = new URL(request.url);

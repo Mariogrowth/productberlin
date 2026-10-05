@@ -153,7 +153,7 @@ The production frontend still has a webpack bundle-size advisory (~1.19 MiB mini
 
 ## Weekly Google News collection
 
-The deployed Worker has a Cron Trigger, `0 6 * * MON`: Monday at **06:00 UTC**, in both staging and production. Deploy through the existing **Deploy Cloudflare** workflow; migration `0002_weekly_collection.sql`, the catalogue, RSS parser and cron configuration ship with it. No Google API key or new GitHub secret is needed. The first live snapshot appears after the first successful scheduled run; deployment itself does not fetch news. Seed mock data only if you want a demo while waiting. Cron configuration can take time to propagate.
+The deployed Worker has an hourly Cron Trigger, `0 * * * *`, in both staging and production. A new week's first attempt waits until **Monday 06:00 UTC** (earlier Monday events do nothing). Every later hourly event resolves to the same week: it is skipped without contacting Google once the week is published, and retries the week if the previous attempt failed, so a failed Monday heals itself within the week. Searches are paced 1.5 seconds apart (`SEARCH_PAUSE_MS`), because Google News answers bursts of automated requests with HTTP 503. Up to a tenth of the searches (at most 4) may fail without losing the edition; the failures are logged. Beyond that the run stops early, records the error in `collection_runs` and keeps the previous edition. Failures are logged as plain text in the Worker logs. Deploy through the existing **Deploy Cloudflare** workflow; migration `0002_weekly_collection.sql`, the catalogue, RSS parser and cron configuration ship with it. No Google API key or new GitHub secret is needed. The first live snapshot appears after the first successful scheduled run; deployment itself does not fetch news. Seed mock data only if you want a demo while waiting. Cron configuration can take time to propagate.
 
 The collector:
 
@@ -170,7 +170,7 @@ The catalogue is editorial data, not automatic company discovery. It contains 22
 Start the full app (`./gradlew runLocal`) to build and apply migrations, then trigger its **local-only** scheduled endpoint:
 
 ```sh
-curl 'http://localhost:8787/cdn-cgi/local/scheduled?cron=0%206%20*%20*%20MON'
+curl 'http://localhost:8787/cdn-cgi/local/scheduled?cron=0%20*%20*%20*%20*'
 ```
 
 This makes public Google News requests and writes **local D1 only**. Refresh the page after completion. Every event, on any weekday, resolves to the Monday–Sunday UTC week that ended at the most recent Monday 00:00 UTC, so an edition stays unchanged until the next Monday: once a week has succeeded, later events that week skip all upstream work. To collect a different week, provide a `time` parameter (Unix milliseconds) within the following week. The `trusted-v1` policy uses new lease/snapshot IDs, so triggering it can publish a trusted-publisher edition for a week already collected by the earlier policy, while preserving the old snapshot. To retry failed collection, invoke the same event again. The endpoint is provided by Wrangler for development; the production API remains read-only.
