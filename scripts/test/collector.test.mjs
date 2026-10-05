@@ -60,7 +60,7 @@ before(async () => {
   assert.equal(result.status, 0, result.stdout + result.stderr);
   mf = new Miniflare(convertV4MiniflareOptions({
     name: 'collector', modules: true, script: await readFile(join(directory, 'entry.js'), 'utf8'), compatibilityDate: '2026-09-01',
-    d1Databases: { DB: 'collector-test' }, bindings: { BUILD_SHA: 'test', SEARCH_PAUSE_MS: '0' },
+    d1Databases: { DB: 'collector-test' }, bindings: { BUILD_SHA: 'test', SEARCH_PAUSE_MS: '0', RETRY_PAUSE_MS: '0' },
     outboundService: async request => {
       const url = new URL(request.url);
       assert.equal(url.origin, 'https://news.google.com');
@@ -80,6 +80,8 @@ before(async () => {
       }
       if (mode === 'partial-failure' && calls.length > 1) return new Response('Unavailable', { status: 503 });
       if (mode === 'flaky' && calls.length >= 2 && calls.length <= 4) return new Response('Unavailable', { status: 503 });
+      // Like 2026-10-05: a burst of 503s in the first pass that clears up by the time failed searches are retried.
+      if (mode === 'burst' && calls.length >= 10 && calls.length <= 15) return new Response('Unavailable', { status: 503 });
       if (mode === 'unavailable') return new Response('Unavailable', { status: 503 });
       if (mode === 'malformed') return new Response('<rss><channel></rss>');
       // Every search is a grouped catalogue search with the date first: after:… before:… ("A" OR "B" …)
@@ -258,8 +260,8 @@ test('a failure partway through the searches retains all previous DB content', a
   calls = [];
   mode = 'partial-failure'; // the first search succeeds, every later one fails
   assert.notEqual((await scheduled(weekOne + 7 * 86_400_000)).outcome, 'ok');
-  // Up to 4 failures are tolerated; the run stops at the fifth instead of making the remaining requests.
-  assert.equal(calls.length, 6);
+  // 4 failures may remain and 5 can be retried, so the first pass stops at the tenth failure.
+  assert.equal(calls.length, 11);
   assert.deepEqual(await contents(), stored);
 });
 
@@ -337,9 +339,9 @@ test('untrusted publishers neither count nor show, and syndicated headlines show
 });
 
 test('a few failed searches (Google 503s) still publish the edition', async () => {
-  mode = 'flaky'; // searches 2–4 fail
+  mode = 'flaky'; // searches 2–4 fail once and succeed when retried
   assert.equal((await scheduled(weekOne)).outcome, 'ok');
-  assert.equal(calls.length, CATALOGUE_SEARCHES);
+  assert.equal(calls.length, CATALOGUE_SEARCHES + 3);
   const result = await ranking();
   assert.equal(result.weekLabel, '2026-09-21 – 2026-09-27');
   assert.equal(result.startups.length, 10);
@@ -357,4 +359,13 @@ test('the hourly trigger waits for Monday 06:00 UTC before a new week, then retr
   const count = calls.length;
   assert.equal((await scheduled(Date.parse('2026-09-28T08:17:00Z'))).outcome, 'ok');
   assert.equal(calls.length, count, 'a published week is skipped without contacting Google');
+});
+
+test('a burst of six 503s is recovered by retrying failed searches after a pause', async () => {
+  mode = 'burst';
+  assert.equal((await scheduled(weekOne)).outcome, 'ok');
+  // 6 failures exceed the 4 allowed; the 5 spare requests retry them and 1 remaining failure is tolerated.
+  assert.equal(calls.length, CATALOGUE_SEARCHES + 5);
+  assert.equal(calls.length <= 49, true, 'stays within the free plan subrequest budget');
+  assert.equal((await ranking()).weekLabel, '2026-09-21 – 2026-09-27');
 });

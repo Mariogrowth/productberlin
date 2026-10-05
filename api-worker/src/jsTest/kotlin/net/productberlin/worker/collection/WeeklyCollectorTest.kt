@@ -157,12 +157,13 @@ class WeeklyCollectorTest {
                 object : NewsSource {
                     override suspend fun search(search: NewsSearch): List<NewsArticle> {
                         calls++
-                        check(calls < 2) { "German feed failed" }
+                        check(search.language != NewsLanguage.German) { "German feed failed" }
                         return listOf(story("one"))
                     }
                 }
+            // A small catalogue allows no failed search; the German one is retried once, then the run fails.
             assertFailsWith<IllegalStateException> { WeeklyCollector(source, repository).refresh(catalogue, window, window.end, "token") }
-            assertEquals(2, calls)
+            assertEquals(3, calls)
             assertTrue(repository.failed)
             assertEquals(null, repository.published)
         }
@@ -189,49 +190,85 @@ class WeeklyCollectorTest {
     private val bigCatalogue =
         (1..120).map { StartupCandidate("c$it", "Company $it", "Description", "Tech") } + catalogue
 
+    private fun budget(searches: Int) = Triple(searches, minOf(4, searches / 10), (49 - searches).coerceAtLeast(0))
+
     @Test
-    fun aFewFailedSearchesStillPublishAndArePacedAndLogged() =
+    fun failedSearchesAreRetriedOnceAfterAPauseAndRecoveredOnesCount() =
         runTest {
-            val searches = window.catalogueSearches(bigCatalogue).size
-            val allowed = minOf(4, searches / 10)
-            assertTrue(allowed >= 2, "test catalogue must allow failures, got $searches searches")
+            val (searches, allowed, retries) = budget(window.catalogueSearches(bigCatalogue).size)
+            val failing = allowed + 2 // more than allowed, fewer than allowed + retries
+            assertTrue(retries >= failing, "test needs spare retries, got $retries")
             var calls = 0
             var pauses = 0
+            var retryPauses = 0
             val logged = mutableListOf<String>()
             val repository = RecordingRepository()
             val source =
                 object : NewsSource {
                     override suspend fun search(search: NewsSearch): List<NewsArticle> {
                         calls++
-                        check(calls > allowed) { "Google News returned HTTP 503" }
+                        check(calls > failing) { "Google News returned HTTP 503" } // the first searches fail once
+                        return listOf(story("one"))
+                    }
+                }
+            val collector =
+                WeeklyCollector(source, repository, pause = { pauses++ }, retryPause = { retryPauses++ }, log = { logged += it })
+            assertEquals("published", collector.refresh(bigCatalogue, window, window.end, "token"))
+            assertEquals(searches + failing, calls, "each failed search retried exactly once")
+            assertEquals(1, retryPauses)
+            assertEquals((searches - 1) + (failing - 1), pauses)
+            assertTrue(
+                logged.single().contains("$failing failed searches; $failing recovered on retry, 0 still missing"),
+                logged.toString(),
+            )
+        }
+
+    @Test
+    fun searchesStillFailingAfterRetriesBeyondTheAllowanceKeepThePreviousEdition() =
+        runTest {
+            val (_, allowed, _) = budget(window.catalogueSearches(bigCatalogue).size)
+            val broken = window.catalogueSearches(bigCatalogue).take(allowed + 1).toSet()
+            val repository = RecordingRepository()
+            val source =
+                object : NewsSource {
+                    override suspend fun search(search: NewsSearch): List<NewsArticle> {
+                        check(search !in broken) { "Google News returned HTTP 503" }
+                        return listOf(story("one"))
+                    }
+                }
+            val failure =
+                assertFailsWith<IllegalStateException> {
+                    WeeklyCollector(source, repository, pause = {}, retryPause = {}).refresh(bigCatalogue, window, window.end, "token")
+                }
+            assertTrue(failure.message!!.contains("still failed after retries"), failure.message)
+            assertTrue(repository.failed)
+            assertEquals(null, repository.published)
+        }
+
+    @Test
+    fun aFewPersistentFailuresStillPublish() =
+        runTest {
+            val (_, allowed, _) = budget(window.catalogueSearches(bigCatalogue).size)
+            val broken = window.catalogueSearches(bigCatalogue).take(allowed).toSet()
+            val repository = RecordingRepository()
+            val source =
+                object : NewsSource {
+                    override suspend fun search(search: NewsSearch): List<NewsArticle> {
+                        check(search !in broken) { "Google News returned HTTP 503" }
                         return listOf(story("one"))
                     }
                 }
             assertEquals(
                 "published",
-                WeeklyCollector(
-                    source,
-                    repository,
-                    pause = { pauses++ },
-                    log = { logged += it },
-                ).refresh(bigCatalogue, window, window.end, "token"),
-            )
-            assertEquals(searches, calls)
-            assertEquals(searches - 1, pauses, "a pause between consecutive searches, none before the first")
-            assertTrue(logged.single().contains("$allowed failed searches"), logged.toString())
-            assertEquals(
-                1,
-                repository.published!!
-                    .startups
-                    .single()
-                    .mentionCount,
+                WeeklyCollector(source, repository, pause = {
+                }, retryPause = {}, log = {}).refresh(bigCatalogue, window, window.end, "token"),
             )
         }
 
     @Test
-    fun tooManyFailedSearchesStopEarlyAndKeepThePreviousEdition() =
+    fun whenEvenRetriesCannotSaveTheRunTheFirstPassStopsEarly() =
         runTest {
-            val allowed = minOf(4, window.catalogueSearches(bigCatalogue).size / 10)
+            val (_, allowed, retries) = budget(window.catalogueSearches(bigCatalogue).size)
             var calls = 0
             val repository = RecordingRepository()
             val source =
@@ -243,12 +280,11 @@ class WeeklyCollectorTest {
                 }
             val failure =
                 assertFailsWith<IllegalStateException> {
-                    WeeklyCollector(source, repository, pause = {}).refresh(bigCatalogue, window, window.end, "token")
+                    WeeklyCollector(source, repository, pause = {}, retryPause = {}).refresh(bigCatalogue, window, window.end, "token")
                 }
-            assertEquals(allowed + 1, calls, "stops at the first failure beyond the allowance")
+            assertEquals(allowed + retries + 1, calls)
             assertTrue(failure.message!!.contains("HTTP 503"), failure.message)
             assertTrue(repository.failed)
-            assertEquals(null, repository.published)
         }
 }
 
