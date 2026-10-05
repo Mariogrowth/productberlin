@@ -27,6 +27,7 @@ fun handleScheduled(
     publishersJson: String,
     parseXml: (String) -> dynamic,
     searchPauseMillis: Int,
+    retryPauseMillis: Int,
 ): Promise<String> =
     CoroutineScope(EmptyCoroutineContext).promise {
         if (!CollectionWindow.firstAttemptDue(scheduledTime)) return@promise "waiting"
@@ -44,6 +45,7 @@ fun handleScheduled(
                     GoogleNewsSource(client, RssParser(parsePublishers(publishersJson)::allows, parseXml)),
                     D1CollectionRepository(database),
                     pause = { delay(searchPauseMillis.coerceIn(0, 10_000).toLong()) },
+                    retryPause = { delay(retryPauseMillis.coerceIn(0, 60_000).toLong()) },
                 ).refresh(
                     parseCatalogue(catalogueJson),
                     CollectionWindow.latestCompleteWeek(scheduledTime),

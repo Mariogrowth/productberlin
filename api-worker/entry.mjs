@@ -10,7 +10,8 @@ const publishersJson = JSON.stringify(publishers);
 export default {
   async scheduled(controller, env) {
     await handleScheduled(
-      env.DB, controller.scheduledTime, catalogueJson, publishersJson, parseRssXml, Number(env.SEARCH_PAUSE_MS ?? 1500),
+      env.DB, controller.scheduledTime, catalogueJson, publishersJson, parseRssXml,
+      Number(env.SEARCH_PAUSE_MS ?? 3000), Number(env.RETRY_PAUSE_MS ?? 10000),
     );
   },
   async fetch(request, env) {
