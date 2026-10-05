@@ -60,7 +60,7 @@ before(async () => {
   assert.equal(result.status, 0, result.stdout + result.stderr);
   mf = new Miniflare(convertV4MiniflareOptions({
     name: 'collector', modules: true, script: await readFile(join(directory, 'entry.js'), 'utf8'), compatibilityDate: '2026-09-01',
-    d1Databases: { DB: 'collector-test' }, bindings: { BUILD_SHA: 'test' },
+    d1Databases: { DB: 'collector-test' }, bindings: { BUILD_SHA: 'test', SEARCH_PAUSE_MS: '0' },
     outboundService: async request => {
       const url = new URL(request.url);
       assert.equal(url.origin, 'https://news.google.com');
@@ -79,6 +79,7 @@ before(async () => {
         await db.prepare("UPDATE collection_runs SET lease_token='new-owner',lease_until='2099-01-01T00:00:00.000Z' WHERE status='running'").run();
       }
       if (mode === 'partial-failure' && calls.length > 1) return new Response('Unavailable', { status: 503 });
+      if (mode === 'flaky' && calls.length >= 2 && calls.length <= 4) return new Response('Unavailable', { status: 503 });
       if (mode === 'unavailable') return new Response('Unavailable', { status: 503 });
       if (mode === 'malformed') return new Response('<rss><channel></rss>');
       // Every search is a grouped catalogue search with the date first: after:… before:… ("A" OR "B" …)
@@ -255,9 +256,10 @@ test('a failure partway through the searches retains all previous DB content', a
   assert.equal((await scheduled(weekOne)).outcome, 'ok');
   const stored = await contents();
   calls = [];
-  mode = 'partial-failure'; // the first search succeeds, the second fails
+  mode = 'partial-failure'; // the first search succeeds, every later one fails
   assert.notEqual((await scheduled(weekOne + 7 * 86_400_000)).outcome, 'ok');
-  assert.equal(calls.length, 2);
+  // Up to 4 failures are tolerated; the run stops at the fifth instead of making the remaining requests.
+  assert.equal(calls.length, 6);
   assert.deepEqual(await contents(), stored);
 });
 
@@ -332,4 +334,27 @@ test('untrusted publishers neither count nor show, and syndicated headlines show
     assert.equal(new Set(headlines).size, headlines.length, startup.id);
     assert.equal(headlines.filter(h => h.includes('syndicated award')).length, 1, startup.id);
   }
+});
+
+test('a few failed searches (Google 503s) still publish the edition', async () => {
+  mode = 'flaky'; // searches 2–4 fail
+  assert.equal((await scheduled(weekOne)).outcome, 'ok');
+  assert.equal(calls.length, CATALOGUE_SEARCHES);
+  const result = await ranking();
+  assert.equal(result.weekLabel, '2026-09-21 – 2026-09-27');
+  assert.equal(result.startups.length, 10);
+});
+
+test('the hourly trigger waits for Monday 06:00 UTC before a new week, then retries failures later that week', async () => {
+  assert.equal((await scheduled(Date.parse('2026-09-28T05:17:00Z'))).outcome, 'ok');
+  assert.equal(calls.length, 0);
+  assert.equal((await db.prepare('SELECT COUNT(*) AS count FROM collection_runs').first()).count, 0);
+  mode = 'unavailable';
+  assert.notEqual((await scheduled(Date.parse('2026-09-28T06:17:00Z'))).outcome, 'ok');
+  mode = 'success';
+  assert.equal((await scheduled(Date.parse('2026-09-28T07:17:00Z'))).outcome, 'ok');
+  assert.equal((await ranking()).weekLabel, '2026-09-21 – 2026-09-27');
+  const count = calls.length;
+  assert.equal((await scheduled(Date.parse('2026-09-28T08:17:00Z'))).outcome, 'ok');
+  assert.equal(calls.length, count, 'a published week is skipped without contacting Google');
 });

@@ -79,4 +79,18 @@ class CollectionWindowTest {
         val huge = (1..400).map { StartupCandidate("c$it", "Company Name $it", "Description", "Tech") }
         assertFailsWith<IllegalStateException> { window.catalogueSearches(huge) }
     }
+
+    @Test
+    fun aNewWeeksFirstAttemptWaitsUntilMondaySixUtcWhileRetriesRunAllWeek() {
+        for ((time, due) in listOf(
+            "2026-10-05T00:17:00Z" to false,
+            "2026-10-05T05:59:59Z" to false,
+            "2026-10-05T06:00:00Z" to true,
+            "2026-10-05T06:17:00Z" to true,
+            "2026-10-06T00:17:00Z" to true,
+            "2026-10-11T23:17:00Z" to true,
+        )) {
+            assertEquals(due, CollectionWindow.firstAttemptDue(Date.parse(time)), time)
+        }
+    }
 }
