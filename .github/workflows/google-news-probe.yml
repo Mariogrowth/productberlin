@@ -1,0 +1,25 @@
+name: Google News probe
+# Manual feasibility check: runs the Worker's Google News searches from a GitHub-hosted runner and reports how many
+# succeed. Read-only: no secrets, no deployment, no database writes.
+on:
+  workflow_dispatch:
+    inputs:
+      pause_ms:
+        description: Milliseconds between searches
+        default: '3000'
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: node scripts/google-news-probe.mjs
+        env:
+          PROBE_PAUSE_MS: ${{ inputs.pause_ms }}
