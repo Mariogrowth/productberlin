@@ -36,6 +36,15 @@ internal class D1CollectionRepository(
         return (result.meta.changes as Number).toInt() == 1
     }
 
+    override suspend fun isCompleted(week: String): Boolean {
+        val row =
+            statement("SELECT status FROM collection_runs WHERE week_start=?", week)
+                .first()
+                .unsafeCast<Promise<dynamic>>()
+                .await()
+        return row != null && row.status == "succeeded"
+    }
+
     override suspend fun previousPositions(beforeWeek: String): Map<String, Int> {
         val result =
             statement(

@@ -2,12 +2,14 @@
 import catalogue from '../cloudflare/startups.json';
 import publishers from '../cloudflare/publishers.json';
 import { parseRssXml } from './rss-parser.mjs';
-import { handleApi, handleScheduled, handleSubscription } from './build/dist/js/productionLibrary/Productberlin-api-worker.mjs';
+import { handleApi, handleCollection, handleScheduled, handleSubscription } from './build/dist/js/productionLibrary/Productberlin-api-worker.mjs';
 
 const catalogueJson = JSON.stringify(catalogue);
 const publishersJson = JSON.stringify(publishers);
 
 export default {
+  // Not triggered in production (no cron): Google News blocks Cloudflare, so the GitHub collector feeds
+  // /api/internal/collection instead. Kept for local runs via /cdn-cgi/local/scheduled.
   async scheduled(controller, env) {
     await handleScheduled(
       env.DB, controller.scheduledTime, catalogueJson, publishersJson, parseRssXml,
@@ -16,6 +18,16 @@ export default {
   },
   async fetch(request, env) {
     const url = new URL(request.url);
+    if (url.pathname === '/api/internal/collection') {
+      // Fed by the GitHub Actions collector (Google News blocks Cloudflare); bearer-token protected.
+      const body = request.method === 'POST' ? await request.text() : '';
+      const result = await handleCollection(
+        request.method, request.headers.get('Authorization'), env.COLLECTOR_TOKEN, body, env.DB, catalogueJson, publishersJson,
+      );
+      const headers = { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' };
+      if (result.allow) headers.Allow = result.allow;
+      return new Response(result.body, { status: result.status, headers });
+    }
     if (url.pathname === '/api/subscriptions') {
       // Read at most a small body; the endpoint rejects anything larger than 1 KB.
       const body = request.method === 'POST' ? (await request.text()).slice(0, 2048) : '';

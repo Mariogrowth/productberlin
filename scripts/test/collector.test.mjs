@@ -9,6 +9,7 @@ import { Miniflare, convertV4MiniflareOptions } from 'miniflare';
 let mf, db, directory, mode = 'success', calls = [];
 const catalogue = JSON.parse(await readFile('cloudflare/startups.json', 'utf8')).slice(0, 12);
 const weekOne = Date.parse('2026-09-28T06:00:00Z');
+const COLLECTOR_TOKEN = 'c'.repeat(48);
 // Searches the Worker makes for the real bundled catalogue: names (plus distinct aliases) packed into ≤28-word groups.
 const fullCatalogue = JSON.parse(await readFile('cloudflare/startups.json', 'utf8'));
 const normalised = s => ` ${s.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim()} `;
@@ -60,7 +61,7 @@ before(async () => {
   assert.equal(result.status, 0, result.stdout + result.stderr);
   mf = new Miniflare(convertV4MiniflareOptions({
     name: 'collector', modules: true, script: await readFile(join(directory, 'entry.js'), 'utf8'), compatibilityDate: '2026-09-01',
-    d1Databases: { DB: 'collector-test' }, bindings: { BUILD_SHA: 'test', SEARCH_PAUSE_MS: '0', RETRY_PAUSE_MS: '0' },
+    d1Databases: { DB: 'collector-test' }, bindings: { BUILD_SHA: 'test', SEARCH_PAUSE_MS: '0', RETRY_PAUSE_MS: '0', COLLECTOR_TOKEN: COLLECTOR_TOKEN },
     outboundService: async request => {
       const url = new URL(request.url);
       assert.equal(url.origin, 'https://news.google.com');
@@ -368,4 +369,34 @@ test('a burst of six 503s is recovered by retrying failed searches after a pause
   assert.equal(calls.length, CATALOGUE_SEARCHES + 5);
   assert.equal(calls.length <= 49, true, 'stays within the free plan subrequest budget');
   assert.equal((await ranking()).weekLabel, '2026-09-21 – 2026-09-27');
+});
+
+test('the GitHub collector endpoint plans the current week, publishes posted feeds once, then reports it done', async () => {
+  const call = (method = 'GET', body, token = COLLECTOR_TOKEN) => mf.dispatchFetch('https://local.test/api/internal/collection', {
+    method, body, headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+  });
+  assert.equal((await call('GET', undefined, 'wrong')).status, 401);
+  const plan = await (await call()).json();
+  if (!plan.due) { // Monday before 06:00 UTC on the machine running the tests: nothing to collect yet.
+    assert.equal(plan.reason, 'waiting');
+    return;
+  }
+  assert.equal(plan.searches.length, CATALOGUE_SEARCHES, 'the plan is exactly the Worker\'s own search list');
+  assert.equal(calls.length, 0, 'the endpoint never fetches Google itself');
+  const weekStart = Date.parse(plan.week.slice(0, 10) + 'T00:00:00Z');
+  const company = catalogue[0];
+  const feed = { rss: { channel: { item: [{
+    title: `${company.name} ${company.contextKeywords?.[0] ?? ''} launches product - Handelsblatt`,
+    link: 'https://news.google.com/rss/articles/gh1', guid: 'gh1', pubDate: new Date(weekStart + 2 * DAY).toUTCString(),
+    source: { '#text': 'Handelsblatt', '@_url': 'https://www.handelsblatt.com' },
+  }] } } };
+  const results = plan.searches.map((search, i) => ({ ...search, feed: i === 0 ? feed : { rss: { channel: { item: [] } } } }));
+  const posted = await call('POST', JSON.stringify({ collectionKey: plan.collectionKey, results }));
+  assert.equal(posted.status, 200, await posted.clone().text());
+  assert.equal((await posted.json()).outcome, 'published');
+  const published = await ranking();
+  assert.equal(published.weekLabel, plan.week);
+  assert.deepEqual(published.startups.map(s => s.id), [company.id]);
+  assert.deepEqual(await (await call()).json(), { due: false, reason: 'published', collectionKey: plan.collectionKey });
+  assert.equal((await (await call('POST', JSON.stringify({ collectionKey: plan.collectionKey, results }))).json()).outcome, 'skipped');
 });

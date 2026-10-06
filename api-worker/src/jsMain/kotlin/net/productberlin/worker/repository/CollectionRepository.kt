@@ -12,6 +12,9 @@ internal interface CollectionRepository {
 
     suspend fun previousPositions(beforeWeek: String): Map<String, Int>
 
+    /** Whether the week's collection has already been published. */
+    suspend fun isCompleted(week: String): Boolean = false
+
     suspend fun publish(
         window: CollectionWindow,
         ranking: WeeklyRanking,

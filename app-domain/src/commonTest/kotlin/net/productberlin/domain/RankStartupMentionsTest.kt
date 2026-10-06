@@ -21,7 +21,8 @@ class RankStartupMentionsTest {
         id: String,
         title: String,
         publisher: String = "Publisher",
-    ) = NewsArticle(id, title, publisher, "2026-09-25")
+        publishedAt: String = "2026-09-25T12:00:00.000Z",
+    ) = NewsArticle(id, title, publisher, publishedAt)
 
     @Test
     fun countsArticlesOnceAndMatchesAliasesWithoutCountingPublisherOrSubstring() {
@@ -63,6 +64,20 @@ class RankStartupMentionsTest {
         val articles = companies.map { article(it.id, "${it.name} grows") }
         assertEquals(companies.take(10).map { it.id }, rank(companies.reversed(), articles.reversed()).map { it.company.id })
         assertEquals(emptyList(), rank(companies, emptyList()))
+    }
+
+    @Test
+    fun tiesGoToTheCompanyWithTheMostRecentArticle() {
+        val companies = listOf(company("alpha"), company("nox"), company("zeta"))
+        val articles =
+            listOf(
+                article("a", "alpha grows", publishedAt = "2026-09-29T08:00:00.000Z"),
+                article("n", "nox grows", publishedAt = "2026-10-02T09:00:00.000Z"),
+                article("z1", "zeta grows", publishedAt = "2026-09-28T07:00:00.000Z"),
+                article("z2", "zeta expands", publishedAt = "2026-10-03T10:00:00.000Z"),
+            )
+        // zeta has two articles; nox and alpha tie on one, and nox's is newer.
+        assertEquals(listOf("zeta", "nox", "alpha"), rank(companies, articles).map { it.company.id })
     }
 
     @Test

@@ -1,0 +1,35 @@
+name: Collect weekly news
+# Google News blocks Cloudflare's servers, so this job fetches the searches the Worker plans and sends the parsed
+# feeds back; the Worker filters, ranks and publishes. Hourly: a week already published is skipped by the Worker's
+# plan without contacting Google, and a new week starts Monday 06:00 UTC.
+on:
+  schedule:
+    - cron: '7 * * * *'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Deployment environment to collect for
+        type: choice
+        options: [production, staging]
+        default: production
+permissions:
+  contents: read
+concurrency:
+  group: collect-news-${{ inputs.environment || 'production' }}
+  cancel-in-progress: false
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: ${{ inputs.environment || 'production' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: node scripts/collect-news.mjs
+        env:
+          COLLECTOR_URL: ${{ vars.DEPLOY_URL }}
+          COLLECTOR_TOKEN: ${{ secrets.COLLECTOR_TOKEN }}

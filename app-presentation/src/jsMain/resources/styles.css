@@ -66,7 +66,6 @@ footer > p { font-size: 10px; color: #a0a0a7; margin: 9px 0 13px; }
 .about-ranking { font-size: 10px; color: #717179; max-width: 420px; margin: 0 auto; }
 .about-ranking summary { list-style: none; text-decoration: underline; text-underline-offset: 3px; }
 .about-ranking p { line-height: 1.8; padding: 8px 15px; color: #85858b; }
-.made-in { display: block; margin-top: 34px; font-size: 9px; letter-spacing: .5px; color: #b1b1b6; }
 .status-message { padding: 100px 20px; text-align: center; font-size: 14px; color: #777; }
 .status-message button { padding: 10px 18px; background: #2424ff; border: 0; border-radius: 8px; color: white; }
 @media (max-width: 1180px) { .margin-note { display: none; } }
@@ -90,7 +89,6 @@ footer > p { font-size: 10px; color: #a0a0a7; margin: 9px 0 13px; }
 
 .why-content { background: transparent; padding: 0; }
 @media (max-width: 540px) { .why-content { grid-column: 1 / -1; padding: 0; } }
-.footer-link { display: inline-block; margin-top: 10px; font-size: 9px; letter-spacing: .5px; color: #a0a0a7; text-underline-offset: 3px; }
 .privacy { max-width: 640px; margin: 0 auto; padding: 48px 24px 72px; color: #2a2a31; }
 .privacy-home { font-size: 13px; color: #717179; text-decoration: none; }
 .privacy h1 { margin: 32px 0 6px; font-size: 32px; letter-spacing: -1px; }

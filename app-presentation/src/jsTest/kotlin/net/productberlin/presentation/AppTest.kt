@@ -133,6 +133,16 @@ class AppTest : ComponentTest() {
         }
 
     @Test
+    fun footerEndsWithTheListExplanationAndThePrivacyLinkStaysBesideTheSignup() =
+        runTest {
+            show { ranking }
+            val footer = assertNotNull(container.querySelector("footer"))
+            assertTrue(!footer.textContent.orEmpty().contains("Made for the city"))
+            assertNull(footer.querySelector("a[href='/privacy']"))
+            assertNotNull(container.querySelector(".newsletter a[href='/privacy']"))
+        }
+
+    @Test
     fun regularVisitsShowNoBanner() =
         runTest {
             show { ranking }
