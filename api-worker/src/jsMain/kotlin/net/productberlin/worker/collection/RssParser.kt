@@ -12,9 +12,11 @@ internal class RssParser(
     private val allowPublisher: (source: String, sourceUrl: String?) -> Boolean = { _, _ -> true },
     private val parseXml: (String) -> dynamic,
 ) {
-    fun parse(xml: String): List<NewsArticle> {
-        val feed = parseXml(xml)
-        require(feed.rss?.channel != null) { "Response is not an RSS channel" }
+    fun parse(xml: String): List<NewsArticle> = parseTree(parseXml(xml))
+
+    /** An already parsed feed, e.g. one fetched and parsed by the GitHub collector; the same checks apply. */
+    fun parseTree(feed: dynamic): List<NewsArticle> {
+        require(feed?.rss?.channel != null) { "Response is not an RSS channel" }
         val items =
             feed.rss.channel.item
                 .unsafeCast<Array<dynamic>?>() ?: emptyArray()

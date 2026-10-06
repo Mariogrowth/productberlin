@@ -62,6 +62,7 @@ jobs:
         run: npm run cf -- deploy "$TARGET_ENV"
         env:
           BREVO_API_KEY: ${{ secrets.BREVO_API }}
+          COLLECTOR_TOKEN: ${{ secrets.COLLECTOR_TOKEN }}
       - name: Seed demo data when explicitly requested
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.seed_mock_data }}
         run: npm run cf -- seed "$TARGET_ENV"

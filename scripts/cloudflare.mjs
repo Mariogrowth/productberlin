@@ -54,19 +54,21 @@ if (command === 'config') {
   if (command === 'deploy') {
     args = ['deploy', '--message', `Git ${process.env.BUILD_SHA}`];
     // Secrets ship with the same Worker version as the code. The file is private, temporary and never logged.
-    if (process.env.BREVO_API_KEY) {
+    const secrets = Object.fromEntries(['BREVO_API_KEY', 'COLLECTOR_TOKEN'].filter(name => process.env[name]).map(name => [name, process.env[name]]));
+    for (const name of ['BREVO_API_KEY', 'COLLECTOR_TOKEN']) {
+      if (!secrets[name]) console.warn(`${name} is not set; the existing Worker secret, if any, is kept.`);
+    }
+    if (Object.keys(secrets).length) {
       secretsDirectory = await mkdtemp(join(tmpdir(), 'productberlin-secrets-'));
       const secretsPath = join(secretsDirectory, 'secrets.json');
-      await writeFile(secretsPath, JSON.stringify({ BREVO_API_KEY: process.env.BREVO_API_KEY }), { mode: 0o600 });
+      await writeFile(secretsPath, JSON.stringify(secrets), { mode: 0o600 });
       args.push('--secrets-file', secretsPath);
-    } else {
-      console.warn('BREVO_API_KEY is not set; the existing Worker secret, if any, is kept.');
     }
   }
   let result;
   try {
     result = spawnSync(process.execPath, [resolve(root, 'node_modules/wrangler/bin/wrangler.js'), ...args, '--config', configPath], {
-      cwd: root, stdio: 'inherit', env: { ...process.env, BREVO_API_KEY: '', CI: 'true', WRANGLER_SEND_METRICS: 'false' },
+      cwd: root, stdio: 'inherit', env: { ...process.env, BREVO_API_KEY: '', COLLECTOR_TOKEN: '', CI: 'true', WRANGLER_SEND_METRICS: 'false' },
     });
   } finally {
     if (secretsDirectory) await rm(secretsDirectory, { recursive: true, force: true });

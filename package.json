@@ -8,7 +8,7 @@
     "dev:web": "./gradlew :webApp:jsBrowserDevelopmentRun --continuous",
     "build": "./gradlew :api-worker:jsNodeProductionLibraryDistribution :webApp:jsBrowserDistribution",
     "test": "./gradlew allTests",
-    "test:integration": "node --test scripts/test/cloudflare.test.mjs scripts/test/collector.test.mjs scripts/test/rss-parser.test.mjs",
+    "test:integration": "node --test scripts/test/cloudflare.test.mjs scripts/test/collector.test.mjs scripts/test/rss-parser.test.mjs scripts/test/collect-news.test.mjs",
     "test:dev": "node --test scripts/test/local-dev.test.mjs",
     "check": "npm run lint && npm run test:deployment && npm test && npm run build && npm run test:integration && npm run test:dev",
     "lint": "./gradlew ktlintCheck",

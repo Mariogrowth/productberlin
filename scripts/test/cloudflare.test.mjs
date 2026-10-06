@@ -173,6 +173,8 @@ test('newsletter sign-ups accept only same-origin JSON and fail closed without p
   assert.deepEqual(await json(await post('{"email":"name@"}')), [400, { error: 'invalid_email' }, 'no-store']);
   assert.deepEqual(await json(await post('not json')), [400, { error: 'invalid_request' }, 'no-store']);
   assert.deepEqual(await json(await post('{"email":"name@domain.de"}')), [503, { error: 'unavailable' }, 'no-store']);
+  // Worker logs stream asynchronously from the dev server; on slow CI runners give the line a moment to arrive.
+  for (let i = 0; i < 40 && !/Newsletter sign-up is not configured/.test(logs); i++) await new Promise(r => setTimeout(r, 50));
   assert.match(logs, /Newsletter sign-up is not configured/);
   assert.doesNotMatch(logs, /name@domain\.de/);
 });
