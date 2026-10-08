@@ -8,10 +8,25 @@ internal data class CollectionWindow(
     val end: String,
 ) {
     val collectionKey: String get() = "${end.take(10)}-$POLICY_VERSION"
+
+    /** The week's Monday (UTC), which identifies its stored articles. */
+    val weekStart: String get() = start.take(10)
+
+    /** Identifies a plan that only stores this week's articles for later editions' momentum. */
+    val historyKey: String get() = "$weekStart-history"
     val startMillis: Double get() = Date.parse(start)
     val endMillis: Double get() = Date.parse(end)
     val label: String get() = "${start.take(10)} – ${Date(endMillis - 1).toISOString().take(10)}"
-    val query: String get() = "Catalogue company names in trusted publishers $dateRange [en,de]"
+    val query: String get() = "Catalogue company names in trusted publishers $dateRange [en,de], press momentum over four weeks"
+
+    /** The [count] weeks before this one, latest first. */
+    fun previousWeeks(count: Int): List<CollectionWindow> =
+        (1..count).map { weeks -> CollectionWindow(shift(start, -weeks), shift(end, -weeks)) }
+
+    private fun shift(
+        iso: String,
+        weeks: Int,
+    ) = Date(Date.parse(iso) + weeks * 7 * DAY).toISOString()
 
     private val dateRange: String get() = "after:${start.take(10)} before:${end.take(10)}"
 
@@ -66,7 +81,7 @@ internal data class CollectionWindow(
     private fun quoted(value: String): String = "\"${value.replace("\"", "")}\""
 
     companion object {
-        const val POLICY_VERSION = "trusted-v2"
+        const val POLICY_VERSION = "momentum-v1"
         const val DAY = 86_400_000.0
 
         /** Google ignores query words beyond about 32; two are taken by the date range. */

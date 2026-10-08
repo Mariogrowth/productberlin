@@ -1,5 +1,6 @@
 // Weekly news collector, run by GitHub Actions because Google News blocks Cloudflare's servers.
-// 1. Ask the Worker for its plan (GET /api/internal/collection): is this week due, and which searches to run.
+// 1. Ask the Worker for its plan (GET /api/internal/collection): the next unit of work and which searches to run.
+//    Editions score four weeks, so missing earlier weeks come first as history units that only store articles.
 // 2. Fetch those Google News searches from this machine, paced, retrying failures once after a pause.
 // 3. Translate non-English headlines to English with DeepL (company names protected), if DEEPL_API_KEY is set.
 // 4. Send the parsed feeds (only the fields the Worker reads) back (POST); the Worker filters, ranks and publishes.
@@ -126,7 +127,7 @@ export async function collect({ baseUrl, token, deeplApiKey, fetchImpl = fetch, 
     log(`Nothing to collect (${plan.reason}${plan.collectionKey ? `, ${plan.collectionKey}` : ''}).`);
     return { outcome: plan.reason, failed: 0 };
   }
-  log(`Collecting ${plan.collectionKey} (${plan.week}): ${plan.searches.length} searches.`);
+  log(`Collecting ${plan.mode ?? 'edition'} ${plan.collectionKey} (${plan.week}): ${plan.searches.length} searches.`);
 
   const results = plan.searches.map(search => ({ ...search }));
   const fetchOne = async result => {
@@ -181,8 +182,22 @@ export async function collect({ baseUrl, token, deeplApiKey, fetchImpl = fetch, 
   return { outcome: body.outcome, failed };
 }
 
+/**
+ * Runs units until the Worker has nothing left: missing history weeks (each stored, not published), then the edition.
+ * Bounded, so a Worker that keeps planning work can never loop forever; the next hourly run continues.
+ */
+export async function collectAll(options, maxUnits = 5) {
+  const results = [];
+  for (let unit = 0; unit < maxUnits; unit++) {
+    const result = await collect(options);
+    results.push(result);
+    if (result.outcome !== 'recorded') break;
+  }
+  return results;
+}
+
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
-  const result = await collect({
+  const results = await collectAll({
     baseUrl: process.env.COLLECTOR_URL,
     token: process.env.COLLECTOR_TOKEN,
     deeplApiKey: process.env.DEEPL_API_KEY,
@@ -191,6 +206,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   });
   if (process.env.GITHUB_STEP_SUMMARY) {
     const { appendFileSync } = await import('node:fs');
-    appendFileSync(process.env.GITHUB_STEP_SUMMARY, `### Weekly news collection: ${result.outcome}\n\nFailed searches after retry: ${result.failed}\n`);
+    const lines = results.map(r => `- ${r.outcome} (failed searches after retry: ${r.failed})`).join('\n');
+    appendFileSync(process.env.GITHUB_STEP_SUMMARY, `### Weekly news collection\n\n${lines}\n`);
   }
 }

@@ -11,6 +11,7 @@ import net.productberlin.worker.collection.CollectionEndpoint
 import net.productberlin.worker.collection.RssParser
 import net.productberlin.worker.collection.parseCatalogue
 import net.productberlin.worker.collection.parsePublishers
+import net.productberlin.worker.repository.D1ArticleHistoryRepository
 import net.productberlin.worker.repository.D1CollectionRepository
 
 /** Cloudflare boundary for the GitHub Actions news collector. */
@@ -30,6 +31,7 @@ fun handleCollection(
             CollectionEndpoint(
                 expectedToken,
                 D1CollectionRepository(database),
+                D1ArticleHistoryRepository(database),
                 parseCatalogue(catalogueJson),
                 parser,
                 Date.now(),

@@ -17,6 +17,7 @@ import net.productberlin.worker.collection.RssParser
 import net.productberlin.worker.collection.WeeklyCollector
 import net.productberlin.worker.collection.parseCatalogue
 import net.productberlin.worker.collection.parsePublishers
+import net.productberlin.worker.repository.D1ArticleHistoryRepository
 import net.productberlin.worker.repository.D1CollectionRepository
 
 @JsExport
@@ -44,6 +45,7 @@ fun handleScheduled(
                 WeeklyCollector(
                     GoogleNewsSource(client, RssParser(parsePublishers(publishersJson)::allows, parseXml)),
                     D1CollectionRepository(database),
+                    D1ArticleHistoryRepository(database),
                     pause = { delay(searchPauseMillis.coerceIn(0, 10_000).toLong()) },
                     retryPause = { delay(retryPauseMillis.coerceIn(0, 60_000).toLong()) },
                 ).refresh(
