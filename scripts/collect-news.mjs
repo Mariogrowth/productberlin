@@ -37,6 +37,24 @@ export function protectNames(text, names = companyNames) {
 }
 export const unprotectNames = xml => unescapeXml(xml.replace(/<\/?x>/g, ''));
 
+const DECORATION = `(?:[*_'"‘’“”„«»]|&quot;|&apos;)*`;
+const QUOTE_LIKE = /[*_'"‘’“”„«»]/u;
+
+/**
+ * DeepL sometimes decorates a protected name it was told not to translate ("the end of *Zalando*", "'Langdock'").
+ * Removes asterisks, underscores and quotes wrapped around a name unless the original headline had them there too.
+ */
+export function restoreNames(xml, original) {
+  const cleaned = xml.replace(new RegExp(`(${DECORATION})<x>([^<]*)</x>(${DECORATION})`, 'gu'), (match, before, name, after) => {
+    if (!before && !after) return match;
+    const plain = unescapeXml(name);
+    const index = original.indexOf(plain);
+    const decorated = index >= 0 && (QUOTE_LIKE.test(original[index - 1] ?? '') || QUOTE_LIKE.test(original[index + plain.length] ?? ''));
+    return decorated ? match : `<x>${name}</x>`;
+  });
+  return unprotectNames(cleaned);
+}
+
 /** The headline exactly as the Worker derives it: the RSS title without its " - Publisher" suffix. */
 export function headlineOf(item) {
   const source = String(typeof item.source === 'object' ? item.source?.['#text'] ?? '' : item.source ?? '').trim();
@@ -64,7 +82,7 @@ export async function translateHeadlines(headlines, { apiKey, fetchImpl = fetch,
       if (!response.ok) throw new Error(`DeepL returned HTTP ${response.status}`);
       const { translations: results = [] } = await response.json();
       results.forEach((result, index) => {
-        const english = unprotectNames(String(result.text ?? '')).trim();
+        const english = restoreNames(String(result.text ?? ''), batch[index]).trim();
         if (result.detected_source_language !== 'EN' && english && english !== batch[index]) translations.set(batch[index], english);
       });
     } catch (error) {

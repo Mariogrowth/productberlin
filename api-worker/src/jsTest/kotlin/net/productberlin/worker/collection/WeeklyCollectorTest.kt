@@ -123,6 +123,29 @@ class WeeklyCollectorTest {
         }
 
     @Test
+    fun sharePriceNotesNeitherCountNorAppear() =
+        runTest {
+            val repository = RecordingRepository()
+            val source =
+                object : NewsSource {
+                    override suspend fun search(search: NewsSearch) =
+                        listOf(story("one"), story("note").copy(headline = "mika-Aktie: Kurs gibt nach nach accounting Zahlen"))
+                }
+            WeeklyCollector(source, repository).refresh(catalogue, window, window.end, "token")
+            val ranking = repository.published!!
+            assertEquals(1, ranking.startups.single().mentionCount)
+            assertEquals(
+                listOf("one"),
+                ranking.startups
+                    .single()
+                    .news
+                    .map { it.id },
+            )
+            // Still reviewed: the note was a valid in-week article.
+            assertEquals(2, ranking.articleCount)
+        }
+
+    @Test
     fun fewMatchesShowOnlyRealArticles() =
         runTest {
             val repository = RecordingRepository()

@@ -79,7 +79,8 @@ internal class WeeklyCollector(
                 )
             }
             val articles = validArticles(fetched, window)
-            val top = RankStartupMentions()(catalogue, articles)
+            // Market notes still count as reviewed articles, but never as mentions or shown news.
+            val top = RankStartupMentions()(catalogue, articles.filterNot(MarketNotes::isMarketNote))
             check(top.isNotEmpty()) { "No catalogue companies mentioned; retaining the previous ranking" }
             val previous = repository.previousPositions(window.start.take(10))
             val startups =
