@@ -93,4 +93,15 @@ class CollectionWindowTest {
             assertEquals(due, CollectionWindow.firstAttemptDue(Date.parse(time)), time)
         }
     }
+
+    @Test
+    fun previousWeeksAreTheMondayToSundayWeeksBeforeLatestFirst() {
+        val window = CollectionWindow.latestCompleteWeek(Date.parse("2026-10-06T08:07:00Z"))
+        assertEquals("2026-09-28", window.weekStart)
+        assertEquals(
+            listOf("2026-09-21" to "2026-09-28", "2026-09-14" to "2026-09-21", "2026-09-07" to "2026-09-14"),
+            window.previousWeeks(3).map { it.start.take(10) to it.end.take(10) },
+        )
+        assertEquals("2026-09-07-history", window.previousWeeks(3).last().historyKey)
+    }
 }

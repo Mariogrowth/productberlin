@@ -24,9 +24,10 @@ let activeWeek = weekOne;
 let discoveryGate, discoveryStarted;
 let takeoverDone = false;
 const xml = value => value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('"', '&quot;');
-function item(company, id, day = 1) {
+// Publisher names differ while the trusted domain stays the same: momentum counts each named outlet once per week.
+function item(company, id, day = 1, source = 'Publisher') {
   const date = new Date(activeWeek - day * 86_400_000).toUTCString();
-  return `<item><title>${xml(company.name)} ${company.contextKeywords?.[0] ?? ""} launches product ${id} - Publisher</title><source url="https://www.handelsblatt.com">Publisher</source><guid isPermaLink="false">${id}</guid><link>https://news.google.com/rss/articles/${id}?oc=5</link><pubDate>${date}</pubDate></item>`;
+  return `<item><title>${xml(company.name)} ${company.contextKeywords?.[0] ?? ""} launches product ${id} - ${xml(source)}</title><source url="https://www.handelsblatt.com">${xml(source)}</source><guid isPermaLink="false">${id}</guid><link>https://news.google.com/rss/articles/${id}?oc=5</link><pubDate>${date}</pubDate></item>`;
 }
 // Fixture stories are dated relative to the Monday 06:00 UTC that starts the event's week.
 const DAY = 86_400_000;
@@ -91,12 +92,13 @@ before(async () => {
       let items = '';
       if (mode !== 'empty') {
         // The Worker searches the whole bundled catalogue; groups without any of the 12 test companies are empty.
-        // Each test company gets a distinct number of articles (12 - position) plus seven more, so counts differ.
+        // Each test company gets a distinct number of articles (12 - position), each from its own outlet, plus seven
+        // more from "Publisher": 13 - position outlets, so momentum (two growth points per outlet) follows the position.
         const group = catalogue.filter(c => query.includes(`"${c.name}"`) && (mode !== 'sparse' || catalogue.indexOf(c) < 2));
         items = group.flatMap(c => {
           const i = catalogue.indexOf(c);
           return [
-            ...Array.from({ length: 12 - i }, (_, n) => item(c, `${c.id}-${n}`, 2)),
+            ...Array.from({ length: 12 - i }, (_, n) => item(c, `${c.id}-${n}`, 2, `Publisher ${n}`)),
             ...Array.from({ length: 7 }, (_, n) => item(c, `${c.id}-related-${n}`, n + 1)),
           ];
         }).join('');
@@ -113,7 +115,7 @@ before(async () => {
     },
   }));
   db = (await mf.getBindings()).DB;
-  for (const file of ['0001_initial.sql', '0002_weekly_collection.sql', '0003_translated_headlines.sql']) {
+  for (const file of ['0001_initial.sql', '0002_weekly_collection.sql', '0003_translated_headlines.sql', '0004_hiring_counts.sql', '0005_article_history.sql']) {
     const sql = await readFile(resolve('cloudflare/migrations', file), 'utf8');
     await db.batch(sql.split(';').map(s => s.trim()).filter(Boolean).map(s => db.prepare(s)));
   }
@@ -124,7 +126,7 @@ after(async () => {
 });
 
 beforeEach(async () => {
-  await db.batch(['news_articles', 'ranking_entries', 'ranking_snapshots', 'startups', 'collection_runs'].map(table => db.prepare(`DELETE FROM ${table}`)));
+  await db.batch(['news_articles', 'ranking_entries', 'ranking_snapshots', 'startups', 'collection_runs', 'hiring_counts', 'hiring_runs', 'collected_articles', 'collected_weeks'].map(table => db.prepare(`DELETE FROM ${table}`)));
   calls = [];
   mode = 'success';
   takeoverDone = false;
@@ -154,7 +156,7 @@ test('scheduled collector publishes ten ranked companies and at most five dated 
     assert.match(startup.news[0].url, /^https:\/\/news.google.com\/rss\/articles\//);
     assert.equal(startup.news[0].source, 'Publisher');
   }
-  assert.equal((await db.prepare("SELECT status FROM collection_runs WHERE week_start='2026-09-28-trusted-v2'").first()).status, 'succeeded');
+  assert.equal((await db.prepare("SELECT status FROM collection_runs WHERE week_start='2026-09-28-momentum-v1'").first()).status, 'succeeded');
 });
 
 test('duplicate events skip collection, and a failed next week retains the previous published snapshot', async () => {
@@ -166,7 +168,7 @@ test('duplicate events skip collection, and a failed next week retains the previ
   mode = 'unavailable';
   assert.notEqual((await scheduled(weekOne + 7 * 86_400_000)).outcome, 'ok');
   assert.deepEqual(await ranking(), previous);
-  assert.equal((await db.prepare("SELECT status FROM collection_runs WHERE week_start='2026-10-05-trusted-v2'").first()).status, 'failed');
+  assert.equal((await db.prepare("SELECT status FROM collection_runs WHERE week_start='2026-10-05-momentum-v1'").first()).status, 'failed');
 });
 
 test('off-schedule events during a week neither refetch nor replace the published edition', async () => {
@@ -187,7 +189,7 @@ test('a failed Monday collection is retried for the same week by a later event t
   mode = 'success';
   assert.equal((await scheduled(weekOne + 3 * DAY)).outcome, 'ok');
   assert.equal((await ranking()).weekLabel, '2026-09-21 – 2026-09-27');
-  assert.equal((await db.prepare("SELECT status FROM collection_runs WHERE week_start='2026-09-28-trusted-v2'").first()).status, 'succeeded');
+  assert.equal((await db.prepare("SELECT status FROM collection_runs WHERE week_start='2026-09-28-momentum-v1'").first()).status, 'succeeded');
 });
 
 test('D1 publication rolls back all writes on failure, then a retry publishes with movement', async () => {
@@ -213,11 +215,11 @@ test('empty and malformed feeds retain data; an active lease skips and an expire
     assert.notEqual((await scheduled(next)).outcome, 'ok');
     assert.deepEqual(await ranking(), previous);
   }
-  await db.prepare("UPDATE collection_runs SET status='running',lease_until='2099-01-01T00:00:00.000Z' WHERE week_start='2026-10-12-trusted-v2'").run();
+  await db.prepare("UPDATE collection_runs SET status='running',lease_until='2099-01-01T00:00:00.000Z' WHERE week_start='2026-10-12-momentum-v1'").run();
   const count = calls.length;
   assert.equal((await scheduled(next)).outcome, 'ok');
   assert.equal(calls.length, count);
-  await db.prepare("UPDATE collection_runs SET lease_until='2000-01-01T00:00:00.000Z' WHERE week_start='2026-10-12-trusted-v2'").run();
+  await db.prepare("UPDATE collection_runs SET lease_until='2000-01-01T00:00:00.000Z' WHERE week_start='2026-10-12-momentum-v1'").run();
   mode = 'success';
   assert.equal((await scheduled(next)).outcome, 'ok');
   assert.equal((await ranking()).weekLabel, '2026-10-05 – 2026-10-11');
@@ -245,7 +247,7 @@ test('every stage of the D1 batch is atomic, including the final success audit w
       assert.notEqual((await scheduled(weekOne + 7 * 86_400_000)).outcome, 'ok', target);
       assert.deepEqual(await contents(), stored, target);
       assert.deepEqual(await ranking(), previous, target);
-      const run = await db.prepare("SELECT status,error FROM collection_runs WHERE week_start='2026-10-05-trusted-v2'").first();
+      const run = await db.prepare("SELECT status,error FROM collection_runs WHERE week_start='2026-10-05-momentum-v1'").first();
       assert.equal(run.status, 'failed');
       assert.ok(run.error.length > 0 && run.error.length <= 500);
     } finally {
@@ -272,7 +274,7 @@ test('a worker whose lease was replaced cannot publish or mark the new owner fai
   mode = 'lost-lease';
   assert.notEqual((await scheduled(weekOne + 7 * 86_400_000)).outcome, 'ok');
   assert.deepEqual(await contents(), stored);
-  const run = await db.prepare("SELECT lease_token,status,error FROM collection_runs WHERE week_start='2026-10-05-trusted-v2'").first();
+  const run = await db.prepare("SELECT lease_token,status,error FROM collection_runs WHERE week_start='2026-10-05-momentum-v1'").first();
   assert.deepEqual(run, { lease_token: 'new-owner', status: 'running', error: null });
 });
 
@@ -324,7 +326,7 @@ test('rank movement ignores newer mock, draft and incomplete earlier-week snapsh
 test('untrusted publishers neither count nor show, and syndicated headlines show once', async () => {
   assert.equal((await scheduled(weekOne)).outcome, 'ok');
   const baseline = Object.fromEntries((await ranking()).startups.map(s => [s.id, s.mentionCount]));
-  await db.batch(['news_articles', 'ranking_entries', 'ranking_snapshots', 'startups', 'collection_runs'].map(table => db.prepare(`DELETE FROM ${table}`)));
+  await db.batch(['news_articles', 'ranking_entries', 'ranking_snapshots', 'startups', 'collection_runs', 'hiring_counts', 'hiring_runs', 'collected_articles', 'collected_weeks'].map(table => db.prepare(`DELETE FROM ${table}`)));
   mode = 'publishers';
   assert.equal((await scheduled(weekOne)).outcome, 'ok');
   const filtered = await ranking();
@@ -371,34 +373,80 @@ test('a burst of six 503s is recovered by retrying failed searches after a pause
   assert.equal((await ranking()).weekLabel, '2026-09-21 – 2026-09-27');
 });
 
-test('the GitHub collector endpoint plans the current week, publishes posted feeds once, then reports it done', async () => {
+test('the GitHub collector endpoint fills missing history weeks oldest first, then publishes the edition once', async () => {
   const call = (method = 'GET', body, token = COLLECTOR_TOKEN) => mf.dispatchFetch('https://local.test/api/internal/collection', {
     method, body, headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
   });
   assert.equal((await call('GET', undefined, 'wrong')).status, 401);
-  const plan = await (await call()).json();
-  if (!plan.due) { // Monday before 06:00 UTC on the machine running the tests: nothing to collect yet.
+  const empty = { rss: { channel: { item: [] } } };
+  // Editions score four weeks: the three earlier weeks are planned first as history units that only store articles.
+  const historyKeys = [];
+  let plan = await (await call()).json();
+  while (plan.due && plan.mode === 'history') {
+    historyKeys.push(plan.collectionKey);
+    assert.equal(plan.searches.length, CATALOGUE_SEARCHES);
+    const recorded = await call('POST', JSON.stringify({ collectionKey: plan.collectionKey, results: plan.searches.map(s => ({ ...s, feed: empty })) }));
+    assert.equal(recorded.status, 200, await recorded.clone().text());
+    assert.equal((await recorded.json()).outcome, 'recorded');
+    plan = await (await call()).json();
+  }
+  assert.equal(historyKeys.length, 3);
+  assert.deepEqual(historyKeys, [...historyKeys].sort(), 'oldest week first');
+  assert.ok(historyKeys.every(key => key.endsWith('-history')));
+  assert.equal((await db.prepare('SELECT COUNT(*) AS n FROM collected_weeks').first()).n, 3);
+  if (!plan.due) { // Monday before 06:00 UTC on the machine running the tests: the edition waits.
     assert.equal(plan.reason, 'waiting');
     return;
   }
+  assert.equal(plan.mode, 'edition');
   assert.equal(plan.searches.length, CATALOGUE_SEARCHES, 'the plan is exactly the Worker\'s own search list');
   assert.equal(calls.length, 0, 'the endpoint never fetches Google itself');
   const weekStart = Date.parse(plan.week.slice(0, 10) + 'T00:00:00Z');
   const company = catalogue[0];
-  const feed = { rss: { channel: { item: [{
-    title: `${company.name} ${company.contextKeywords?.[0] ?? ''} launches product - Handelsblatt`,
-    translatedTitle: `${company.name} launches a product (translated)`,
-    link: 'https://news.google.com/rss/articles/gh1', guid: 'gh1', pubDate: new Date(weekStart + 2 * DAY).toUTCString(),
-    source: { '#text': 'Handelsblatt', '@_url': 'https://www.handelsblatt.com' },
-  }] } } };
-  const results = plan.searches.map((search, i) => ({ ...search, feed: i === 0 ? feed : { rss: { channel: { item: [] } } } }));
+  const story = (id, source, extra = {}) => ({
+    title: `${company.name} ${company.contextKeywords?.[0] ?? ''} launches product ${id} - ${source}`,
+    link: `https://news.google.com/rss/articles/${id}`, guid: id, pubDate: new Date(weekStart + 2 * DAY).toUTCString(),
+    source: { '#text': source, '@_url': 'https://www.handelsblatt.com' }, ...extra,
+  });
+  const feed = { rss: { channel: { item: [
+    story('gh1', 'Handelsblatt', { translatedTitle: `${company.name} launches a product (translated)` }),
+    story('gh2', 'Handelsblatt Live'),
+  ] } } };
+  const results = plan.searches.map((search, i) => ({ ...search, feed: i === 0 ? feed : empty }));
   const posted = await call('POST', JSON.stringify({ collectionKey: plan.collectionKey, results }));
   assert.equal(posted.status, 200, await posted.clone().text());
   assert.equal((await posted.json()).outcome, 'published');
   const published = await ranking();
   assert.equal(published.weekLabel, plan.week);
   assert.deepEqual(published.startups.map(s => s.id), [company.id]);
-  assert.equal(published.startups[0].news[0].translatedHeadline, `${company.name} launches a product (translated)`);
+  assert.equal(published.startups[0].news.find(n => n.headline.includes('gh1')).translatedHeadline, `${company.name} launches a product (translated)`);
+  // The edition's own week is stored too, so next week's edition needs no history unit.
+  assert.equal((await db.prepare('SELECT COUNT(*) AS n FROM collected_weeks').first()).n, 4);
+  assert.equal((await db.prepare('SELECT COUNT(*) AS n FROM collected_articles').first()).n, 2);
   assert.deepEqual(await (await call()).json(), { due: false, reason: 'published', collectionKey: plan.collectionKey });
-  assert.equal((await (await call('POST', JSON.stringify({ collectionKey: plan.collectionKey, results }))).json()).outcome, 'skipped');
+  assert.equal((await (await call('POST', JSON.stringify({ collectionKey: plan.collectionKey, results }))).json()).error, 'stale_plan');
+});
+
+test('the hiring endpoint plans the catalogue job boards, stores one week of counts once, then reports it recorded', async () => {
+  const call = (method = 'GET', body, token = COLLECTOR_TOKEN) => mf.dispatchFetch('https://local.test/api/internal/hiring', {
+    method, body, headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+  });
+  assert.equal((await call('GET', undefined, 'wrong')).status, 401);
+  const plan = await (await call()).json();
+  assert.equal(plan.due, true, JSON.stringify(plan).slice(0, 300));
+  const withBoards = fullCatalogue.filter(c => c.jobBoard);
+  assert.deepEqual(plan.boards, withBoards.map(c => ({ startupId: c.id, ...c.jobBoard })), 'every catalogue job board, nothing else');
+  const results = plan.boards.map((board, i) => (i === 0 ? { ...board, error: 'HTTP 503' } : { ...board, totalJobs: i + 2, berlinJobs: 1 }));
+  const posted = await call('POST', JSON.stringify({ week: plan.week, results }));
+  assert.equal(posted.status, 200, await posted.clone().text());
+  assert.deepEqual(await posted.json(), { outcome: 'recorded', week: plan.week, boards: plan.boards.length - 1, failed: 1 });
+  const run = await db.prepare('SELECT boards, failed FROM hiring_runs WHERE week_start=?').bind(plan.week).first();
+  assert.deepEqual({ ...run }, { boards: plan.boards.length - 1, failed: 1 });
+  const rows = (await db.prepare('SELECT startup_id, provider, total_jobs, berlin_jobs FROM hiring_counts WHERE week_start=? ORDER BY startup_id').bind(plan.week).all()).results;
+  assert.equal(rows.length, plan.boards.length - 1);
+  const second = plan.boards[1];
+  assert.deepEqual({ ...rows.find(r => r.startup_id === second.startupId) }, { startup_id: second.startupId, provider: second.provider, total_jobs: 3, berlin_jobs: 1 });
+  assert.deepEqual(await (await call()).json(), { due: false, reason: 'recorded', week: plan.week });
+  assert.equal((await (await call('POST', JSON.stringify({ week: plan.week, results }))).json()).outcome, 'already_recorded');
+  assert.equal((await db.prepare('SELECT COUNT(*) AS n FROM hiring_counts').first()).n, plan.boards.length - 1, 'a repeated post adds nothing');
 });

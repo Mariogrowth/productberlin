@@ -5,7 +5,11 @@
     "description": "Consumer discovery and rewards.",
     "category": "Adtech",
     "domain": "almedia.co",
-    "aliases": []
+    "aliases": [],
+    "jobBoard": {
+      "provider": "ashby",
+      "handle": "almedia"
+    }
   },
   {
     "id": "aignostics",
@@ -21,7 +25,11 @@
     "description": "Digital banking.",
     "category": "Fintech",
     "domain": "n26.com",
-    "aliases": []
+    "aliases": [],
+    "jobBoard": {
+      "provider": "greenhouse",
+      "handle": "n26"
+    }
   },
   {
     "id": "parloa",
@@ -29,7 +37,11 @@
     "description": "AI agents for customer service.",
     "category": "AI",
     "domain": "parloa.com",
-    "aliases": []
+    "aliases": [],
+    "jobBoard": {
+      "provider": "greenhouse",
+      "handle": "parloa"
+    }
   },
   {
     "id": "sennder",
@@ -61,7 +73,11 @@
     "description": "Tools for building AI applications.",
     "category": "AI",
     "domain": "deepset.ai",
-    "aliases": []
+    "aliases": [],
+    "jobBoard": {
+      "provider": "ashby",
+      "handle": "deepsetai"
+    }
   },
   {
     "id": "ecosia",
@@ -104,7 +120,11 @@
     "description": "Chauffeur services.",
     "category": "Mobility",
     "domain": "blacklane.com",
-    "aliases": []
+    "aliases": [],
+    "jobBoard": {
+      "provider": "greenhouse",
+      "handle": "blacklane"
+    }
   },
   {
     "id": "noxtua",
@@ -138,7 +158,11 @@
     "category": "AI",
     "domain": "langdock.com",
     "aliases": [],
-    "contextKeywords": []
+    "contextKeywords": [],
+    "jobBoard": {
+      "provider": "ashby",
+      "handle": "langdock"
+    }
   },
   {
     "id": "koro",
@@ -147,7 +171,11 @@
     "category": "Food tech",
     "domain": "korodrogerie.de",
     "aliases": [],
-    "contextKeywords": []
+    "contextKeywords": [],
+    "jobBoard": {
+      "provider": "ashby",
+      "handle": "koro"
+    }
   },
   {
     "id": "nox",
@@ -200,7 +228,11 @@
       "Geldanlage",
       "Sparen",
       "Festgeld"
-    ]
+    ],
+    "jobBoard": {
+      "provider": "greenhouse",
+      "handle": "raisin"
+    }
   },
   {
     "id": "getyourguide",
@@ -211,7 +243,11 @@
     "aliases": [
       "Get Your Guide"
     ],
-    "contextKeywords": []
+    "contextKeywords": [],
+    "jobBoard": {
+      "provider": "greenhouse",
+      "handle": "getyourguide"
+    }
   },
   {
     "id": "contentful",
@@ -220,7 +256,11 @@
     "category": "Software",
     "domain": "contentful.com",
     "aliases": [],
-    "contextKeywords": []
+    "contextKeywords": [],
+    "jobBoard": {
+      "provider": "greenhouse",
+      "handle": "contentful"
+    }
   },
   {
     "id": "omio",
@@ -229,7 +269,11 @@
     "category": "Travel tech",
     "domain": "omio.com",
     "aliases": [],
-    "contextKeywords": []
+    "contextKeywords": [],
+    "jobBoard": {
+      "provider": "smartrecruiters",
+      "handle": "omio"
+    }
   },
   {
     "id": "forto",
@@ -238,7 +282,11 @@
     "category": "Logistics",
     "domain": "forto.com",
     "aliases": [],
-    "contextKeywords": []
+    "contextKeywords": [],
+    "jobBoard": {
+      "provider": "ashby",
+      "handle": "forto"
+    }
   },
   {
     "id": "babbel",
@@ -247,7 +295,11 @@
     "category": "Education",
     "domain": "babbel.com",
     "aliases": [],
-    "contextKeywords": []
+    "contextKeywords": [],
+    "jobBoard": {
+      "provider": "ashby",
+      "handle": "babbel"
+    }
   },
   {
     "id": "helsing",
@@ -276,7 +328,11 @@
       "Finanzierung",
       "valuation",
       "Bewertung"
-    ]
+    ],
+    "jobBoard": {
+      "provider": "greenhouse",
+      "handle": "helsing"
+    }
   },
   {
     "id": "n8n",
@@ -284,7 +340,11 @@
     "description": "Workflow automation platform.",
     "category": "Software",
     "domain": "n8n.io",
-    "aliases": []
+    "aliases": [],
+    "jobBoard": {
+      "provider": "ashby",
+      "handle": "n8n"
+    }
   },
   {
     "id": "langfuse",
@@ -338,7 +398,11 @@
     "domain": "peec.ai",
     "aliases": [
       "Peec"
-    ]
+    ],
+    "jobBoard": {
+      "provider": "ashby",
+      "handle": "Peec"
+    }
   },
   {
     "id": "solsten",
@@ -393,7 +457,11 @@
       "Finanzierung",
       "AI",
       "KI"
-    ]
+    ],
+    "jobBoard": {
+      "provider": "ashby",
+      "handle": "buena"
+    }
   },
   {
     "id": "upvest",
@@ -401,7 +469,11 @@
     "description": "Investment infrastructure API.",
     "category": "Fintech",
     "domain": "upvest.co",
-    "aliases": []
+    "aliases": [],
+    "jobBoard": {
+      "provider": "ashby",
+      "handle": "upvest"
+    }
   },
   {
     "id": "mondu",
@@ -425,7 +497,11 @@
     "description": "Brokerage infrastructure API.",
     "category": "Fintech",
     "domain": "lemon.markets",
-    "aliases": []
+    "aliases": [],
+    "jobBoard": {
+      "provider": "ashby",
+      "handle": "lemon-markets"
+    }
   },
   {
     "id": "pliant",
@@ -447,7 +523,11 @@
       "startup",
       "funding",
       "Finanzierung"
-    ]
+    ],
+    "jobBoard": {
+      "provider": "ashby",
+      "handle": "pliant"
+    }
   },
   {
     "id": "finmid",
@@ -463,7 +543,11 @@
     "description": "Digital asset custody for institutions.",
     "category": "Fintech",
     "domain": "finoa.io",
-    "aliases": []
+    "aliases": [],
+    "jobBoard": {
+      "provider": "personio",
+      "handle": "finoa"
+    }
   },
   {
     "id": "solaris",
@@ -546,7 +630,11 @@
       "Finanzierung",
       "funding",
       "Seed"
-    ]
+    ],
+    "jobBoard": {
+      "provider": "personio",
+      "handle": "invest-nao"
+    }
   },
   {
     "id": "midas",
@@ -577,7 +665,11 @@
     "description": "Heat pump installation for homes.",
     "category": "Climate tech",
     "domain": "thermondo.de",
-    "aliases": []
+    "aliases": [],
+    "jobBoard": {
+      "provider": "personio",
+      "handle": "thermondo"
+    }
   },
   {
     "id": "trawa",
@@ -585,7 +677,11 @@
     "description": "AI-powered energy procurement for businesses.",
     "category": "Climate tech",
     "domain": "trawa.de",
-    "aliases": []
+    "aliases": [],
+    "jobBoard": {
+      "provider": "ashby",
+      "handle": "trawa"
+    }
   },
   {
     "id": "atlas-metrics",
@@ -618,7 +714,11 @@
       "Startup",
       "funding",
       "Finanzierung"
-    ]
+    ],
+    "jobBoard": {
+      "provider": "personio",
+      "handle": "dunia"
+    }
   },
   {
     "id": "terra-one",
@@ -644,7 +744,11 @@
     "description": "Process orchestration and automation.",
     "category": "Software",
     "domain": "camunda.com",
-    "aliases": []
+    "aliases": [],
+    "jobBoard": {
+      "provider": "ashby",
+      "handle": "camunda"
+    }
   },
   {
     "id": "spryker",
@@ -676,7 +780,11 @@
     "description": "Promotion and loyalty engine.",
     "category": "Software",
     "domain": "talon.one",
-    "aliases": []
+    "aliases": [],
+    "jobBoard": {
+      "provider": "greenhouse",
+      "handle": "talonone"
+    }
   },
   {
     "id": "productsup",
@@ -700,7 +808,11 @@
     "description": "Procurement software.",
     "category": "Software",
     "domain": "mercanis.com",
-    "aliases": []
+    "aliases": [],
+    "jobBoard": {
+      "provider": "personio",
+      "handle": "mercanis"
+    }
   },
   {
     "id": "topi",
@@ -722,7 +834,11 @@
       "Startup",
       "funding",
       "Finanzierung"
-    ]
+    ],
+    "jobBoard": {
+      "provider": "personio",
+      "handle": "topi"
+    }
   },
   {
     "id": "emnify",
@@ -730,7 +846,11 @@
     "description": "Cellular connectivity for IoT.",
     "category": "Software",
     "domain": "emnify.com",
-    "aliases": []
+    "aliases": [],
+    "jobBoard": {
+      "provider": "greenhouse",
+      "handle": "emnify"
+    }
   },
   {
     "id": "adjust",
@@ -873,7 +993,11 @@
       "startup",
       "edtech",
       "healthtech"
-    ]
+    ],
+    "jobBoard": {
+      "provider": "ashby",
+      "handle": "amboss"
+    }
   },
   {
     "id": "ariceum",
@@ -935,7 +1059,11 @@
     "description": "Tailor-made trip planning and booking.",
     "category": "Travel tech",
     "domain": "tourlane.de",
-    "aliases": []
+    "aliases": [],
+    "jobBoard": {
+      "provider": "ashby",
+      "handle": "tourlane"
+    }
   },
   {
     "id": "autodoc",
@@ -953,7 +1081,11 @@
     "domain": "distribusion.com",
     "aliases": [
       "Distribusion Technologies"
-    ]
+    ],
+    "jobBoard": {
+      "provider": "recruitee",
+      "handle": "distribusion"
+    }
   },
   {
     "id": "coachhub",
@@ -969,7 +1101,11 @@
     "description": "AI-powered learning app for students.",
     "category": "Education",
     "domain": "knowunity.de",
-    "aliases": []
+    "aliases": [],
+    "jobBoard": {
+      "provider": "ashby",
+      "handle": "knowunity"
+    }
   },
   {
     "id": "grid-esports",
@@ -989,7 +1125,11 @@
       "Riot",
       "Ubisoft",
       "Counter-Strike"
-    ]
+    ],
+    "jobBoard": {
+      "provider": "recruitee",
+      "handle": "grid"
+    }
   },
   {
     "id": "grover",
@@ -1013,7 +1153,11 @@
       "Finanzierung",
       "startup",
       "unicorn"
-    ]
+    ],
+    "jobBoard": {
+      "provider": "greenhouse",
+      "handle": "grover"
+    }
   },
   {
     "id": "urban-sports-club",
@@ -1021,7 +1165,11 @@
     "description": "Multi-sport fitness memberships.",
     "category": "Health tech",
     "domain": "urbansportsclub.com",
-    "aliases": []
+    "aliases": [],
+    "jobBoard": {
+      "provider": "personio",
+      "handle": "urbansportsclub"
+    }
   },
   {
     "id": "born",
@@ -1111,7 +1259,11 @@
     "description": "Desk and room booking for hybrid offices.",
     "category": "Software",
     "domain": "liz.solutions",
-    "aliases": []
+    "aliases": [],
+    "jobBoard": {
+      "provider": "personio",
+      "handle": "liz-smart-office-gmbh"
+    }
   },
   {
     "id": "formation",
@@ -1172,7 +1324,11 @@
     "description": "Korean skincare brand with natural ingredients.",
     "category": "E-commerce",
     "domain": "yepoda.com",
-    "aliases": []
+    "aliases": [],
+    "jobBoard": {
+      "provider": "ashby",
+      "handle": "yepoda"
+    }
   },
   {
     "id": "c1-green-chemicals",
@@ -1199,7 +1355,11 @@
       "funding",
       "Finanzierung",
       "Adlershof"
-    ]
+    ],
+    "jobBoard": {
+      "provider": "personio",
+      "handle": "c1-green-chemicals-ag"
+    }
   },
   {
     "id": "kaiko-systems",
@@ -1217,7 +1377,11 @@
     "domain": "cortea.ai",
     "aliases": [
       "Cortea AI"
-    ]
+    ],
+    "jobBoard": {
+      "provider": "ashby",
+      "handle": "cortea"
+    }
   },
   {
     "id": "holy",
@@ -1250,7 +1414,11 @@
       "funding",
       "Finanzierung",
       "Umsatz"
-    ]
+    ],
+    "jobBoard": {
+      "provider": "personio",
+      "handle": "holy"
+    }
   },
   {
     "id": "ucaneo",
@@ -1258,7 +1426,11 @@
     "description": "Electrochemical direct air capture of CO2.",
     "category": "Climate tech",
     "domain": "ucaneo.com",
-    "aliases": []
+    "aliases": [],
+    "jobBoard": {
+      "provider": "personio",
+      "handle": "ucaneo"
+    }
   },
   {
     "id": "axo-track",
@@ -1292,7 +1464,11 @@
       "funding",
       "Finanzierung",
       "Investment"
-    ]
+    ],
+    "jobBoard": {
+      "provider": "personio",
+      "handle": "axotrack"
+    }
   },
   {
     "id": "needle",
@@ -1329,7 +1505,11 @@
     "description": "Lithium-sulfur crystal battery technology.",
     "category": "Climate tech",
     "domain": "theion.de",
-    "aliases": []
+    "aliases": [],
+    "jobBoard": {
+      "provider": "personio",
+      "handle": "theion-gmbh"
+    }
   },
   {
     "id": "ecoligo",
@@ -1337,7 +1517,11 @@
     "description": "Solar-as-a-service for businesses in emerging markets.",
     "category": "Climate tech",
     "domain": "ecoligo.com",
-    "aliases": []
+    "aliases": [],
+    "jobBoard": {
+      "provider": "personio",
+      "handle": "ecoligo"
+    }
   },
   {
     "id": "reportassistant",
@@ -1402,7 +1586,11 @@
     "description": "Sustainability data platform for businesses.",
     "category": "Climate tech",
     "domain": "score4more.eu",
-    "aliases": []
+    "aliases": [],
+    "jobBoard": {
+      "provider": "personio",
+      "handle": "score4more-gmbh"
+    }
   },
   {
     "id": "jacasa",
@@ -1463,7 +1651,11 @@
       "Start-up",
       "funding",
       "Finanzierung"
-    ]
+    ],
+    "jobBoard": {
+      "provider": "personio",
+      "handle": "rex"
+    }
   },
   {
     "id": "concular",
@@ -1504,7 +1696,11 @@
     "description": "Short-break and hotel package travel.",
     "category": "Travel tech",
     "domain": "travelcircus.de",
-    "aliases": []
+    "aliases": [],
+    "jobBoard": {
+      "provider": "personio",
+      "handle": "travelcircus"
+    }
   },
   {
     "id": "flank",
@@ -1555,7 +1751,11 @@
       "Start-up",
       "funding",
       "Finanzierung"
-    ]
+    ],
+    "jobBoard": {
+      "provider": "personio",
+      "handle": "new-soul-gmbh"
+    }
   },
   {
     "id": "juhi",
@@ -1720,7 +1920,11 @@
     "description": "AI decision platform for financial risk.",
     "category": "Fintech",
     "domain": "taktile.com",
-    "aliases": []
+    "aliases": [],
+    "jobBoard": {
+      "provider": "ashby",
+      "handle": "taktile"
+    }
   },
   {
     "id": "ctrl-s",
@@ -1783,7 +1987,11 @@
       "Start-up",
       "funding",
       "Finanzierung"
-    ]
+    ],
+    "jobBoard": {
+      "provider": "personio",
+      "handle": "ygo"
+    }
   },
   {
     "id": "dsb",
@@ -1917,7 +2125,11 @@
       "Finanzierung",
       "funding",
       "Series A"
-    ]
+    ],
+    "jobBoard": {
+      "provider": "personio",
+      "handle": "lanch"
+    }
   },
   {
     "id": "wyrld",
@@ -1933,7 +2145,11 @@
     "description": "AI agents for back-office document processing.",
     "category": "AI",
     "domain": "hypatos.ai",
-    "aliases": []
+    "aliases": [],
+    "jobBoard": {
+      "provider": "personio",
+      "handle": "hypatos-gmbh"
+    }
   },
   {
     "id": "spark-e-fuels",
@@ -2125,7 +2341,11 @@
     "domain": "moleqlar.com",
     "aliases": [
       "MoleQlar Analytics"
-    ]
+    ],
+    "jobBoard": {
+      "provider": "personio",
+      "handle": "moleqlar"
+    }
   },
   {
     "id": "nodi-kids",
@@ -2409,7 +2629,11 @@
     "description": "AI and automation software for rail operations.",
     "category": "Mobility",
     "domain": "menlo79.com",
-    "aliases": []
+    "aliases": [],
+    "jobBoard": {
+      "provider": "personio",
+      "handle": "menlo79-gmbh"
+    }
   },
   {
     "id": "enapi",
@@ -2449,7 +2673,11 @@
     "domain": "projecteaden.com",
     "aliases": [
       "Eaden"
-    ]
+    ],
+    "jobBoard": {
+      "provider": "personio",
+      "handle": "project-eaden-1"
+    }
   },
   {
     "id": "ingarden",
@@ -2510,7 +2738,11 @@
       "Finanzierung",
       "Series A",
       "Series B"
-    ]
+    ],
+    "jobBoard": {
+      "provider": "ashby",
+      "handle": "nelly"
+    }
   },
   {
     "id": "perseus",
@@ -2535,7 +2767,11 @@
       "Startup",
       "funding",
       "Finanzierung"
-    ]
+    ],
+    "jobBoard": {
+      "provider": "personio",
+      "handle": "perseus"
+    }
   },
   {
     "id": "healthcaters",
@@ -2551,7 +2787,11 @@
     "description": "Federated AI for drug discovery.",
     "category": "AI",
     "domain": "apheris.com",
-    "aliases": []
+    "aliases": [],
+    "jobBoard": {
+      "provider": "personio",
+      "handle": "apheris"
+    }
   },
   {
     "id": "telli",
@@ -2577,7 +2817,11 @@
       "Finanzierung",
       "seed",
       "Y Combinator"
-    ]
+    ],
+    "jobBoard": {
+      "provider": "ashby",
+      "handle": "telli"
+    }
   },
   {
     "id": "dexter",
@@ -2772,7 +3016,11 @@
       "Startup",
       "funding",
       "Finanzierung"
-    ]
+    ],
+    "jobBoard": {
+      "provider": "ashby",
+      "handle": "moss"
+    }
   },
   {
     "id": "billie",
@@ -2823,7 +3071,11 @@
       "startup",
       "funding",
       "Finanzierung"
-    ]
+    ],
+    "jobBoard": {
+      "provider": "personio",
+      "handle": "vivid"
+    }
   },
   {
     "id": "candis",
@@ -2878,7 +3130,11 @@
       "startup",
       "funding",
       "Finanzierung"
-    ]
+    ],
+    "jobBoard": {
+      "provider": "recruitee",
+      "handle": "circula"
+    }
   },
   {
     "id": "banxware",
@@ -2886,7 +3142,11 @@
     "description": "Embedded lending for platforms.",
     "category": "Fintech",
     "domain": "banxware.com",
-    "aliases": []
+    "aliases": [],
+    "jobBoard": {
+      "provider": "personio",
+      "handle": "banxware"
+    }
   },
   {
     "id": "holvi",
@@ -2910,7 +3170,11 @@
     "description": "Card terminals and payments for merchants.",
     "category": "Fintech",
     "domain": "sumup.com",
-    "aliases": []
+    "aliases": [],
+    "jobBoard": {
+      "provider": "greenhouse",
+      "handle": "sumup"
+    }
   },
   {
     "id": "delivery-hero",
@@ -2918,7 +3182,11 @@
     "description": "Global food and quick-commerce delivery.",
     "category": "Food tech",
     "domain": "deliveryhero.com",
-    "aliases": []
+    "aliases": [],
+    "jobBoard": {
+      "provider": "smartrecruiters",
+      "handle": "deliveryhero"
+    }
   },
   {
     "id": "zalando",
@@ -2934,7 +3202,11 @@
     "description": "Meal-kit delivery.",
     "category": "Food tech",
     "domain": "hellofresh.com",
-    "aliases": []
+    "aliases": [],
+    "jobBoard": {
+      "provider": "greenhouse",
+      "handle": "hellofresh"
+    }
   },
   {
     "id": "flink",
@@ -3037,7 +3309,11 @@
       "funding",
       "Finanzierung",
       "Series C"
-    ]
+    ],
+    "jobBoard": {
+      "provider": "ashby",
+      "handle": "Rasa"
+    }
   },
   {
     "id": "merantix",
@@ -3048,7 +3324,11 @@
     "aliases": [
       "Merantix AI Campus",
       "Merantix Momentum"
-    ]
+    ],
+    "jobBoard": {
+      "provider": "personio",
+      "handle": "merantix"
+    }
   },
   {
     "id": "juna-ai",
@@ -3074,7 +3354,11 @@
       "funding",
       "Finanzierung",
       "seed"
-    ]
+    ],
+    "jobBoard": {
+      "provider": "personio",
+      "handle": "juna-ai"
+    }
   },
   {
     "id": "vara",
@@ -3134,7 +3418,11 @@
     "description": "Furnished mid-term apartment rentals.",
     "category": "Proptech",
     "domain": "wunderflats.com",
-    "aliases": []
+    "aliases": [],
+    "jobBoard": {
+      "provider": "greenhouse",
+      "handle": "wunderflats"
+    }
   },
   {
     "id": "homeday",
@@ -3158,7 +3446,11 @@
     "description": "Tendering and procurement software for construction.",
     "category": "Proptech",
     "domain": "cosuno.com",
-    "aliases": []
+    "aliases": [],
+    "jobBoard": {
+      "provider": "ashby",
+      "handle": "cosuno"
+    }
   },
   {
     "id": "lingoda",
@@ -3188,7 +3480,11 @@
       "Sprachpartner",
       "Sprachen",
       "Tripod Technology"
-    ]
+    ],
+    "jobBoard": {
+      "provider": "personio",
+      "handle": "tandem"
+    }
   },
   {
     "id": "ostrom",
@@ -3219,7 +3515,11 @@
       "Finanzierung",
       "Series A",
       "Series B"
-    ]
+    ],
+    "jobBoard": {
+      "provider": "ashby",
+      "handle": "Ostrom"
+    }
   },
   {
     "id": "klim",
@@ -3250,7 +3550,11 @@
       "Start-up",
       "funding",
       "Finanzierung"
-    ]
+    ],
+    "jobBoard": {
+      "provider": "ashby",
+      "handle": "klim"
+    }
   },
   {
     "id": "plan-a",
@@ -3324,7 +3628,11 @@
       "Start-up",
       "funding",
       "Finanzierung"
-    ]
+    ],
+    "jobBoard": {
+      "provider": "recruitee",
+      "handle": "vlyfoods"
+    }
   },
   {
     "id": "hometogo",
@@ -3370,7 +3678,11 @@
       "Start-up",
       "funding",
       "Finanzierung"
-    ]
+    ],
+    "jobBoard": {
+      "provider": "personio",
+      "handle": "miles-mobility"
+    }
   },
   {
     "id": "nia-health",

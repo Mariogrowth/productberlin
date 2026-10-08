@@ -2,7 +2,7 @@
 import catalogue from '../cloudflare/startups.json';
 import publishers from '../cloudflare/publishers.json';
 import { parseRssXml } from './rss-parser.mjs';
-import { handleApi, handleCollection, handleScheduled, handleSubscription } from './build/dist/js/productionLibrary/Productberlin-api-worker.mjs';
+import { handleApi, handleCollection, handleHiring, handleScheduled, handleSubscription } from './build/dist/js/productionLibrary/Productberlin-api-worker.mjs';
 
 const catalogueJson = JSON.stringify(catalogue);
 const publishersJson = JSON.stringify(publishers);
@@ -24,6 +24,14 @@ export default {
       const result = await handleCollection(
         request.method, request.headers.get('Authorization'), env.COLLECTOR_TOKEN, body, env.DB, catalogueJson, publishersJson,
       );
+      const headers = { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' };
+      if (result.allow) headers.Allow = result.allow;
+      return new Response(result.body, { status: result.status, headers });
+    }
+    if (url.pathname === '/api/internal/hiring') {
+      // Weekly open-role counts from the GitHub collector; bearer-token protected, like the news collection.
+      const body = request.method === 'POST' ? (await request.text()).slice(0, 1_000_001) : '';
+      const result = await handleHiring(request.method, request.headers.get('Authorization'), env.COLLECTOR_TOKEN, body, env.DB, catalogueJson);
       const headers = { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' };
       if (result.allow) headers.Allow = result.allow;
       return new Response(result.body, { status: result.status, headers });

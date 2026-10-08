@@ -173,8 +173,9 @@ val App =
                             if (ranking?.isMock == true) {
                                 "A preview with sample rankings and fictional stories."
                             } else {
-                                "This metric ranks up to ten catalogued Berlin startups by their press relevance counts " +
-                                    "over the previous seven UTC days, refreshing every Monday at 06:00 UTC " +
+                                "This metric ranks up to ten catalogued Berlin startups by their press momentum " +
+                                    "over the previous four UTC weeks, weighting recent weeks and news such as funding " +
+                                    "and launches most, refreshing every Monday at 06:00 UTC " +
                                     "as an indicator of media visibility rather than company quality."
                             }
                         )

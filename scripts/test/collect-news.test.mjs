@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { collect, compactFeed, headlineOf, protectNames, translateHeadlines, unprotectNames } from '../collect-news.mjs';
+import { collect, collectAll, compactFeed, headlineOf, protectNames, restoreNames, translateHeadlines, unprotectNames } from '../collect-news.mjs';
 
 const rss = id => `<rss version="2.0"><channel><item><title>Noxtua sammelt ${id} ein - Handelsblatt</title><link>https://news.google.com/rss/articles/${id}</link><guid isPermaLink="false">${id}</guid><pubDate>Wed, 30 Sep 2026 09:00:00 GMT</pubDate><description>long html</description><source url="https://www.handelsblatt.com">Handelsblatt</source></item></channel></rss>`;
 const plan = { due: true, collectionKey: '2026-10-05-trusted-v1', week: '2026-09-28 – 2026-10-04',
@@ -122,4 +122,50 @@ test('name protection keeps whole catalogue names and escapes XML', () => {
   assert.equal(protectNames('Langdock hits €50M ARR'), '<x>Langdock</x> hits €50M ARR');
   for (const text of ['Nox gegen Nightjet: Nox Mobility startet', 'Noxtua & C.H.BECK <Mehrheit>']) assert.equal(unprotectNames(protectNames(text)), text);
   assert.equal(headlineOf({ title: 'Der Zinsstreit geht weiter - WiWo', source: { '#text': 'WiWo' } }), 'Der Zinsstreit geht weiter');
+});
+
+test('decorations DeepL adds around protected names are removed, original ones kept', () => {
+  const original = '"Es ist wie tot da drin": Was bleibt nach dem Zalando-Aus in Erfurt?';
+  assert.equal(
+    restoreNames('"It’s as good as dead in there": What remains after the end of *<x>Zalando</x>* in Erfurt?', original),
+    '"It’s as good as dead in there": What remains after the end of Zalando in Erfurt?');
+  assert.equal(restoreNames('&apos;<x>Langdock</x>&apos; hits €50M ARR', 'Langdock knackt 50 Mio. ARR'), 'Langdock hits €50M ARR');
+  assert.equal(restoreNames('“<x>Nox</x>” starts night trains', '„Nox“ startet Nachtzüge'), '“Nox” starts night trains');
+  assert.equal(restoreNames('<x>Noxtua</x> &amp; C.H.BECK', 'Noxtua & C.H.BECK'), 'Noxtua & C.H.BECK');
+});
+
+test('translations use the cleaned names', async () => {
+  const fetchImpl = async () => ({ ok: true, json: async () => ({ translations: [
+    { detected_source_language: 'DE', text: 'What remains after the end of *<x>Zalando</x>* in Erfurt?' }] }) });
+  const result = await translateHeadlines(['Was bleibt nach dem Zalando-Aus in Erfurt?'], { apiKey: 'k:fx', fetchImpl, log: () => {} });
+  assert.equal(result.get('Was bleibt nach dem Zalando-Aus in Erfurt?'), 'What remains after the end of Zalando in Erfurt?');
+});
+
+test('one run works through history units until the edition, and never loops forever', async () => {
+  const units = [
+    { ...plan, mode: 'history', collectionKey: '2026-09-07-history' },
+    { ...plan, mode: 'history', collectionKey: '2026-09-14-history' },
+    { ...plan, mode: 'edition' },
+    { due: false, reason: 'published', collectionKey: plan.collectionKey },
+  ];
+  let planned = 0;
+  const posts = [];
+  const impl = async (url, init = {}) => {
+    const target = new URL(url);
+    if (target.hostname === 'news.google.com') return new Response(rss('x'));
+    if (init.method === 'POST') {
+      const body = JSON.parse(init.body);
+      posts.push(body.collectionKey);
+      return Response.json({ outcome: body.collectionKey.endsWith('-history') ? 'recorded' : 'published', collectionKey: body.collectionKey });
+    }
+    return Response.json(units[Math.min(planned++, units.length - 1)]);
+  };
+  const options = { baseUrl: 'https://site.test', token: 'secret', fetchImpl: impl, pauseMs: 0, retryPauseMs: 0, log: () => {} };
+  const results = await collectAll(options);
+  assert.deepEqual(results.map(r => r.outcome), ['recorded', 'recorded', 'published']);
+  assert.deepEqual(posts, ['2026-09-07-history', '2026-09-14-history', plan.collectionKey]);
+  // A Worker that kept planning history would stop at the bound; the next hourly run continues.
+  planned = 0; posts.length = 0;
+  units.splice(0, units.length, ...Array.from({ length: 9 }, (_, i) => ({ ...plan, mode: 'history', collectionKey: `w${i}-history` })));
+  assert.equal((await collectAll(options, 3)).length, 3);
 });

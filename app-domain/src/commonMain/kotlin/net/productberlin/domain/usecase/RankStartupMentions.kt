@@ -9,6 +9,19 @@ class RankStartupMentions {
     operator fun invoke(
         catalogue: List<StartupCandidate>,
         articles: List<NewsArticle>,
+    ): List<MentionRanking> =
+        matches(catalogue, articles)
+            // Ties go to the most recent coverage (ISO-8601 UTC timestamps sort chronologically), then the stable ID.
+            .sortedWith(
+                compareByDescending<MentionRanking> { it.mentionCount }
+                    .thenByDescending { ranking -> ranking.articles.maxOf { it.publishedAt } }
+                    .thenBy { it.company.id },
+            ).take(10)
+
+    /** Every catalogue company mentioned in [articles], with its distinct matching articles, in catalogue order. */
+    fun matches(
+        catalogue: List<StartupCandidate>,
+        articles: List<NewsArticle>,
     ): List<MentionRanking> {
         require(catalogue.map { it.id }.distinct().size == catalogue.size) { "Duplicate catalogue identities" }
         val unique = articles.distinctBy { it.id }.distinctBy { normalized(it.headline) to normalized(it.source) }
@@ -19,12 +32,6 @@ class RankStartupMentions {
                 val terms = CompanyTerms(company)
                 MentionRanking(company, headlines.filter { (_, title) -> terms.matches(title) }.map { it.first })
             }.filter { it.mentionCount > 0 }
-            // Ties go to the most recent coverage (ISO-8601 UTC timestamps sort chronologically), then the stable ID.
-            .sortedWith(
-                compareByDescending<MentionRanking> { it.mentionCount }
-                    .thenByDescending { ranking -> ranking.articles.maxOf { it.publishedAt } }
-                    .thenBy { it.company.id },
-            ).take(10)
     }
 
     fun mentions(
