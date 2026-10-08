@@ -113,7 +113,7 @@ before(async () => {
     },
   }));
   db = (await mf.getBindings()).DB;
-  for (const file of ['0001_initial.sql', '0002_weekly_collection.sql']) {
+  for (const file of ['0001_initial.sql', '0002_weekly_collection.sql', '0003_translated_headlines.sql']) {
     const sql = await readFile(resolve('cloudflare/migrations', file), 'utf8');
     await db.batch(sql.split(';').map(s => s.trim()).filter(Boolean).map(s => db.prepare(s)));
   }
@@ -154,7 +154,7 @@ test('scheduled collector publishes ten ranked companies and at most five dated 
     assert.match(startup.news[0].url, /^https:\/\/news.google.com\/rss\/articles\//);
     assert.equal(startup.news[0].source, 'Publisher');
   }
-  assert.equal((await db.prepare("SELECT status FROM collection_runs WHERE week_start='2026-09-28-trusted-v1'").first()).status, 'succeeded');
+  assert.equal((await db.prepare("SELECT status FROM collection_runs WHERE week_start='2026-09-28-trusted-v2'").first()).status, 'succeeded');
 });
 
 test('duplicate events skip collection, and a failed next week retains the previous published snapshot', async () => {
@@ -166,7 +166,7 @@ test('duplicate events skip collection, and a failed next week retains the previ
   mode = 'unavailable';
   assert.notEqual((await scheduled(weekOne + 7 * 86_400_000)).outcome, 'ok');
   assert.deepEqual(await ranking(), previous);
-  assert.equal((await db.prepare("SELECT status FROM collection_runs WHERE week_start='2026-10-05-trusted-v1'").first()).status, 'failed');
+  assert.equal((await db.prepare("SELECT status FROM collection_runs WHERE week_start='2026-10-05-trusted-v2'").first()).status, 'failed');
 });
 
 test('off-schedule events during a week neither refetch nor replace the published edition', async () => {
@@ -187,7 +187,7 @@ test('a failed Monday collection is retried for the same week by a later event t
   mode = 'success';
   assert.equal((await scheduled(weekOne + 3 * DAY)).outcome, 'ok');
   assert.equal((await ranking()).weekLabel, '2026-09-21 – 2026-09-27');
-  assert.equal((await db.prepare("SELECT status FROM collection_runs WHERE week_start='2026-09-28-trusted-v1'").first()).status, 'succeeded');
+  assert.equal((await db.prepare("SELECT status FROM collection_runs WHERE week_start='2026-09-28-trusted-v2'").first()).status, 'succeeded');
 });
 
 test('D1 publication rolls back all writes on failure, then a retry publishes with movement', async () => {
@@ -213,11 +213,11 @@ test('empty and malformed feeds retain data; an active lease skips and an expire
     assert.notEqual((await scheduled(next)).outcome, 'ok');
     assert.deepEqual(await ranking(), previous);
   }
-  await db.prepare("UPDATE collection_runs SET status='running',lease_until='2099-01-01T00:00:00.000Z' WHERE week_start='2026-10-12-trusted-v1'").run();
+  await db.prepare("UPDATE collection_runs SET status='running',lease_until='2099-01-01T00:00:00.000Z' WHERE week_start='2026-10-12-trusted-v2'").run();
   const count = calls.length;
   assert.equal((await scheduled(next)).outcome, 'ok');
   assert.equal(calls.length, count);
-  await db.prepare("UPDATE collection_runs SET lease_until='2000-01-01T00:00:00.000Z' WHERE week_start='2026-10-12-trusted-v1'").run();
+  await db.prepare("UPDATE collection_runs SET lease_until='2000-01-01T00:00:00.000Z' WHERE week_start='2026-10-12-trusted-v2'").run();
   mode = 'success';
   assert.equal((await scheduled(next)).outcome, 'ok');
   assert.equal((await ranking()).weekLabel, '2026-10-05 – 2026-10-11');
@@ -245,7 +245,7 @@ test('every stage of the D1 batch is atomic, including the final success audit w
       assert.notEqual((await scheduled(weekOne + 7 * 86_400_000)).outcome, 'ok', target);
       assert.deepEqual(await contents(), stored, target);
       assert.deepEqual(await ranking(), previous, target);
-      const run = await db.prepare("SELECT status,error FROM collection_runs WHERE week_start='2026-10-05-trusted-v1'").first();
+      const run = await db.prepare("SELECT status,error FROM collection_runs WHERE week_start='2026-10-05-trusted-v2'").first();
       assert.equal(run.status, 'failed');
       assert.ok(run.error.length > 0 && run.error.length <= 500);
     } finally {
@@ -272,7 +272,7 @@ test('a worker whose lease was replaced cannot publish or mark the new owner fai
   mode = 'lost-lease';
   assert.notEqual((await scheduled(weekOne + 7 * 86_400_000)).outcome, 'ok');
   assert.deepEqual(await contents(), stored);
-  const run = await db.prepare("SELECT lease_token,status,error FROM collection_runs WHERE week_start='2026-10-05-trusted-v1'").first();
+  const run = await db.prepare("SELECT lease_token,status,error FROM collection_runs WHERE week_start='2026-10-05-trusted-v2'").first();
   assert.deepEqual(run, { lease_token: 'new-owner', status: 'running', error: null });
 });
 
@@ -387,6 +387,7 @@ test('the GitHub collector endpoint plans the current week, publishes posted fee
   const company = catalogue[0];
   const feed = { rss: { channel: { item: [{
     title: `${company.name} ${company.contextKeywords?.[0] ?? ''} launches product - Handelsblatt`,
+    translatedTitle: `${company.name} launches a product (translated)`,
     link: 'https://news.google.com/rss/articles/gh1', guid: 'gh1', pubDate: new Date(weekStart + 2 * DAY).toUTCString(),
     source: { '#text': 'Handelsblatt', '@_url': 'https://www.handelsblatt.com' },
   }] } } };
@@ -397,6 +398,7 @@ test('the GitHub collector endpoint plans the current week, publishes posted fee
   const published = await ranking();
   assert.equal(published.weekLabel, plan.week);
   assert.deepEqual(published.startups.map(s => s.id), [company.id]);
+  assert.equal(published.startups[0].news[0].translatedHeadline, `${company.name} launches a product (translated)`);
   assert.deepEqual(await (await call()).json(), { due: false, reason: 'published', collectionKey: plan.collectionKey });
   assert.equal((await (await call('POST', JSON.stringify({ collectionKey: plan.collectionKey, results }))).json()).outcome, 'skipped');
 });

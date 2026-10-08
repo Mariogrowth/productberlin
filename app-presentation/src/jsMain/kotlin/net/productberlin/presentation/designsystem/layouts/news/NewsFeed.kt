@@ -42,6 +42,7 @@ val NewsFeed =
                             +story.publisher
                         }
                         h4 {
+                            story.originalHeadline?.let { title = "Original: $it" }
                             val link = story.url?.takeIf { Regex("^https://[^\\s/<>]+/[^\\s<>]*$").matches(it) }
                             if (link != null) {
                                 a {

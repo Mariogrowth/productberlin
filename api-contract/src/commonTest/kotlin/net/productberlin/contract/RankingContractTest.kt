@@ -41,6 +41,7 @@ class RankingContractTest {
                 "2026-09-25T12:00:00Z",
                 "https://news.google.com/rss/articles/a?oc=5",
                 "A summary",
+                "Founders: \"AI\" & growth",
             )
         val startup =
             StartupDto(

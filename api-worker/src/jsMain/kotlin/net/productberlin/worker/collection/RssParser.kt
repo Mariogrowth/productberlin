@@ -30,7 +30,14 @@ internal class RssParser(
             if (headline.isBlank() || source.isBlank() || !time.isFinite() || !safeGoogleLink(url)) return@mapNotNull null
             if (!allowPublisher(source, sourceUrl(item.source))) return@mapNotNull null
             val id = nodeText(item.guid).ifBlank { url.substringBefore('?') }
-            NewsArticle(id.take(1000), headline.take(500), source.take(160), Date(time).toISOString(), url)
+            NewsArticle(
+                id.take(1000),
+                headline.take(500),
+                source.take(160),
+                Date(time).toISOString(),
+                url,
+                translatedHeadline = text(item.translatedTitle).takeIf { it.isNotBlank() && it != headline }?.take(500),
+            )
         }
     }
 

@@ -33,3 +33,4 @@ jobs:
         env:
           COLLECTOR_URL: ${{ vars.DEPLOY_URL }}
           COLLECTOR_TOKEN: ${{ secrets.COLLECTOR_TOKEN }}
+          DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}

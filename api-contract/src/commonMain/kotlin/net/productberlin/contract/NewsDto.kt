@@ -10,4 +10,5 @@ data class NewsDto(
     val publishedAt: String,
     val url: String? = null,
     val summary: String? = null,
+    val translatedHeadline: String? = null,
 )
