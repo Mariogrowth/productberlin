@@ -43,13 +43,20 @@ h3 { margin: 0; font-size: 16px; letter-spacing: -.3px; font-weight: 650; }
 .movement { font-size: 10px; font-weight: 600; white-space: nowrap; }
 .up { color: #099945; }.down { color: #a58b7f; }.steady { color: #96969b; }.new { color: #4949dc; font-size: 8px; letter-spacing: .4px; background: #f0f0ff; padding: 3px 4px; border-radius: 3px; }
 .company-description { margin: 4px 0 0; font-size: 11.5px; color: #6b6b72; line-height: 1.4; }
-.why-button { background: white; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 7px; list-style: none; border: 1px solid #dedee3; border-radius: 12px; color: #818187; font-size: 11px; height: 32px; transition: background .15s, color .15s; }
+.why-button { background: white; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 7px; list-style: none; border: 1px solid #dedee3; border-radius: 12px; color: #818187; font-size: 11px; height: 32px; scroll-margin: 16px; transition: background .15s, color .15s; }
 summary::-webkit-details-marker { display: none; }
 .why-button:hover { color: #2424ff; background: #f7f7ff; border-color: #bbbbfa; }
-.chevron { border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; width: 5px; height: 5px; transform: translateY(-2px) rotate(45deg); }
+.chevron { border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; width: 5px; height: 5px; transform: translateY(-2px) rotate(45deg); transition: transform .28s cubic-bezier(.2, .7, .2, 1); }
 .why-button[aria-expanded="true"] .chevron { transform: translateY(1px) rotate(225deg); }
 .why-button[aria-expanded="true"] { background: #f3f3ff; color: #2424dd; border-color: #dadaff; }
-.why-content { grid-column: 2 / -1; margin-top: 17px; border-radius: 10px; background: #f8f8fc; padding: 18px; }
+/* The panel stays mounted so its height can animate: a one-row grid moves between 1fr and 0fr. Opening eases out over
+   280ms; closing is quicker, and visibility flips only after the fade so collapsed news is not find-in-page text. */
+.why-content { grid-column: 2 / -1; display: grid; grid-template-rows: 1fr; opacity: 1; visibility: visible; border-radius: 10px; transition: grid-template-rows .28s cubic-bezier(.2, .7, .2, 1), opacity .22s ease-out, visibility 0s; }
+.why-content.is-collapsed { grid-template-rows: 0fr; opacity: 0; visibility: hidden; transition: grid-template-rows .2s cubic-bezier(.4, 0, .6, 1), opacity .15s ease-in, visibility 0s .2s; }
+/* Clips the content while the row shrinks; the 3px inset keeps focus outlines visible. */
+.why-inner { min-height: 0; overflow: hidden; margin: -3px; padding: 3px; transition: transform .28s cubic-bezier(.2, .7, .2, 1); }
+.why-inner::before { content: ""; display: block; height: 17px; }
+.why-content.is-collapsed .why-inner { transform: translateY(-4px); transition-duration: .2s; }
 .category { display: block; margin-bottom: 16px; color: #4b4bc7; font-size: 9px; letter-spacing: .8px; text-transform: uppercase; font-weight: 650; }
 .news-story { border-top: 1px solid #e6e6f0; padding-top: 12px; }
 .story-meta { color: #7c7c89; font-size: 9px; }
@@ -85,7 +92,6 @@ footer > p { font-size: 10px; color: #a0a0a7; margin: 9px 0 13px; }
 @media (max-width: 360px) { .page-content { margin: 0 16px; }.startup-row { column-gap: 8px; } h3 { font-size: 12px; }.company-description { font-size: 9px; } }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 
-.why-content.is-collapsed { display: none; }
 
 .why-content { background: transparent; padding: 0; }
 @media (max-width: 540px) { .why-content { grid-column: 1 / -1; padding: 0; } }

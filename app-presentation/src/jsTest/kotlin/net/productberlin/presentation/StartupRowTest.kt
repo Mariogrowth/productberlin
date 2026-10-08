@@ -11,10 +11,13 @@ import net.productberlin.presentation.testing.ComponentTest
 import react.create
 import react.dom.flushSync
 import web.cssom.ClassName
+import web.cssom.getComputedStyle
 import web.dom.document
 import web.events.Event
 import web.events.EventType
 import web.html.HTMLButtonElement
+import web.html.HTMLElement
+import web.window.window
 
 /** Existing behavior baseline; Figma visual parity is verified separately once the design is accessible. */
 class StartupRowTest : ComponentTest() {
@@ -86,6 +89,49 @@ class StartupRowTest : ComponentTest() {
         flushSync { less.click() }
         assertEquals("false", why.getAttribute("aria-expanded"))
         assertEquals(why, document.activeElement)
+    }
+
+    @Test
+    fun collapsedNewsTakesNoSpaceAndIsInertWhileOpeningAndClosingAnimate() {
+        render(
+            StartupRow.create {
+                company = this@StartupRowTest.company
+                position = 1
+            },
+        )
+        val why = container.querySelector(".why-button")!!.unsafeCast<HTMLButtonElement>()
+        val content = assertNotNull(container.querySelector("#reason-almedia")).unsafeCast<HTMLElement>()
+
+        // Collapsed: mounted for the animation, but zero height, hidden, and out of tab order and the a11y tree.
+        assertTrue(content.hasAttribute("inert"))
+        assertEquals(0, content.offsetHeight)
+        assertEquals("hidden", getComputedStyle(content).visibility)
+
+        flushSync { why.click() }
+        assertTrue(!content.hasAttribute("inert"))
+        assertEquals("visible", getComputedStyle(content).visibility)
+        val transitions = getComputedStyle(content).transitionProperty
+        assertTrue("grid-template-rows" in transitions && "opacity" in transitions, transitions)
+        assertTrue("transform" in getComputedStyle(container.querySelector(".chevron")!!).transitionProperty)
+
+        flushSync { why.click() }
+        assertTrue(content.hasAttribute("inert"))
+    }
+
+    @Test
+    fun showLessReturnsFocusWithoutScrollingWhenWhyIsVisible() {
+        render(
+            StartupRow.create {
+                company = this@StartupRowTest.company
+                position = 1
+            },
+        )
+        val why = container.querySelector(".why-button")!!.unsafeCast<HTMLButtonElement>()
+        flushSync { why.click() }
+        val before = window.scrollY
+        flushSync { container.querySelector(".pb-news-feed button")!!.unsafeCast<HTMLButtonElement>().click() }
+        assertEquals(why, document.activeElement)
+        assertEquals(before, window.scrollY)
     }
 
     @Test
