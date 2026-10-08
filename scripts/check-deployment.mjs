@@ -18,6 +18,8 @@ for (const path of [
   'cloudflare/publishers.json',
   'cloudflare/migrations/0002_weekly_collection.sql',
   'cloudflare/migrations/0003_translated_headlines.sql',
+  'cloudflare/migrations/0004_hiring_counts.sql',
+  'scripts/collect-jobs.mjs',
   'api-worker/build/dist/js/productionLibrary/Productberlin-api-worker.mjs',
   'webApp/build/dist/js/productionExecutable/index.html',
   'webApp/build/dist/js/productionExecutable/productberlin.js',

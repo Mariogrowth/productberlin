@@ -113,7 +113,7 @@ before(async () => {
     },
   }));
   db = (await mf.getBindings()).DB;
-  for (const file of ['0001_initial.sql', '0002_weekly_collection.sql', '0003_translated_headlines.sql']) {
+  for (const file of ['0001_initial.sql', '0002_weekly_collection.sql', '0003_translated_headlines.sql', '0004_hiring_counts.sql']) {
     const sql = await readFile(resolve('cloudflare/migrations', file), 'utf8');
     await db.batch(sql.split(';').map(s => s.trim()).filter(Boolean).map(s => db.prepare(s)));
   }
@@ -124,7 +124,7 @@ after(async () => {
 });
 
 beforeEach(async () => {
-  await db.batch(['news_articles', 'ranking_entries', 'ranking_snapshots', 'startups', 'collection_runs'].map(table => db.prepare(`DELETE FROM ${table}`)));
+  await db.batch(['news_articles', 'ranking_entries', 'ranking_snapshots', 'startups', 'collection_runs', 'hiring_counts', 'hiring_runs'].map(table => db.prepare(`DELETE FROM ${table}`)));
   calls = [];
   mode = 'success';
   takeoverDone = false;
@@ -324,7 +324,7 @@ test('rank movement ignores newer mock, draft and incomplete earlier-week snapsh
 test('untrusted publishers neither count nor show, and syndicated headlines show once', async () => {
   assert.equal((await scheduled(weekOne)).outcome, 'ok');
   const baseline = Object.fromEntries((await ranking()).startups.map(s => [s.id, s.mentionCount]));
-  await db.batch(['news_articles', 'ranking_entries', 'ranking_snapshots', 'startups', 'collection_runs'].map(table => db.prepare(`DELETE FROM ${table}`)));
+  await db.batch(['news_articles', 'ranking_entries', 'ranking_snapshots', 'startups', 'collection_runs', 'hiring_counts', 'hiring_runs'].map(table => db.prepare(`DELETE FROM ${table}`)));
   mode = 'publishers';
   assert.equal((await scheduled(weekOne)).outcome, 'ok');
   const filtered = await ranking();
@@ -401,4 +401,28 @@ test('the GitHub collector endpoint plans the current week, publishes posted fee
   assert.equal(published.startups[0].news[0].translatedHeadline, `${company.name} launches a product (translated)`);
   assert.deepEqual(await (await call()).json(), { due: false, reason: 'published', collectionKey: plan.collectionKey });
   assert.equal((await (await call('POST', JSON.stringify({ collectionKey: plan.collectionKey, results }))).json()).outcome, 'skipped');
+});
+
+test('the hiring endpoint plans the catalogue job boards, stores one week of counts once, then reports it recorded', async () => {
+  const call = (method = 'GET', body, token = COLLECTOR_TOKEN) => mf.dispatchFetch('https://local.test/api/internal/hiring', {
+    method, body, headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+  });
+  assert.equal((await call('GET', undefined, 'wrong')).status, 401);
+  const plan = await (await call()).json();
+  assert.equal(plan.due, true, JSON.stringify(plan).slice(0, 300));
+  const withBoards = fullCatalogue.filter(c => c.jobBoard);
+  assert.deepEqual(plan.boards, withBoards.map(c => ({ startupId: c.id, ...c.jobBoard })), 'every catalogue job board, nothing else');
+  const results = plan.boards.map((board, i) => (i === 0 ? { ...board, error: 'HTTP 503' } : { ...board, totalJobs: i + 2, berlinJobs: 1 }));
+  const posted = await call('POST', JSON.stringify({ week: plan.week, results }));
+  assert.equal(posted.status, 200, await posted.clone().text());
+  assert.deepEqual(await posted.json(), { outcome: 'recorded', week: plan.week, boards: plan.boards.length - 1, failed: 1 });
+  const run = await db.prepare('SELECT boards, failed FROM hiring_runs WHERE week_start=?').bind(plan.week).first();
+  assert.deepEqual({ ...run }, { boards: plan.boards.length - 1, failed: 1 });
+  const rows = (await db.prepare('SELECT startup_id, provider, total_jobs, berlin_jobs FROM hiring_counts WHERE week_start=? ORDER BY startup_id').bind(plan.week).all()).results;
+  assert.equal(rows.length, plan.boards.length - 1);
+  const second = plan.boards[1];
+  assert.deepEqual({ ...rows.find(r => r.startup_id === second.startupId) }, { startup_id: second.startupId, provider: second.provider, total_jobs: 3, berlin_jobs: 1 });
+  assert.deepEqual(await (await call()).json(), { due: false, reason: 'recorded', week: plan.week });
+  assert.equal((await (await call('POST', JSON.stringify({ week: plan.week, results }))).json()).outcome, 'already_recorded');
+  assert.equal((await db.prepare('SELECT COUNT(*) AS n FROM hiring_counts').first()).n, plan.boards.length - 1, 'a repeated post adds nothing');
 });

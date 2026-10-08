@@ -6,6 +6,7 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
 import net.productberlin.domain.entity.StartupCandidate
+import net.productberlin.worker.bearerRejection
 import net.productberlin.worker.newsletter.EndpointResponse
 import net.productberlin.worker.repository.CollectionRepository
 
@@ -28,8 +29,7 @@ internal class CollectionEndpoint(
         authorization: String?,
         body: String,
     ): EndpointResponse {
-        val token = expectedToken?.takeIf { it.length >= MIN_TOKEN_LENGTH } ?: return EndpointResponse(503, error("not_configured"))
-        if (!constantTimeEquals(authorization.orEmpty(), "Bearer $token")) return EndpointResponse(401, error("unauthorized"))
+        bearerRejection(expectedToken, authorization)?.let { return it }
         return when (method) {
             "GET" -> plan()
             "POST" -> collect(body)
@@ -99,19 +99,7 @@ internal class CollectionEndpoint(
 
     private fun error(code: String) = """{"error":"$code"}"""
 
-    private fun constantTimeEquals(
-        a: String,
-        b: String,
-    ): Boolean {
-        var difference = a.length xor b.length
-        for (i in 0 until maxOf(a.length, b.length)) {
-            difference = difference or (a.getOrElse(i) { ' ' }.code xor b.getOrElse(i) { ' ' }.code)
-        }
-        return difference == 0
-    }
-
     private companion object {
-        const val MIN_TOKEN_LENGTH = 32
         const val MAX_BODY = 8_000_000
     }
 }
