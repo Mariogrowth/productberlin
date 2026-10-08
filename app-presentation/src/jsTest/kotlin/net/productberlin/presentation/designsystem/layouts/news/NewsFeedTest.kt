@@ -66,4 +66,29 @@ class NewsFeedTest : DesignSystemTest() {
         render(NewsFeed.create { stories = emptyList() })
         assertTrue(container.textContent.orEmpty().contains("No recent stories available."))
     }
+
+    @Test
+    fun aTranslatedHeadlineOffersTheOriginalOnHover() {
+        themed()
+        render(
+            NewsFeed.create {
+                stories =
+                    listOf(
+                        NewsStory(
+                            "t",
+                            "Delivery service warns customers",
+                            "Spiegel",
+                            "2026-09-28",
+                            null,
+                            originalHeadline = "Lieferdienst warnt Kunden",
+                        ),
+                        NewsStory("e", "Already English", "Dealroom", "2026-09-30", null),
+                    )
+            },
+        )
+        val headings = container.querySelectorAll("h4")
+        assertEquals("Delivery service warns customers", headings.item(0)?.textContent)
+        assertEquals("Original: Lieferdienst warnt Kunden", headings.item(0)?.getAttribute("title"))
+        assertEquals(null, headings.item(1)?.getAttribute("title"))
+    }
 }

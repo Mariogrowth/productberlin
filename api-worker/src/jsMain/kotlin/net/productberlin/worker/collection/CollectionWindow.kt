@@ -66,7 +66,7 @@ internal data class CollectionWindow(
     private fun quoted(value: String): String = "\"${value.replace("\"", "")}\""
 
     companion object {
-        const val POLICY_VERSION = "trusted-v1"
+        const val POLICY_VERSION = "trusted-v2"
         const val DAY = 86_400_000.0
 
         /** Google ignores query words beyond about 32; two are taken by the date range. */

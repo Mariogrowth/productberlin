@@ -109,10 +109,10 @@ internal class D1CollectionRepository(
                 ),
                 statement(
                     """
-                    INSERT INTO news_articles (id,snapshot_id,startup_id,headline,source,url,published_at,summary)
+                    INSERT INTO news_articles (id,snapshot_id,startup_id,headline,source,url,published_at,summary,translated_headline)
                     SELECT ? || ':' || json_extract(s.value,'$.id') || ':' || n.key,?,json_extract(s.value,'$.id'),
                         json_extract(n.value,'$.headline'),json_extract(n.value,'$.source'),json_extract(n.value,'$.url'),
-                        json_extract(n.value,'$.publishedAt'),json_extract(n.value,'$.summary')
+                        json_extract(n.value,'$.publishedAt'),json_extract(n.value,'$.summary'),json_extract(n.value,'$.translatedHeadline')
                     FROM json_each(?, '$.startups') s JOIN json_each(s.value,'$.news') n WHERE $draft
                     """.trimIndent(),
                     snapshot,

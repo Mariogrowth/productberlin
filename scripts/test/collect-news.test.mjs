@@ -1,18 +1,24 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { collect, compactFeed } from '../collect-news.mjs';
+import { collect, compactFeed, headlineOf, protectNames, translateHeadlines, unprotectNames } from '../collect-news.mjs';
 
-const rss = id => `<rss version="2.0"><channel><item><title>Noxtua raises ${id} - Handelsblatt</title><link>https://news.google.com/rss/articles/${id}</link><guid isPermaLink="false">${id}</guid><pubDate>Wed, 30 Sep 2026 09:00:00 GMT</pubDate><description>long html</description><source url="https://www.handelsblatt.com">Handelsblatt</source></item></channel></rss>`;
+const rss = id => `<rss version="2.0"><channel><item><title>Noxtua sammelt ${id} ein - Handelsblatt</title><link>https://news.google.com/rss/articles/${id}</link><guid isPermaLink="false">${id}</guid><pubDate>Wed, 30 Sep 2026 09:00:00 GMT</pubDate><description>long html</description><source url="https://www.handelsblatt.com">Handelsblatt</source></item></channel></rss>`;
 const plan = { due: true, collectionKey: '2026-10-05-trusted-v1', week: '2026-09-28 – 2026-10-04',
   start: '2026-09-28T00:00:00.000Z', end: '2026-10-05T00:00:00.000Z', searches: [
   { query: 'after:2026-09-28 before:2026-10-05 ("Noxtua")', language: 'en' },
   { query: 'after:2026-09-28 before:2026-10-05 ("Noxtua")', language: 'de' },
 ] };
 
-function fakeFetch({ planBody = plan, google = () => 200, postStatus = 200 } = {}) {
-  const calls = { google: [], posts: [], headers: [] };
+function fakeFetch({ planBody = plan, google = () => 200, postStatus = 200, deepl = 200 } = {}) {
+  const calls = { google: [], posts: [], headers: [], deepl: [] };
   const impl = async (url, init = {}) => {
     const target = new URL(url);
+    if (target.hostname.endsWith('deepl.com')) {
+      const request = JSON.parse(init.body);
+      calls.deepl.push({ host: target.hostname, auth: init.headers.Authorization, request });
+      if (deepl !== 200) return new Response('Quota exceeded', { status: deepl });
+      return Response.json({ translations: request.text.map(text => ({ detected_source_language: 'DE', text: text.replace(' sammelt ', ' raises ').replace(' ein', '') })) });
+    }
     if (target.hostname === 'news.google.com') {
       calls.google.push(`${target.searchParams.get('hl')} ${target.searchParams.get('q')}`);
       const status = google(calls.google.length);
@@ -78,4 +84,42 @@ test('compaction keeps only in-week trusted items and the fields the Worker read
     { title: 't', link: 'l', guid: 'g', pubDate: 'Wed, 30 Sep 2026 09:00:00 GMT', source: source('https://www.handelsblatt.com') },
   ] } } });
   assert.deepEqual(compactFeed({}, week), { rss: { channel: { item: [] } } });
+});
+
+test('German headlines are translated with company names protected; the original stays for matching', async () => {
+  const fake = fakeFetch();
+  await run(fake, { deeplApiKey: 'key:fx' });
+  assert.equal(fake.calls.deepl.length, 1);
+  const { host, auth, request } = fake.calls.deepl[0];
+  assert.equal(host, 'api-free.deepl.com', 'free-plan keys end in :fx');
+  assert.equal(auth, 'DeepL-Auth-Key key:fx');
+  assert.deepEqual({ ...request, text: undefined }, { target_lang: 'EN-GB', tag_handling: 'xml', ignore_tags: ['x'], text: undefined });
+  assert.ok(request.text.every(t => t.startsWith('<x>Noxtua</x> sammelt')), JSON.stringify(request.text));
+  const item = fake.calls.posts[0].results[0].feed.rss.channel.item[0];
+  assert.equal(item.title, 'Noxtua sammelt a1 ein - Handelsblatt', 'the original title is untouched');
+  assert.equal(item.translatedTitle, 'Noxtua raises a1');
+});
+
+test('without a DeepL key, or when DeepL fails, collection still posts untranslated headlines', async () => {
+  for (const [options, deepl] of [[{}, 200], [{ deeplApiKey: 'paid-key' }, 456]]) {
+    const fake = fakeFetch({ deepl });
+    assert.equal((await run(fake, options)).outcome, 'published');
+    assert.equal(fake.calls.posts[0].results[0].feed.rss.channel.item[0].translatedTitle, undefined);
+    if (options.deeplApiKey) assert.equal(fake.calls.deepl[0].host, 'api.deepl.com', 'paid keys use the paid endpoint');
+  }
+});
+
+test('English headlines and unchanged texts are not stored as translations', async () => {
+  const fetchImpl = async (_url, init) => Response.json({ translations: JSON.parse(init.body).text.map((text, i) =>
+    i === 0 ? { detected_source_language: 'EN', text } : { detected_source_language: 'DE', text: unprotectNames(text) }) });
+  const result = await translateHeadlines(['Langdock hits €50M ARR', 'n8n'], { apiKey: 'k:fx', fetchImpl, log: () => {} });
+  assert.equal(result.size, 0);
+});
+
+test('name protection keeps whole catalogue names and escapes XML', () => {
+  assert.equal(protectNames('Nox gegen Nightjet: Nox Mobility startet'), '<x>Nox</x> gegen Nightjet: <x>Nox Mobility</x> startet');
+  assert.equal(protectNames('Noxtua & C.H.BECK <Mehrheit>'), '<x>Noxtua</x> &amp; C.H.BECK &lt;Mehrheit&gt;');
+  assert.equal(protectNames('Langdock hits €50M ARR'), '<x>Langdock</x> hits €50M ARR');
+  for (const text of ['Nox gegen Nightjet: Nox Mobility startet', 'Noxtua & C.H.BECK <Mehrheit>']) assert.equal(unprotectNames(protectNames(text)), text);
+  assert.equal(headlineOf({ title: 'Der Zinsstreit geht weiter - WiWo', source: { '#text': 'WiWo' } }), 'Der Zinsstreit geht weiter');
 });

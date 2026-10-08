@@ -47,6 +47,7 @@ internal class D1StartupRepository(
                                 it.published_at as String,
                                 it.url as String?,
                                 it.summary as String?,
+                                it.translated_headline as String?,
                             )
                         },
                 )
@@ -72,7 +73,7 @@ private val RANKING_QUERY =
         ORDER BY week_start DESC, created_at DESC, id DESC LIMIT 1
     )
     SELECT latest.week_label, latest.is_mock, latest.created_at, latest.search_query, latest.article_count, s.id AS startup_id, s.name, s.description, s.category,
-           e.movement, e.reason, e.mention_count, n.url, n.summary, n.id AS news_id, n.headline, n.source, n.published_at
+           e.movement, e.reason, e.mention_count, n.url, n.summary, n.translated_headline, n.id AS news_id, n.headline, n.source, n.published_at
     FROM latest
     JOIN ranking_entries e ON e.snapshot_id = latest.id
     JOIN startups s ON s.id = e.startup_id

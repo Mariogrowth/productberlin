@@ -7,4 +7,6 @@ data class NewsArticle(
     val publishedAt: String,
     val url: String? = null,
     val summary: String? = null,
+    /** English translation of a non-English [headline], for display only; matching always uses [headline]. */
+    val translatedHeadline: String? = null,
 )

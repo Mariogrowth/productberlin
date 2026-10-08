@@ -99,7 +99,7 @@ test('seeded D1 serves exactly the shared mock contract and is idempotent', asyn
   assert.deepEqual(actual, {
     ...expected, isMock: true, updatedAt: '2026-09-13T00:00:00Z', searchQuery: null, articleCount: null,
     startups: expected.startups.map(s => ({
-      ...s, mentionCount: null, logoUrl: logoUrl(s.id), logoFallbackUrl: logoUrl(s.id, 'logo'), news: s.news.map(n => ({ ...n, url: null, summary: null })),
+      ...s, mentionCount: null, logoUrl: logoUrl(s.id), logoFallbackUrl: logoUrl(s.id, 'logo'), news: s.news.map(n => ({ ...n, url: null, summary: null, translatedHeadline: null })),
     })),
   });
   await seed();
