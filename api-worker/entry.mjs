@@ -38,9 +38,12 @@ export default {
     }
     if (url.pathname === '/api/key-check') {
       // Prototype key checker: reads only what the given site sends to every visitor. Never cached.
-      const result = await handleKeyCheck(request.method, url.searchParams.get('domain'));
+      // One scan per visitor per minute (KEY_CHECK_LIMITER in wrangler.json), counted only for valid domains.
+      const client = request.headers.get('CF-Connecting-IP') ?? 'unknown';
+      const result = await handleKeyCheck(request.method, url.searchParams.get('domain'), env.KEY_CHECK_LIMITER ?? null, client);
       const headers = { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' };
       if (result.allow) headers.Allow = result.allow;
+      if (result.retryAfter) headers['Retry-After'] = String(result.retryAfter);
       return new Response(result.body, { status: result.status, headers });
     }
     if (url.pathname === '/api/subscriptions') {

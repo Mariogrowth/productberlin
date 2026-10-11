@@ -147,6 +147,10 @@ val KeyCheckPage =
                             }
                         }
 
+                        KeyScanResult.RateLimited -> {
+                            Problem { message = "One check per minute, please. Try again in a minute." }
+                        }
+
                         KeyScanResult.Unavailable -> {
                             Problem { message = "The checker is unavailable right now. Please try again." }
                         }

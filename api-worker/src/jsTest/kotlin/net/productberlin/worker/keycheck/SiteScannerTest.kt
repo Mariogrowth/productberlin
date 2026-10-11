@@ -110,15 +110,35 @@ class SiteScannerTest {
                 FakeSite(
                     mapOf("https://myapp.com/" to ok("<script>const k='$openAiKey'</script>")),
                 )
-            val response = keyCheck("GET", "https://MyApp.com/pricing", site)
+            val response = keyCheck("GET", "https://MyApp.com/pricing", site) { true }
             assertEquals(200, response.status, response.body)
             assertTrue(openAiKey !in response.body)
             assertTrue(response.body.contains("\"type\":\"OpenAi\""), response.body)
             assertTrue(response.body.contains("sk-proj-…"), response.body)
             for (input in listOf(null, "localhost", "10.0.0.1", "myapp.com:22")) {
-                assertEquals(400, keyCheck("GET", input, site).status, input.toString())
+                assertEquals(400, keyCheck("GET", input, site) { true }.status, input.toString())
             }
-            assertEquals(405, keyCheck("POST", "myapp.com", site).status)
-            assertEquals(502, keyCheck("GET", "unknown.example", site).status)
+            assertEquals(405, keyCheck("POST", "myapp.com", site) { true }.status)
+            assertEquals(502, keyCheck("GET", "unknown.example", site) { true }.status)
+        }
+
+    @Test
+    fun oneScanPerVisitorIsCountedOnlyForValidDomainsAndNothingIsFetchedWhenLimited() =
+        runTest {
+            val site = FakeSite(mapOf("https://myapp.com/" to ok("<p>hi</p>")))
+            var counted = 0
+            var remaining = 1
+            val limiter: suspend () -> Boolean = {
+                counted++
+                remaining-- > 0
+            }
+            assertEquals(400, keyCheck("GET", "not a domain", site, limiter).status)
+            assertEquals(0, counted, "a typo never costs the visitor their scan")
+            assertEquals(200, keyCheck("GET", "myapp.com", site, limiter).status)
+            val limited = keyCheck("GET", "myapp.com", site, limiter)
+            assertEquals(429, limited.status)
+            assertEquals(60, limited.retryAfter)
+            assertEquals("""{"error":"rate_limited"}""", limited.body)
+            assertEquals(1, site.requested.size, "a limited request reads nothing from the site")
         }
 }

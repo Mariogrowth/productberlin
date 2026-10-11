@@ -11,6 +11,9 @@ sealed interface KeyScanResult {
     /** The site did not answer over HTTPS. */
     data object Unreachable : KeyScanResult
 
+    /** One scan per visitor per minute: each scan reads up to 40 files from someone's site. */
+    data object RateLimited : KeyScanResult
+
     /** The checker itself failed; worth retrying. */
     data object Unavailable : KeyScanResult
 }

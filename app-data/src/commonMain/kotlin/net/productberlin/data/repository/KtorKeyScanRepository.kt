@@ -26,6 +26,7 @@ class KtorKeyScanRepository(
             HttpStatusCode.OK -> KeyScanResult.Completed(response.body<KeyScanDto>().toDomain())
             HttpStatusCode.BadRequest -> KeyScanResult.InvalidDomain
             HttpStatusCode.BadGateway -> KeyScanResult.Unreachable
+            HttpStatusCode.TooManyRequests -> KeyScanResult.RateLimited
             else -> KeyScanResult.Unavailable
         }
     }

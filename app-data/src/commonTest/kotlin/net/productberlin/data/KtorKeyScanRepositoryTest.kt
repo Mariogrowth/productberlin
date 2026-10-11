@@ -58,6 +58,7 @@ class KtorKeyScanRepositoryTest {
         runTest {
             assertEquals(KeyScanResult.InvalidDomain, repository(HttpStatusCode.BadRequest).scan("x.com"))
             assertEquals(KeyScanResult.Unreachable, repository(HttpStatusCode.BadGateway).scan("x.com"))
+            assertEquals(KeyScanResult.RateLimited, repository(HttpStatusCode.TooManyRequests).scan("x.com"))
             assertEquals(KeyScanResult.Unavailable, repository(HttpStatusCode.ServiceUnavailable).scan("x.com"))
         }
 }

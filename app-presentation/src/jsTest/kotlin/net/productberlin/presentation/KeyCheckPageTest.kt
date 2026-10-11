@@ -131,4 +131,18 @@ class KeyCheckPageTest : ComponentTest() {
                     .contains("couldn’t reach")
             }
         }
+
+    @Test
+    fun aSecondScanWithinTheMinuteExplainsTheLimit() =
+        runTest {
+            show(KeyScanResult.RateLimited)
+            submit("myapp.com")
+            awaitUi {
+                container
+                    .querySelector("[role=alert]")
+                    ?.textContent
+                    .orEmpty()
+                    .contains("One check per minute")
+            }
+        }
 }

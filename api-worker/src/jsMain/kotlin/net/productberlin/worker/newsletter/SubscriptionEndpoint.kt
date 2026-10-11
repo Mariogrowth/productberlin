@@ -12,6 +12,8 @@ internal data class EndpointResponse(
     val status: Int,
     val body: String,
     val allow: String? = null,
+    /** Seconds, for `Retry-After` on 429 responses. */
+    val retryAfter: Int? = null,
 )
 
 /**
