@@ -2,6 +2,7 @@ package net.productberlin
 
 import net.productberlin.di.createAppContainer
 import net.productberlin.presentation.App
+import net.productberlin.presentation.KeyCheckPage
 import net.productberlin.presentation.PrivacyPage
 import net.productberlin.presentation.designsystem.showcase.DesignSystemShowcase
 import react.create
@@ -22,6 +23,11 @@ internal fun mountApplication(): Root {
     when (window.location.pathname.trimEnd('/')) {
         "/design-system" -> {
             root.render(DesignSystemShowcase.create())
+        }
+
+        "/key-check" -> {
+            val container = createAppContainer()
+            root.render(KeyCheckPage.create { checkSite = container.koin.get() })
         }
 
         "/privacy" -> {
