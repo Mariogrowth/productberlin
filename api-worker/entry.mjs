@@ -2,7 +2,7 @@
 import catalogue from '../cloudflare/startups.json';
 import publishers from '../cloudflare/publishers.json';
 import { parseRssXml } from './rss-parser.mjs';
-import { handleApi, handleCollection, handleHiring, handleScheduled, handleSubscription } from './build/dist/js/productionLibrary/Productberlin-api-worker.mjs';
+import { handleApi, handleCollection, handleHiring, handleKeyCheck, handleScheduled, handleSubscription } from './build/dist/js/productionLibrary/Productberlin-api-worker.mjs';
 
 const catalogueJson = JSON.stringify(catalogue);
 const publishersJson = JSON.stringify(publishers);
@@ -34,6 +34,16 @@ export default {
       const result = await handleHiring(request.method, request.headers.get('Authorization'), env.COLLECTOR_TOKEN, body, env.DB, catalogueJson);
       const headers = { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' };
       if (result.allow) headers.Allow = result.allow;
+      return new Response(result.body, { status: result.status, headers });
+    }
+    if (url.pathname === '/api/key-check') {
+      // Prototype key checker: reads only what the given site sends to every visitor. Never cached.
+      // One scan per visitor per minute (KEY_CHECK_LIMITER in wrangler.json), counted only for valid domains.
+      const client = request.headers.get('CF-Connecting-IP') ?? 'unknown';
+      const result = await handleKeyCheck(request.method, url.searchParams.get('domain'), env.KEY_CHECK_LIMITER ?? null, client);
+      const headers = { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' };
+      if (result.allow) headers.Allow = result.allow;
+      if (result.retryAfter) headers['Retry-After'] = String(result.retryAfter);
       return new Response(result.body, { status: result.status, headers });
     }
     if (url.pathname === '/api/subscriptions') {

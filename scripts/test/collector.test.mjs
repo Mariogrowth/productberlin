@@ -62,7 +62,7 @@ before(async () => {
   assert.equal(result.status, 0, result.stdout + result.stderr);
   mf = new Miniflare(convertV4MiniflareOptions({
     name: 'collector', modules: true, script: await readFile(join(directory, 'entry.js'), 'utf8'), compatibilityDate: '2026-09-01',
-    d1Databases: { DB: 'collector-test' }, bindings: { BUILD_SHA: 'test', SEARCH_PAUSE_MS: '0', RETRY_PAUSE_MS: '0', COLLECTOR_TOKEN: COLLECTOR_TOKEN },
+    d1Databases: { DB: 'collector-test' }, ratelimits: { KEY_CHECK_LIMITER: { namespace_id: '4201', simple: { limit: 1, period: 60 } } }, bindings: { BUILD_SHA: 'test', SEARCH_PAUSE_MS: '0', RETRY_PAUSE_MS: '0', COLLECTOR_TOKEN: COLLECTOR_TOKEN },
     outboundService: async request => {
       const url = new URL(request.url);
       assert.equal(url.origin, 'https://news.google.com');
@@ -449,4 +449,18 @@ test('the hiring endpoint plans the catalogue job boards, stores one week of cou
   assert.deepEqual(await (await call()).json(), { due: false, reason: 'recorded', week: plan.week });
   assert.equal((await (await call('POST', JSON.stringify({ week: plan.week, results }))).json()).outcome, 'already_recorded');
   assert.equal((await db.prepare('SELECT COUNT(*) AS n FROM hiring_counts').first()).n, plan.boards.length - 1, 'a repeated post adds nothing');
+});
+
+test('the key checker allows one scan per visitor per minute, not counting invalid domains', async () => {
+  const check = (domain, ip = '203.0.113.7') => mf.dispatchFetch(`https://local.test/api/key-check?domain=${encodeURIComponent(domain)}`, {
+    headers: { 'CF-Connecting-IP': ip },
+  });
+  assert.equal((await check('localhost')).status, 400, 'invalid input is rejected before the limit');
+  // This test Worker's outbound service only serves Google News, so the first real scan cannot reach the site.
+  assert.equal((await check('example.com')).status, 502);
+  const limited = await check('example.com');
+  assert.equal(limited.status, 429);
+  assert.equal(limited.headers.get('Retry-After'), '60');
+  assert.deepEqual(await limited.json(), { error: 'rate_limited' });
+  assert.equal((await check('example.com', '198.51.100.9')).status, 502, 'another visitor has their own allowance');
 });

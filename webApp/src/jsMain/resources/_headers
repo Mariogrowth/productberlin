@@ -1,6 +1,10 @@
 # Cloudflare static-asset response headers (https://developers.cloudflare.com/workers/static-assets/headers/).
-# The privacy policy stays reachable and crawlable, but search engines must not list it.
+# The privacy policy and the key-check prototype stay reachable, but search engines must not list them.
 /privacy
   X-Robots-Tag: noindex
 /privacy/
+  X-Robots-Tag: noindex
+/key-check
+  X-Robots-Tag: noindex
+/key-check/
   X-Robots-Tag: noindex

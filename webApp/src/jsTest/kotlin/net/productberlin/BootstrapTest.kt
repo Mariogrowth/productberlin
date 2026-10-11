@@ -33,6 +33,12 @@ class BootstrapTest {
         }
 
     @Test
+    fun keyCheckRouteRendersTheCheckerWithoutCallingAnyApiUntilSubmitted() =
+        runTest {
+            verifyRoute("/key-check", false, "Is your site leaking API keys?")
+        }
+
+    @Test
     fun confirmationReturnShowsTheVerifiedBannerAndCleansTheAddress() =
         runTest {
             verifyRoute("/?subscribed=1&ref=mail", true, "Email Verified. Expect a weekly roundup") {

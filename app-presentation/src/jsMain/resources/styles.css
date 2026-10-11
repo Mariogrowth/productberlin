@@ -103,3 +103,30 @@ footer > p { font-size: 10px; color: #a0a0a7; margin: 9px 0 13px; }
 .privacy p, .privacy li { font-size: 14px; line-height: 1.7; color: #4a4a52; }
 .privacy ul { padding-left: 20px; }
 .privacy article a { color: inherit; text-underline-offset: 3px; }
+
+/* Key-check prototype: /key-check. Same quiet layout as the privacy page; risk is stated in words, not colours. */
+.key-check { max-width: 640px; margin: 0 auto; padding: 48px 24px 72px; color: #2a2a31; }
+.key-check h1 { margin: 32px 0 10px; font-size: 32px; letter-spacing: -1px; line-height: 1.15; }
+.key-check-intro { margin: 0 0 24px; font-size: 14px; line-height: 1.7; color: #4a4a52; }
+.key-check-form label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; }
+.key-check-row { display: flex; gap: 8px; }
+.key-check-row input { flex: 1; min-width: 0; height: 44px; padding: 0 14px; border: 1px solid #dedee3; border-radius: 12px; font: inherit; font-size: 15px; color: #161718; background: #fff; }
+.key-check-row input:focus-visible { outline: 2px solid #161718; outline-offset: 1px; }
+.key-check-row button { height: 44px; padding: 0 18px; border: 1px solid #161718; border-radius: 12px; background: #161718; color: #fff; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
+.key-check-row button:disabled { opacity: .5; cursor: default; }
+.key-check-status { margin: 24px 0 0; font-size: 14px; color: #4a4a52; }
+.key-check-report { margin-top: 32px; padding-top: 24px; border-top: 1px solid #ececf0; }
+.key-check-report h2 { margin: 0; font-size: 20px; letter-spacing: -.4px; }
+.key-check-meta { margin: 6px 0 0; font-size: 13px; color: #85858b; }
+.key-check-aside { margin: 14px 0 0; font-size: 13px; color: #4a4a52; }
+.key-finding { margin-top: 16px; padding: 18px; border: 1px solid #e6e6ec; border-radius: 14px; background: #fff; }
+.key-finding.risk-secret { border-color: #161718; border-width: 1.5px; }
+.key-finding-verdict { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #6e6e76; }
+.key-finding.risk-secret .key-finding-verdict { color: #161718; }
+.key-finding h3 { margin: 6px 0 4px; font-size: 16px; }
+.key-finding p { margin: 8px 0 0; font-size: 14px; line-height: 1.6; color: #4a4a52; }
+.key-finding code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; padding: 1px 5px; border-radius: 5px; background: #f3f3f6; color: #161718; word-break: break-all; }
+.key-finding-copy { margin-top: 12px; height: 34px; padding: 0 14px; border: 1px solid #dedee3; border-radius: 10px; background: #fff; font: inherit; font-size: 13px; font-weight: 550; color: #161718; cursor: pointer; }
+.key-finding-copy:hover { background: #f6f6f8; }
+.key-check-note { margin-top: 40px; font-size: 12px; line-height: 1.6; color: #85858b; }
+@media (max-width: 540px) { .key-check { padding: 32px 16px 56px; } .key-check h1 { font-size: 26px; } .key-check-row { flex-direction: column; } .key-check-row input { flex: none; width: 100%; box-sizing: border-box; } }

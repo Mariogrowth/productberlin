@@ -174,6 +174,15 @@ The collector:
 
 The catalogue is editorial data, not automatic company discovery. It contains 229 Berlin startups, scaleups and a few large Berlin-founded companies; [catalogue notes and source references](cloudflare/CATALOGUE.md) describe the expanded coverage and Berlin connection criteria. Add verified Berlin companies with a stable slug, name, short description, category and optional distinctive aliases. Add `contextKeywords` for ambiguous names; a headline must contain a keyword as well as the company name/alias to count or appear. This conservative rule prevents person-name collisions but can miss terse company headlines. Avoid broad aliases and retired/non-Berlin companies. Changes require a normal deployment. [Automatic catalogue refresh](cloudflare/CATALOGUE.md#refreshing-the-catalogue-on-each-weekly-run) is possible with a supported feed, but is not enabled without API/export access. The search plan grows with the catalogue (44 RSS requests for 229 companies, at most 48). Add or remove trusted outlets in `cloudflare/publishers.json` (domain, name, type `startup`/`trade`/`tech`/`business`); changes require a normal deployment. If ranking/search methodology changes again, increment `CollectionWindow.POLICY_VERSION` to permit a fresh same-week snapshot. Google News RSS can omit or cap results; daily slicing reduces that effect, but this is a **catalogue-limited news signal**, not an exhaustive census or a company-quality score. Article deduplication is heuristic and cannot detect all syndicated copies. The public RSS endpoint is an upstream dependency, not a guaranteed structured company API.
 
+## Key-check prototype (`/key-check`)
+
+An unlisted page (`X-Robots-Tag: noindex`) where someone pastes a domain and sees which API keys the site exposes to every visitor. The ranking page does not link to it.
+
+- `GET /api/key-check?domain=myapp.com` (Worker, `api-worker/.../keycheck/`) reads the homepage, the site's own scripts and the source maps they point to. It is passive only: no hidden paths are probed, third-party scripts are skipped, redirects must stay on the same site over HTTPS, and at most 40 files are read.
+- `FindExposedKeys` (`app-domain`) recognises about 20 credential formats by prefix and rates each one secret, depends-on-settings or public. Supabase's legacy anon and service-role keys are told apart by the role inside the token. A found key is never used or stored; responses carry only a masked hint (`sk-proj-…dE4x`) and the file path.
+- **One scan per visitor per minute**, via Cloudflare's rate-limiting binding `KEY_CHECK_LIMITER` in `wrangler.json`, keyed by `CF-Connecting-IP`. Invalid domains are rejected before the limit counts. Without the binding, the checker refuses to scan. Change `limit` and `period` (10 or 60 seconds) in `wrangler.json`.
+- Not yet: proof of domain ownership before showing more detail, or monitoring.
+
 ## Weekly hiring counts
 
 To test hiring as a ranking signal, the same workflow records each catalogue company's **open roles** once a week. Nothing on the site reads these counts yet.

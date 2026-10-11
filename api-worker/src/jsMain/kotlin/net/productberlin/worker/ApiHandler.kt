@@ -79,4 +79,4 @@ private fun response(
     return result
 }
 
-private val wireJson = Json { encodeDefaults = true }
+internal val wireJson = Json { encodeDefaults = true }
