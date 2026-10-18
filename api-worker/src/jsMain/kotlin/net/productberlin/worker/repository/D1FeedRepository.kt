@@ -22,7 +22,7 @@ internal class D1FeedRepository(
 
     override suspend fun store(
         items: List<FeedItem>,
-        classifiedAt: String,
+        storedAt: String,
     ): Int {
         if (items.isEmpty()) return 0
         val itemsJson =
@@ -36,57 +36,24 @@ internal class D1FeedRepository(
                         put("translated", item.translatedTitle)
                         put("link", item.link)
                         put("published", item.publishedAt)
-                        put("classifier", if (item.stories != null) "model" else "rules")
                     }
                 }
             }.toString()
-        val storiesJson =
-            buildJsonArray {
-                for (item in items) {
-                    item.stories.orEmpty().forEachIndexed { position, story ->
-                        addJsonObject {
-                            put("key", item.key)
-                            put("position", position)
-                            put("companyId", story.companyId)
-                            put("companyName", story.companyName)
-                            put("category", story.category.name)
-                            put("headline", story.headline)
-                        }
-                    }
-                }
-            }.toString()
-        // Stories are written only for items this batch inserted (same classified_at), so a repeat changes nothing.
-        val results =
-            database
-                .batch(
-                    arrayOf(
-                        statement(
-                            """
-                            INSERT INTO feed_items (key,feed,source,title,translated_title,link,published_at,classified_at,classifier)
-                            SELECT json_extract(value,'$.key'),json_extract(value,'$.feed'),json_extract(value,'$.source'),
-                                json_extract(value,'$.title'),json_extract(value,'$.translated'),json_extract(value,'$.link'),
-                                json_extract(value,'$.published'),?,json_extract(value,'$.classifier') FROM json_each(?) WHERE 1
-                            ON CONFLICT(key) DO NOTHING
-                            """.trimIndent(),
-                            classifiedAt,
-                            itemsJson,
-                        ),
-                        statement(
-                            """
-                            INSERT INTO feed_stories (item_key,position,company_id,company_name,category,headline)
-                            SELECT json_extract(value,'$.key'),json_extract(value,'$.position'),json_extract(value,'$.companyId'),
-                                json_extract(value,'$.companyName'),json_extract(value,'$.category'),json_extract(value,'$.headline')
-                            FROM json_each(?)
-                            WHERE EXISTS (SELECT 1 FROM feed_items WHERE key=json_extract(value,'$.key') AND classified_at=?)
-                            ON CONFLICT(item_key,position) DO NOTHING
-                            """.trimIndent(),
-                            storiesJson,
-                            classifiedAt,
-                        ),
-                    ),
-                ).unsafeCast<Promise<Array<dynamic>>>()
+        val result =
+            statement(
+                """
+                INSERT INTO feed_items (key,feed,source,title,translated_title,link,published_at,stored_at)
+                SELECT json_extract(value,'$.key'),json_extract(value,'$.feed'),json_extract(value,'$.source'),
+                    json_extract(value,'$.title'),json_extract(value,'$.translated'),json_extract(value,'$.link'),
+                    json_extract(value,'$.published'),? FROM json_each(?) WHERE 1
+                ON CONFLICT(key) DO NOTHING
+                """.trimIndent(),
+                storedAt,
+                itemsJson,
+            ).run()
+                .unsafeCast<Promise<dynamic>>()
                 .await()
-        return (results.first().meta.changes as Number).toInt()
+        return (result.meta.changes as Number).toInt()
     }
 
     private fun statement(

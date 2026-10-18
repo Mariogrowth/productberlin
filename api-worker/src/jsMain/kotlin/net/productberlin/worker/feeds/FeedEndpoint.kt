@@ -6,24 +6,21 @@ import kotlinx.serialization.json.addJsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
-import net.productberlin.domain.entity.NewsCategory
-import net.productberlin.domain.entity.StartupCandidate
 import net.productberlin.worker.bearerRejection
 import net.productberlin.worker.newsletter.EndpointResponse
 
 /**
  * `/api/internal/feeds`, used by the GitHub collector for the weekly news.
  * - `GET`: the publisher feeds to read, and the items already read in the last [WINDOW_DAYS] days.
- * - `POST`: new items, each with the model's verdict (the Berlin startup stories in it) or none, in which case the
- *   keyword rules judge it when the news is built. The verdict is untrusted model output: only known categories,
- *   catalogue IDs that exist (anything else is a new company), bounded lengths, HTTPS links and recent dates are kept.
+ * - `POST`: new items (title, optional English translation, link, date). They are judged like Google News articles when
+ *   the news is built. Only items from listed feeds with bounded single-line titles, HTTPS links and recent dates are
+ *   kept.
  * Both require `Authorization: Bearer <COLLECTOR_TOKEN>`.
  */
 internal class FeedEndpoint(
     private val expectedToken: String?,
     private val repository: FeedRepository,
     private val feeds: List<PublisherFeed>,
-    private val catalogue: List<StartupCandidate>,
     private val now: Double,
 ) {
     suspend fun handle(
@@ -80,22 +77,7 @@ internal class FeedEndpoint(
         val title = text(value.title, 300) ?: return null
         val published = (value.publishedAt as? String)?.let { Date.parse(it) }?.takeIf { !it.isNaN() } ?: return null
         if (published < now - WINDOW_DAYS * DAY || published > now + DAY) return null
-        val verdict = value.verdict
-        val stories =
-            if (verdict == null || verdict == undefined) {
-                null
-            } else {
-                (verdict.stories.unsafeCast<Array<dynamic>?>() ?: return null).take(MAX_STORIES).mapNotNull(::story)
-            }
-        return FeedItem(itemKey(link), feed, title, text(value.translatedTitle, 300), link, Date(published).toISOString(), stories)
-    }
-
-    private fun story(value: dynamic): VerdictStory? {
-        val category = NewsCategory.entries.firstOrNull { it.name == (value?.category as? String) } ?: return null
-        val name = text(value.companyName, 80) ?: return null
-        val headline = text(value.headline, 160) ?: return null
-        val id = (value.companyId as? String)?.takeIf { candidate -> catalogue.any { it.id == candidate } }
-        return VerdictStory(id, id?.let { known -> catalogue.first { it.id == known }.name } ?: name, category, headline)
+        return FeedItem(itemKey(link), feed, title, text(value.translatedTitle, 300), link, Date(published).toISOString())
     }
 
     /** Single-line text without control characters, at most [max] characters, or null. */
@@ -114,7 +96,6 @@ internal class FeedEndpoint(
         const val WINDOW_DAYS = 21
         const val MAX_BODY = 2_000_000
         const val MAX_ITEMS = 400
-        const val MAX_STORIES = 5
         val SAFE_LINK = Regex("^https://[^\\s/<>]+/[^\\s<>\"]*$")
         val CONTROL = Regex("[\\u0000-\\u001f\\u007f]")
     }

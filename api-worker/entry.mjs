@@ -31,9 +31,9 @@ export default {
       return new Response(result.body, { status: result.status, headers });
     }
     if (url.pathname === '/api/internal/feeds') {
-      // Publisher-feed items and the model's verdicts from the GitHub collector; bearer-token protected.
+      // Publisher-feed items from the GitHub collector; bearer-token protected.
       const body = request.method === 'POST' ? (await request.text()).slice(0, 2_000_001) : '';
-      const result = await handleFeeds(request.method, request.headers.get('Authorization'), env.COLLECTOR_TOKEN, body, env.DB, catalogueJson, feedsJson);
+      const result = await handleFeeds(request.method, request.headers.get('Authorization'), env.COLLECTOR_TOKEN, body, env.DB, feedsJson);
       const headers = { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' };
       if (result.allow) headers.Allow = result.allow;
       return new Response(result.body, { status: result.status, headers });

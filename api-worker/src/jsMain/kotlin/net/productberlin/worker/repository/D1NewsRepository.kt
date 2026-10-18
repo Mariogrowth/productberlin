@@ -3,9 +3,7 @@ package net.productberlin.worker.repository
 import kotlin.js.Date
 import kotlin.js.Promise
 import kotlinx.coroutines.await
-import net.productberlin.domain.entity.FeedStory
 import net.productberlin.domain.entity.NewsArticle
-import net.productberlin.domain.entity.NewsCategory
 import net.productberlin.domain.entity.StartupCandidate
 import net.productberlin.domain.entity.WeeklyNews
 import net.productberlin.domain.repository.NewsRepository
@@ -49,14 +47,14 @@ internal class D1NewsRepository(
                     translatedHeadline = it.translated_headline as String?,
                 )
             }
-        // Publisher-feed items of the same week: without a model verdict they are judged like Google News articles.
+        // Publisher-feed items of the same week, judged like Google News articles.
         val from = "${latest.week_start}T00:00:00.000Z"
         val until = Date(Date.parse(from) + 7 * 86_400_000.0).toISOString()
         val feedRows =
             database
                 .prepare(
                     "SELECT key,source,title,translated_title,link,published_at FROM feed_items " +
-                        "WHERE classifier='rules' AND published_at >= ? AND published_at < ? ORDER BY published_at, key",
+                        "WHERE published_at >= ? AND published_at < ? ORDER BY published_at, key",
                 ).bind(from, until)
                 .all()
                 .unsafeCast<Promise<dynamic>>()
@@ -72,34 +70,8 @@ internal class D1NewsRepository(
                     translatedHeadline = it.translated_title as String?,
                 )
             }
-        val storyRows =
-            database
-                .prepare(
-                    "SELECT s.item_key,s.position,s.company_id,s.company_name,s.category,s.headline," +
-                        "i.title,i.source,i.link,i.published_at FROM feed_stories s JOIN feed_items i ON i.key = s.item_key " +
-                        "WHERE i.published_at >= ? AND i.published_at < ? ORDER BY i.published_at, s.item_key, s.position",
-                ).bind(from, until)
-                .all()
-                .unsafeCast<Promise<dynamic>>()
-                .await()
-        val feedStories =
-            storyRows.results.unsafeCast<Array<dynamic>>().mapNotNull { row ->
-                val category = NewsCategory.entries.firstOrNull { it.name == row.category } ?: return@mapNotNull null
-                FeedStory(
-                    "${row.item_key}#${row.position}",
-                    row.company_id as String?,
-                    row.company_name as String,
-                    category,
-                    row.headline as String,
-                    row.title as String,
-                    row.source as String,
-                    row.link as String,
-                    row.published_at as String,
-                )
-            }
         val stories =
-            CategorizeWeeklyNews()(catalogue, articles + feedArticles, feedStories).map { story ->
-                if (story.isNew) return@map story
+            CategorizeWeeklyNews()(catalogue, articles + feedArticles).map { story ->
                 val urls = logos(story.companyId)
                 story.copy(logoUrl = urls.icon, logoFallbackUrl = urls.fullLogo)
             }

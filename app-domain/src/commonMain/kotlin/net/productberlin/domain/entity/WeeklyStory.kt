@@ -20,6 +20,4 @@ data class WeeklyStory(
     /** Decorative logos for the first company, as for the ranking: square icon, then full logo. */
     val logoUrl: String? = null,
     val logoFallbackUrl: String? = null,
-    /** A Berlin startup that is not in the catalogue yet (found in a publisher feed). */
-    val isNew: Boolean = false,
 )

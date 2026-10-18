@@ -6,15 +6,12 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
-import net.productberlin.domain.entity.NewsCategory
-import net.productberlin.domain.entity.StartupCandidate
 
 class FeedEndpointTest {
     private val token = "t".repeat(40)
     private val auth = "Bearer $token"
     private val now = Date.parse("2026-10-18T12:00:00Z")
     private val feeds = listOf(PublisherFeed("ds", "deutsche-startups.de", "https://ds.example/feed/", 2))
-    private val catalogue = listOf(StartupCandidate("n26", "N26", "Bank", "Fintech"))
 
     private class Fake : FeedRepository {
         val stored = mutableListOf<FeedItem>()
@@ -23,7 +20,7 @@ class FeedEndpointTest {
 
         override suspend fun store(
             items: List<FeedItem>,
-            classifiedAt: String,
+            storedAt: String,
         ): Int {
             val fresh = items.filter { item -> stored.none { it.key == item.key } }
             stored += fresh
@@ -31,17 +28,17 @@ class FeedEndpointTest {
         }
     }
 
-    private fun endpoint(repository: Fake = Fake()) = FeedEndpoint(token, repository, feeds, catalogue, now)
+    private fun endpoint(repository: Fake = Fake()) = FeedEndpoint(token, repository, feeds, now)
 
     private fun item(
         link: String = "https://ds.example/procuros?utm_source=rss",
-        verdict: String? = PROCUROS,
+        translated: String? = null,
         published: String = "2026-10-17T10:00:00Z",
         feed: String = "ds",
         title: String = "Procuros: Berliner Logistik-Startup erhält 20 Mio. Euro",
     ) = """{"feed":"$feed","title":${JSON.stringify(
         title,
-    )},"link":"$link","publishedAt":"$published"${verdict?.let { ""","verdict":$it""" } ?: ""}}"""
+    )},"link":"$link","publishedAt":"$published"${translated?.let { ""","translatedTitle":"$it"""" } ?: ""}}"""
 
     private fun post(vararg items: String) = """{"items":[${items.joinToString(",")}]}"""
 
@@ -61,54 +58,32 @@ class FeedEndpointTest {
     fun requiresTheCollectorToken() =
         runTest {
             assertEquals(401, endpoint().handle("GET", "Bearer wrong", "").status)
-            assertEquals(503, FeedEndpoint(null, Fake(), feeds, catalogue, now).handle("GET", auth, "").status)
+            assertEquals(503, FeedEndpoint(null, Fake(), feeds, now).handle("GET", auth, "").status)
         }
 
     @Test
-    fun aModelVerdictIsStoredWithItsStoryAndTheLinkKeyedWithoutTracking() =
+    fun itemsAreStoredOnceKeyedWithoutTrackingParametersWithCleanTitles() =
         runTest {
             val repository = Fake()
-            val response = endpoint(repository).handle("POST", auth, post(item(), item()))
-            assertEquals("""{"received":2,"valid":1,"stored":1}""", response.body)
-            val stored = repository.stored.single()
-            assertEquals("https://ds.example/procuros", stored.key)
-            assertEquals("deutsche-startups.de", stored.feed.name)
-            assertEquals("2026-10-17T10:00:00.000Z", stored.publishedAt)
-            assertEquals(listOf(VerdictStory(null, "Procuros", NewsCategory.Funding, "Procuros raises €20M")), stored.stories)
-        }
-
-    @Test
-    fun anItemWithoutAVerdictIsLeftToTheKeywordRules() =
-        runTest {
-            val repository = Fake()
-            endpoint(repository).handle("POST", auth, post(item(verdict = null)))
-            assertNull(repository.stored.single().stories)
-            endpoint(repository).handle("POST", auth, post(item(link = "https://ds.example/other", verdict = """{"stories":[]}""")))
-            assertEquals(emptyList(), repository.stored.last().stories, "judged: no Berlin startup in it")
-        }
-
-    @Test
-    fun modelOutputIsUntrustedOnlyValidStoriesAndRealCatalogueIdsAreKept() =
-        runTest {
-            val repository = Fake()
-            val stories =
-                """{"stories":[
-                {"companyId":"n26","companyName":"N26 Bank AG","category":"People","headline":"N26 hires a CFO"},
-                {"companyId":"made-up","companyName":"Ghost","category":"Funding","headline":"Ghost raises"},
-                {"companyId":null,"companyName":"Line\nbreak","category":"Other","headline":"Tab\tand\u0007bell"},
-                {"companyId":null,"companyName":"X","category":"Promo","headline":"Not a category"},
-                {"companyId":null,"companyName":"","category":"Funding","headline":"No name"},
-                {"companyId":null,"companyName":"Long","category":"Funding","headline":"${"h".repeat(161)}"}]}"""
-            endpoint(repository).handle("POST", auth, post(item(verdict = stories)))
-            assertEquals(
-                listOf(
-                    VerdictStory("n26", "N26", NewsCategory.People, "N26 hires a CFO"),
-                    VerdictStory(null, "Ghost", NewsCategory.Funding, "Ghost raises"),
-                    VerdictStory(null, "Line break", NewsCategory.Other, "Tab and bell"),
-                ),
-                repository.stored.single().stories,
-                "catalogue names win, unknown IDs become new companies, invalid stories are dropped, control characters removed",
-            )
+            val response =
+                endpoint(repository).handle(
+                    "POST",
+                    auth,
+                    post(
+                        item(),
+                        item(),
+                        item(link = "https://ds.example/n26", title = "N26 holt\nneuen\tCFO", translated = "N26 hires a CFO"),
+                    ),
+                )
+            assertEquals("""{"received":3,"valid":2,"stored":2}""", response.body)
+            val procuros = repository.stored.first()
+            assertEquals("https://ds.example/procuros", procuros.key)
+            assertEquals("deutsche-startups.de", procuros.feed.name)
+            assertEquals("2026-10-17T10:00:00.000Z", procuros.publishedAt)
+            assertNull(procuros.translatedTitle)
+            assertEquals("N26 holt neuen CFO", repository.stored.last().title, "control characters removed")
+            assertEquals("N26 hires a CFO", repository.stored.last().translatedTitle)
+            assertEquals("""{"received":1,"valid":1,"stored":0}""", endpoint(repository).handle("POST", auth, post(item())).body)
         }
 
     @Test
@@ -134,9 +109,4 @@ class FeedEndpointTest {
             assertEquals(400, endpoint(repository).handle("POST", auth, "{").status)
             assertTrue(endpoint(repository).handle("POST", auth, """{"items":[${List(401) { item() }.joinToString(",")}]}""").status == 413)
         }
-
-    private companion object {
-        const val PROCUROS =
-            """{"stories":[{"companyId":null,"companyName":"Procuros","category":"Funding","headline":"Procuros raises €20M"}]}"""
-    }
 }

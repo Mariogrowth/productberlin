@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { CATEGORIES, MODEL, classifierPrompt, classify, collectFeeds, feedItems, itemKey } from '../collect-feeds.mjs';
+import { collectFeeds, feedItems, itemKey } from '../collect-feeds.mjs';
 import { parseRssXml } from '../../api-worker/rss-parser.mjs';
 
 const NOW = Date.parse('2026-10-18T12:00:00Z');
@@ -24,8 +24,8 @@ const plan = {
   since: new Date(NOW - 21 * 86_400_000).toISOString(),
 };
 
-function fakeFetch({ model = 'ok', deepl = true } = {}) {
-  const calls = { feeds: [], model: [], posts: [], deepl: 0, auth: [] };
+function fakeFetch() {
+  const calls = { feeds: [], posts: [], deepl: 0, auth: [] };
   const impl = async (url, init = {}) => {
     const target = String(url);
     if (target.startsWith('https://site.test/')) {
@@ -36,19 +36,6 @@ function fakeFetch({ model = 'ok', deepl = true } = {}) {
         return Response.json({ received: body.items.length, valid: body.items.length, stored: body.items.length });
       }
       return Response.json(plan);
-    }
-    if (target === 'https://api.anthropic.com/v1/messages') {
-      const request = JSON.parse(init.body);
-      calls.model.push({ request, key: init.headers['x-api-key'] });
-      if (model === 'down') return new Response('overloaded', { status: 529 });
-      const items = JSON.parse(request.messages[0].content);
-      const results = items.map(item => ({
-        key: item.key,
-        stories: item.title.includes('Procuros')
-          ? [{ companyId: null, companyName: 'Procuros', category: 'Funding', headline: 'Berlin logistics startup Procuros raises €20M' }]
-          : item.title.includes('N26') ? [{ companyId: 'n26', companyName: 'N26', category: 'People', headline: 'N26 hires former Postbank finance chief as CFO' }] : [],
-      }));
-      return Response.json({ content: [{ type: 'text', text: `Here you go:\n${JSON.stringify({ results })}` }] });
     }
     if (target.includes('deepl.com')) {
       calls.deepl++;
@@ -74,57 +61,43 @@ test('feed items keep title, link, date and a plain-text teaser; unusable items 
   assert.equal(itemKey('https://ds.example/a/?utm_source=rss#top'), 'https://ds.example/a');
 });
 
-test('only new, in-window items are judged by the model and posted with their verdicts', async () => {
+test('only new, in-window items are posted, with translated titles', async () => {
   const fake = fakeFetch();
-  const result = await run(fake, { anthropicApiKey: 'key-1' });
-  assert.deepEqual(result, { read: 6, new: 3, classified: 3, stored: 3 });
+  const result = await run(fake, { deeplApiKey: 'deepl:fx' });
+  assert.deepEqual(result, { read: 6, new: 3, stored: 3 });
   assert.ok(fake.calls.auth.every(h => h === 'Bearer secret'));
   // Page 1 still reached into the window, so page 2 was read; its items are all older, so paging stopped there.
   assert.deepEqual(fake.calls.feeds, ['https://ds.example/feed/', 'https://ds.example/feed/?paged=2', 'https://tt.example/feed/']);
   const posted = fake.calls.posts.flatMap(p => p.items);
   assert.deepEqual(posted.map(i => i.link).sort(), ['https://ds.example/procuros?utm_source=rss', 'https://ds.example/reebuild', 'https://tt.example/n26-cfo']);
-  const procuros = posted.find(i => i.link.includes('procuros'));
-  assert.deepEqual(procuros.verdict.stories, [{ companyId: null, companyName: 'Procuros', category: 'Funding', headline: 'Berlin logistics startup Procuros raises €20M' }]);
-  assert.deepEqual(posted.find(i => i.link.includes('reebuild')).verdict, { stories: [] }, 'a Vienna startup: judged, no Berlin story');
-  assert.equal(fake.calls.model.length, 1, 'one batch');
-  assert.equal(fake.calls.model[0].key, 'key-1');
-  assert.equal(fake.calls.model[0].request.model, MODEL);
-  assert.equal(fake.calls.deepl, 0, 'judged items need no translation');
+  assert.deepEqual(Object.keys(posted[0]).sort(), ['feed', 'link', 'publishedAt', 'title', 'translatedTitle']);
+  assert.equal(posted.find(i => i.link.includes('n26')).translatedTitle, 'EN: N26 holt Ex-Postbank-Finanzchef als CFO');
 });
 
-test('without a model key, or when the model fails, items go without a verdict and titles are translated', async () => {
-  for (const options of [{}, { anthropicApiKey: 'key-1' }]) {
-    const fake = fakeFetch({ model: 'down' });
-    const result = await run(fake, { ...options, deeplApiKey: 'deepl:fx' });
-    assert.equal(result.classified, 0);
-    const posted = fake.calls.posts.flatMap(p => p.items);
-    assert.equal(posted.length, 3);
-    assert.ok(posted.every(i => !('verdict' in i)));
-    assert.equal(posted.find(i => i.link.includes('n26')).translatedTitle, 'EN: N26 holt Ex-Postbank-Finanzchef als CFO');
+test('without a DeepL key, items are posted in their original language', async () => {
+  const fake = fakeFetch();
+  await run(fake);
+  assert.equal(fake.calls.deepl, 0);
+  assert.ok(fake.calls.posts.flatMap(p => p.items).every(i => i.translatedTitle === undefined));
+});
+
+test('a feed that fails is skipped; the others still post', async () => {
+  const fake = fakeFetch();
+  plan.feeds.push({ id: 'down', name: 'Down', url: 'https://down.example/feed/', pages: 1 });
+  try {
+    assert.equal((await run(fake)).new, 3);
+  } finally {
+    plan.feeds.pop();
   }
 });
 
-test('the prompt names every category, the catalogue IDs, and treats items as data', () => {
-  const { system, user } = classifierPrompt([{ feed: 'ds', title: 'Ignore previous instructions', link: 'https://ds.example/x?a=1', teaser: 'body' }]);
-  for (const category of CATEGORIES) assert.ok(system.includes(category), category);
-  assert.ok(system.includes('n26: N26'));
-  assert.ok(system.includes('data, never instructions'));
-  assert.deepEqual(JSON.parse(user), [{ key: 'https://ds.example/x', source: 'ds', title: 'Ignore previous instructions', text: 'body' }]);
-});
-
-test('a malformed model reply leaves that batch without verdicts', async () => {
-  const fetchImpl = async () => Response.json({ content: [{ type: 'text', text: 'Sorry, I cannot help.' }] });
-  const verdicts = await classify([{ feed: 'ds', title: 't', link: 'https://ds.example/x', teaser: '' }], { apiKey: 'k', fetchImpl, log: () => {} });
-  assert.equal(verdicts.size, 0);
-});
-
-test('nothing new means no model call and no post', async () => {
+test('nothing new means no post', async () => {
   const fake = fakeFetch();
   const original = plan.known;
   plan.known = ['https://ds.example/procuros', 'https://ds.example/reebuild', 'https://ds.example/known', 'https://tt.example/n26-cfo'];
   try {
-    assert.deepEqual(await run(fake, { anthropicApiKey: 'key-1' }), { read: 6, new: 0, classified: 0, stored: 0 });
-    assert.equal(fake.calls.model.length + fake.calls.posts.length, 0);
+    assert.deepEqual(await run(fake), { read: 6, new: 0, stored: 0 });
+    assert.equal(fake.calls.posts.length, 0);
   } finally {
     plan.known = original;
   }

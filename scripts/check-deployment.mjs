@@ -20,7 +20,7 @@ for (const path of [
   'cloudflare/migrations/0003_translated_headlines.sql',
   'cloudflare/migrations/0004_hiring_counts.sql',
   'cloudflare/migrations/0005_article_history.sql',
-  'cloudflare/migrations/0006_feed_stories.sql',
+  'cloudflare/migrations/0006_feed_items.sql',
   'cloudflare/feeds.json',
   'scripts/collect-feeds.mjs',
   'scripts/collect-jobs.mjs',

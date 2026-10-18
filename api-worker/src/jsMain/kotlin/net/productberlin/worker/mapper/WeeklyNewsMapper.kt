@@ -22,7 +22,6 @@ internal fun WeeklyNews.toDto() =
                     it.companyId,
                     it.logoUrl,
                     it.logoFallbackUrl,
-                    it.isNew,
                 )
             },
     )

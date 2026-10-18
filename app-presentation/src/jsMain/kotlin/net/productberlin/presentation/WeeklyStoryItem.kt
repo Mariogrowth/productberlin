@@ -36,13 +36,6 @@ val WeeklyStoryItem =
                     span {
                         className = ClassName("weekly-story-company")
                         +story.companies.joinToString(" · ")
-                        if (story.isNew) {
-                            span {
-                                className = ClassName("weekly-story-new")
-                                title = "Not in the Product.berlin catalogue yet"
-                                +"NEW"
-                            }
-                        }
                     }
                     time {
                         dateTime = story.publishedAt.take(10)
