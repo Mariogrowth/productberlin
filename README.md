@@ -174,6 +174,16 @@ The collector:
 
 The catalogue is editorial data, not automatic company discovery. It contains 229 Berlin startups, scaleups and a few large Berlin-founded companies; [catalogue notes and source references](cloudflare/CATALOGUE.md) describe the expanded coverage and Berlin connection criteria. Add verified Berlin companies with a stable slug, name, short description, category and optional distinctive aliases. Add `contextKeywords` for ambiguous names; a headline must contain a keyword as well as the company name/alias to count or appear. This conservative rule prevents person-name collisions but can miss terse company headlines. Avoid broad aliases and retired/non-Berlin companies. Changes require a normal deployment. [Automatic catalogue refresh](cloudflare/CATALOGUE.md#refreshing-the-catalogue-on-each-weekly-run) is possible with a supported feed, but is not enabled without API/export access. The search plan grows with the catalogue (44 RSS requests for 229 companies, at most 48). Add or remove trusted outlets in `cloudflare/publishers.json` (domain, name, type `startup`/`trade`/`tech`/`business`); changes require a normal deployment. If ranking/search methodology changes again, increment `CollectionWindow.POLICY_VERSION` to permit a fresh same-week snapshot. Google News RSS can omit or cap results; daily slicing reduces that effect, but this is a **catalogue-limited news signal**, not an exhaustive census or a company-quality score. Article deduplication is heuristic and cannot detect all syndicated copies. The public RSS endpoint is an upstream dependency, not a guaranteed structured company API.
 
+## This week in Berlin startups (homepage news)
+
+Under the ranking, the homepage shows the categorised news for the **same week as the published ranking**. `GET /api/news/weekly` reads that week's stored articles (`collected_articles`, written by the weekly collection) and `CategorizeWeeklyNews` (`app-domain`):
+
+- classifies each headline with `ClassifyHeadline` into **Funding**, **Launches**, **Growth & partnerships**, **People**, **Trouble** or **Other**. Share-price notes and consumer content are not shown. Trouble is shown as news but still counts zero in the ranking.
+- merges the same news from several outlets into one story (same companies and category, plus a shared amount or mostly the same words), led by the first report and listing the others as "also in";
+- orders stories by category, newest first.
+
+The page's "All" view leaves out **Other** (interviews, features, opinion), which has its own filter. Demo editions, weeks without stories and failed loads show no section. Coverage is the catalogue companies found by the weekly Google News searches; publisher feeds and model-based classification are planned next.
+
 ## Key-check prototype (`/key-check`)
 
 An unlisted page (`X-Robots-Tag: noindex`) where someone pastes a domain and sees which API keys the site exposes to every visitor. The ranking page does not link to it.

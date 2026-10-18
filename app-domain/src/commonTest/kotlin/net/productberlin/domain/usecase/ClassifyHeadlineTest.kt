@@ -29,16 +29,39 @@ class ClassifyHeadlineTest {
             "mika erhält 6 Millionen Euro für KI-native Buchhaltung",
             "Pliant sichert sich 40 Mio. Euro",
             "Nox secures €10M for night trains",
+            "finmid: €17 million for vehicle and dealer loans",
+            "finmid: 17 Millionen Euro für Fahrzeugkredite",
         )
 
     @Test
-    fun launchesExpansionAndMilestonesAreGrowth() =
+    fun newProductsAndServicesAreLaunches() =
+        assertAll(
+            HeadlineEvent.Launch,
+            "Newcomer Nox aus Berlin startet Nachtzug Hamburg–München: Tickets ab 65 Euro",
+            "Trade Republic launches a free retirement account",
+            "Langdock unveils agents for regulated industries",
+        )
+
+    @Test
+    fun tractionExpansionAndPartnershipsAreGrowth() =
         assertAll(
             HeadlineEvent.Growth,
-            "Newcomer Nox aus Berlin startet Nachtzug Hamburg–München: Tickets ab 65 Euro",
             "Langdock hits €50M ARR (≈\$55M)",
             "Unbemannter Kampfjet: Helsing-KI gewinnt Luftkämpfe gegen Menschen",
             "Pliant expands to the UK",
+            "Trade Republic Hits €754 Million in Revenue as Profit Jumps Sevenfold",
+            "Parloa partners with Swiss insurer",
+            "Delivery Hero übernimmt Lieferdienst in Polen",
+        )
+
+    @Test
+    fun seniorHiresAreAboutPeople() =
+        assertAll(
+            HeadlineEvent.People,
+            "N26 Hires Former Postbank Finance Chief Marc Hess as C.F.O.",
+            "N26 holt Ex-Postbank-Finanzchef Marc Heß als CFO",
+            "Judith Dada wird Co-Chefin des KI-Start-ups Langdock in Berlin",
+            "Taktile appoints new CTO",
         )
 
     @Test
@@ -76,6 +99,8 @@ class ClassifyHeadlineTest {
             "Berlin: Kunden werden nach Hackerangriff auf Lieferdienst Flink erpresst",
             "\"Müssen sich Betroffene nicht bieten lassen\": Neuer Zins-Ärger bei Trade Republic",
             "Startup cuts jobs after funding dries up",
+            "German Armed Forces: Approval of the Helsing HX-2 combat drone appears to have been delayed",
+            "Bundeswehr: Zulassung der Helsing-Drohne verzögert sich",
         )
 
     @Test
@@ -103,10 +128,12 @@ class ClassifyHeadlineTest {
     @Test
     fun weightsFollowTheEvent() =
         assertEquals(
-            listOf(3, 2, 1, 0, 0, 0),
+            listOf(3, 2, 2, 2, 1, 0, 0, 0),
             listOf(
                 HeadlineEvent.Funding,
+                HeadlineEvent.Launch,
                 HeadlineEvent.Growth,
+                HeadlineEvent.People,
                 HeadlineEvent.Other,
                 HeadlineEvent.Negative,
                 HeadlineEvent.Market,

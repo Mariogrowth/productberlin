@@ -10,9 +10,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withContext
+import net.productberlin.domain.entity.NewsCategory
 import net.productberlin.domain.entity.Startup
+import net.productberlin.domain.entity.WeeklyNews
 import net.productberlin.domain.entity.WeeklyRanking
+import net.productberlin.domain.entity.WeeklyStory
+import net.productberlin.domain.repository.NewsRepository
 import net.productberlin.domain.repository.StartupRepository
+import net.productberlin.domain.usecase.GetWeeklyNews
 import net.productberlin.domain.usecase.GetWeeklyRanking
 import net.productberlin.presentation.testing.ComponentTest
 import react.create
@@ -104,6 +109,7 @@ class AppTest : ComponentTest() {
 
     private fun show(
         confirmed: Boolean = false,
+        news: suspend () -> WeeklyNews = { WeeklyNews("Test week", emptyList()) },
         load: suspend () -> WeeklyRanking,
     ) {
         val useCase =
@@ -112,13 +118,48 @@ class AppTest : ComponentTest() {
                     override suspend fun getWeeklyRanking() = load()
                 },
             )
+        val newsUseCase =
+            GetWeeklyNews(
+                object : NewsRepository {
+                    override suspend fun getWeeklyNews() = news()
+                },
+            )
         render(
             App.create {
                 getRanking = useCase
+                getNews = newsUseCase
                 subscriptionConfirmed = confirmed
             },
         )
     }
+
+    private val story =
+        WeeklyStory("f1", listOf("finmid"), NewsCategory.Funding, "finmid raises €17M", "Startbase", "2026-10-07T09:00:00.000Z")
+
+    @Test
+    fun liveWeeksShowTheNewsSectionBetweenTheRankingAndTheSignup() =
+        runTest {
+            show(news = { WeeklyNews("Test week", listOf(story)) }) { ranking }
+            awaitUi { container.querySelector(".weekly-news") != null }
+            assertNotNull(container.querySelector(".ranking-layout + .weekly-news + .newsletter"), "ranking, then news, then the signup")
+            assertEquals("This week in Berlin startups", container.querySelector(".weekly-news h2")?.textContent)
+        }
+
+    @Test
+    fun demoEditionsQuietWeeksAndFailedNewsShowNoSection() =
+        runTest {
+            for ((rankingFor, news) in listOf<Pair<WeeklyRanking, suspend () -> WeeklyNews>>(
+                ranking.copy(isMock = true) to { WeeklyNews("Test week", listOf(story)) },
+                ranking to { WeeklyNews("Test week", emptyList()) },
+                ranking to { error("News unavailable") },
+            )) {
+                show(news = news) { rankingFor }
+                awaitUi { container.querySelector(".startup-list") != null }
+                tick()
+                assertNull(container.querySelector(".weekly-news"))
+                assertNull(container.querySelector("[role=alert]"), "a news failure never looks like a ranking failure")
+            }
+        }
 
     @Test
     fun confirmedSubscribersSeeADismissibleBannerAboveTheHeaderAndNotBesideThePill() =

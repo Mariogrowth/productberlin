@@ -464,3 +464,20 @@ test('the key checker allows one scan per visitor per minute, not counting inval
   assert.deepEqual(await limited.json(), { error: 'rate_limited' });
   assert.equal((await check('example.com', '198.51.100.9')).status, 502, 'another visitor has their own allowance');
 });
+
+test('the weekly news endpoint categorises the published week and groups the same news from several outlets', async () => {
+  const empty = await (await mf.dispatchFetch('https://local.test/api/news/weekly')).json();
+  assert.deepEqual(empty, { weekLabel: 'No published news yet', stories: [] }, 'nothing before a live edition');
+  assert.equal((await scheduled(weekOne)).outcome, 'ok');
+  const response = await mf.dispatchFetch('https://local.test/api/news/weekly');
+  assert.equal(response.status, 200);
+  const news = await response.json();
+  assert.equal(news.weekLabel, (await ranking()).weekLabel, 'the same week as the ranking');
+  // Each test company's headlines say "<name> launches product …" through several outlets: one launch story each.
+  const first = news.stories.filter(s => s.companies.includes(catalogue[0].name));
+  assert.equal(first.length, 1);
+  assert.equal(first[0].category, 'Launches');
+  assert.ok(first[0].alsoIn.length >= 1, JSON.stringify(first[0]));
+  assert.ok(news.stories.every(s => s.category === 'Launches'));
+  assert.equal(new Set(news.stories.map(s => s.companies.join())).size, news.stories.length, 'one story per company');
+});
