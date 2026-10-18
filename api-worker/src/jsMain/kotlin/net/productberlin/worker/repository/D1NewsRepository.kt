@@ -1,5 +1,6 @@
 package net.productberlin.worker.repository
 
+import kotlin.js.Date
 import kotlin.js.Promise
 import kotlinx.coroutines.await
 import net.productberlin.domain.entity.NewsArticle
@@ -46,8 +47,31 @@ internal class D1NewsRepository(
                     translatedHeadline = it.translated_headline as String?,
                 )
             }
+        // Publisher-feed items of the same week, judged like Google News articles.
+        val from = "${latest.week_start}T00:00:00.000Z"
+        val until = Date(Date.parse(from) + 7 * 86_400_000.0).toISOString()
+        val feedRows =
+            database
+                .prepare(
+                    "SELECT key,source,title,translated_title,link,published_at FROM feed_items " +
+                        "WHERE published_at >= ? AND published_at < ? ORDER BY published_at, key",
+                ).bind(from, until)
+                .all()
+                .unsafeCast<Promise<dynamic>>()
+                .await()
+        val feedArticles =
+            feedRows.results.unsafeCast<Array<dynamic>>().map {
+                NewsArticle(
+                    it.key as String,
+                    it.title as String,
+                    it.source as String,
+                    it.published_at as String,
+                    it.link as String,
+                    translatedHeadline = it.translated_title as String?,
+                )
+            }
         val stories =
-            CategorizeWeeklyNews()(catalogue, articles).map { story ->
+            CategorizeWeeklyNews()(catalogue, articles + feedArticles).map { story ->
                 val urls = logos(story.companyId)
                 story.copy(logoUrl = urls.icon, logoFallbackUrl = urls.fullLogo)
             }

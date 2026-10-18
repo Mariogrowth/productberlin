@@ -3,6 +3,7 @@ name: Collect weekly news
 # feeds back; the Worker filters, ranks and publishes. Hourly: a week already published is skipped by the Worker's
 # plan without contacting Google, and a new week starts Monday 06:00 UTC. Editions rank four weeks of press momentum;
 # any earlier week missing from the Worker's stored history is fetched first, in the same run.
+# Then it reads the startup publishers' feeds (cloudflare/feeds.json) for the weekly news.
 # Afterwards it records each catalogue company's open roles from its public job board, once per week; nothing on the
 # site reads those counts yet. It runs even when the news step fails, and never affects the news edition.
 on:
@@ -34,6 +35,12 @@ jobs:
           cache: npm
       - run: npm ci
       - run: node scripts/collect-news.mjs
+        env:
+          COLLECTOR_URL: ${{ vars.DEPLOY_URL }}
+          COLLECTOR_TOKEN: ${{ secrets.COLLECTOR_TOKEN }}
+          DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
+      - run: node scripts/collect-feeds.mjs
+        if: ${{ !cancelled() }}
         env:
           COLLECTOR_URL: ${{ vars.DEPLOY_URL }}
           COLLECTOR_TOKEN: ${{ secrets.COLLECTOR_TOKEN }}

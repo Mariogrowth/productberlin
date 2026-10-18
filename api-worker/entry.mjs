@@ -1,11 +1,13 @@
 // Only the Cloudflare module-worker adapter is JavaScript; application logic is Kotlin/JS.
 import catalogue from '../cloudflare/startups.json';
 import publishers from '../cloudflare/publishers.json';
+import feeds from '../cloudflare/feeds.json';
 import { parseRssXml } from './rss-parser.mjs';
-import { handleApi, handleCollection, handleHiring, handleKeyCheck, handleScheduled, handleSubscription } from './build/dist/js/productionLibrary/Productberlin-api-worker.mjs';
+import { handleApi, handleCollection, handleFeeds, handleHiring, handleKeyCheck, handleScheduled, handleSubscription } from './build/dist/js/productionLibrary/Productberlin-api-worker.mjs';
 
 const catalogueJson = JSON.stringify(catalogue);
 const publishersJson = JSON.stringify(publishers);
+const feedsJson = JSON.stringify(feeds);
 
 export default {
   // Not triggered in production (no cron): Google News blocks Cloudflare, so the GitHub collector feeds
@@ -24,6 +26,14 @@ export default {
       const result = await handleCollection(
         request.method, request.headers.get('Authorization'), env.COLLECTOR_TOKEN, body, env.DB, catalogueJson, publishersJson,
       );
+      const headers = { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' };
+      if (result.allow) headers.Allow = result.allow;
+      return new Response(result.body, { status: result.status, headers });
+    }
+    if (url.pathname === '/api/internal/feeds') {
+      // Publisher-feed items from the GitHub collector; bearer-token protected.
+      const body = request.method === 'POST' ? (await request.text()).slice(0, 2_000_001) : '';
+      const result = await handleFeeds(request.method, request.headers.get('Authorization'), env.COLLECTOR_TOKEN, body, env.DB, feedsJson);
       const headers = { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' };
       if (result.allow) headers.Allow = result.allow;
       return new Response(result.body, { status: result.status, headers });

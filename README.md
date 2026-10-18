@@ -184,6 +184,14 @@ Under the ranking, the homepage shows the categorised news for the **same week a
 
 Each story shows its first company's mark: the same Brandfetch icon, full logo or letter-mark fallback as the ranking (`CompanyMark`), with logo URLs built only for companies that have a story.
 
+**Publisher feeds.** The collect workflow also reads the startup publishers' RSS feeds in `cloudflare/feeds.json` (Gründerszene, deutsche-startups.de, EU-Startups, Tech.eu, Sifted, Trending Topics):
+
+1. `scripts/collect-feeds.mjs` asks `GET /api/internal/feeds` (same `COLLECTOR_TOKEN`) which feeds to read and which items it already has.
+2. It reads each feed, paging back over the last 21 days, keeps only new items, and translates titles with DeepL when `DEEPL_API_KEY` is set.
+3. It posts them to `POST /api/internal/feeds`. The Worker keeps only items from listed feeds with bounded single-line titles, HTTPS links and dates from the last 21 days, stored once in `feed_items` (migration `0006`).
+
+`/api/news/weekly` judges the week's feed items exactly like Google News articles: they count for the catalogue companies their headline names, and `ClassifyHeadline` sets the category. The same news from Google News and a feed becomes one story. Startups outside the catalogue are not detected.
+
 The page's "All" view leaves out **Other** (interviews, features, opinion), which has its own filter. Demo editions, weeks without stories and failed loads show no section. Coverage is the catalogue companies found by the weekly Google News searches; publisher feeds and model-based classification are planned next.
 
 ## Key-check prototype (`/key-check`)
