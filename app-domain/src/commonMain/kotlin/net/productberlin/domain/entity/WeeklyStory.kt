@@ -15,4 +15,9 @@ data class WeeklyStory(
     /** English translation of a non-English [headline], for display. */
     val translatedHeadline: String? = null,
     val alsoIn: List<String> = emptyList(),
+    /** The first company's catalogue ID, for its mark. */
+    val companyId: String = "",
+    /** Decorative logos for the first company, as for the ranking: square icon, then full logo. */
+    val logoUrl: String? = null,
+    val logoFallbackUrl: String? = null,
 )

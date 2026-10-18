@@ -59,6 +59,7 @@ class CategorizeWeeklyNewsTest {
         assertEquals("f1", finmid.id)
         assertEquals("Startbase", finmid.source)
         assertEquals(listOf("FinTech Global", "quasa.io"), finmid.alsoIn)
+        assertEquals("finmid", finmid.companyId, "the catalogue ID, for the company's mark")
         val n26 = categorize(catalogue, week).single { it.companies == listOf("N26") }
         assertEquals(NewsCategory.People, n26.category)
         assertEquals(listOf("Trending Topics DE"), n26.alsoIn, "the German and English versions are one story")

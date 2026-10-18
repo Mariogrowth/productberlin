@@ -182,6 +182,8 @@ Under the ranking, the homepage shows the categorised news for the **same week a
 - merges the same news from several outlets into one story (same companies and category, plus a shared amount or mostly the same words), led by the first report and listing the others as "also in";
 - orders stories by category, newest first.
 
+Each story shows its first company's mark: the same Brandfetch icon, full logo or letter-mark fallback as the ranking (`CompanyMark`), with logo URLs built only for companies that have a story.
+
 The page's "All" view leaves out **Other** (interviews, features, opinion), which has its own filter. Demo editions, weeks without stories and failed loads show no section. Coverage is the catalogue companies found by the weekly Google News searches; publisher feeds and model-based classification are planned next.
 
 ## Key-check prototype (`/key-check`)

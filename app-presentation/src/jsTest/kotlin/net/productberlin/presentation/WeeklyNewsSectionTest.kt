@@ -93,4 +93,25 @@ class WeeklyNewsSectionTest : ComponentTest() {
         assertTrue(container.textContent.orEmpty().contains("No company news this week beyond interviews and features."))
         assertEquals(listOf("All (0)", "Other (1)"), chips())
     }
+
+    @Test
+    fun eachStoryShowsTheCompanysLogoAndFallsBackToItsLetterMark() {
+        val logo = "https://cdn.brandfetch.io/domain/finmid.com/w/80/h/80/fallback/404/type/icon?c=id"
+        val withLogo = story("f1", NewsCategory.Funding, "finmid", "finmid raises €17M").copy(companyId = "finmid", logoUrl = logo)
+        val withoutLogo = story("n1", NewsCategory.People, "N26", "N26 hires a CFO").copy(companyId = "n26")
+        render(WeeklyNewsSection.create { this.news = WeeklyNews("Week", listOf(withLogo, withoutLogo)) })
+        val marks = container.querySelectorAll(".weekly-story .company-mark.story-mark")
+        assertEquals(2, marks.length)
+        val first = marks.item(0)!!
+        assertEquals(logo, first.querySelector("img")?.getAttribute("src"))
+        assertEquals("", first.querySelector("img")?.getAttribute("alt"))
+        assertEquals("true", first.getAttribute("aria-hidden"), "decorative: the company name follows")
+        flushSync { first.querySelector("img")!!.dispatchEvent(web.events.Event(web.events.EventType("error"))) }
+        assertEquals(
+            "fi",
+            container.querySelectorAll(".weekly-story .company-mark").item(0)?.textContent,
+            "letter mark after a failed logo",
+        )
+        assertEquals("N26", marks.item(1)?.textContent)
+    }
 }
