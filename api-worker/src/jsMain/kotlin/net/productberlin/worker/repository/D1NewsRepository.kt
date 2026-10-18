@@ -7,14 +7,16 @@ import net.productberlin.domain.entity.StartupCandidate
 import net.productberlin.domain.entity.WeeklyNews
 import net.productberlin.domain.repository.NewsRepository
 import net.productberlin.domain.usecase.CategorizeWeeklyNews
+import net.productberlin.worker.logo.CompanyLogos
 
 /**
  * The stored articles of the week behind the latest published live ranking, categorised. Demo editions have no
- * stored articles, so they get no news.
+ * stored articles, so they get no news. Logos are built only for companies with a story, as for the ranking.
  */
 internal class D1NewsRepository(
     private val database: dynamic,
     private val catalogue: List<StartupCandidate>,
+    private val logos: (startupId: String) -> CompanyLogos = { CompanyLogos() },
 ) : NewsRepository {
     override suspend fun getWeeklyNews(): WeeklyNews {
         val latest =
@@ -44,7 +46,12 @@ internal class D1NewsRepository(
                     translatedHeadline = it.translated_headline as String?,
                 )
             }
-        return WeeklyNews(latest.week_label as String, CategorizeWeeklyNews()(catalogue, articles))
+        val stories =
+            CategorizeWeeklyNews()(catalogue, articles).map { story ->
+                val urls = logos(story.companyId)
+                story.copy(logoUrl = urls.icon, logoFallbackUrl = urls.fullLogo)
+            }
+        return WeeklyNews(latest.week_label as String, stories)
     }
 }
 

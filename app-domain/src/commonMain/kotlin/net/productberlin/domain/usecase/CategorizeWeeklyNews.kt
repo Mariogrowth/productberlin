@@ -20,10 +20,10 @@ class CategorizeWeeklyNews(
         catalogue: List<StartupCandidate>,
         articles: List<NewsArticle>,
     ): List<WeeklyStory> {
-        val companiesByArticle = linkedMapOf<String, MutableList<String>>()
+        val companiesByArticle = linkedMapOf<String, MutableList<StartupCandidate>>()
         val byId = articles.associateBy { it.id }
         for (match in mentions.matches(catalogue, articles)) {
-            for (article in match.articles) companiesByArticle.getOrPut(article.id) { mutableListOf() } += match.company.name
+            for (article in match.articles) companiesByArticle.getOrPut(article.id) { mutableListOf() } += match.company
         }
         val candidates =
             companiesByArticle.mapNotNull { (id, companies) ->
@@ -31,12 +31,13 @@ class CategorizeWeeklyNews(
                 val category = classify(article).newsCategory ?: return@mapNotNull null
                 Triple(article, companies.toList(), category)
             }
-        val groups = mutableListOf<MutableList<Triple<NewsArticle, List<String>, NewsCategory>>>()
+        val groups = mutableListOf<MutableList<Triple<NewsArticle, List<StartupCandidate>, NewsCategory>>>()
         for (candidate in candidates.sortedWith(compareBy({ it.first.publishedAt }, { it.first.id }))) {
             val group =
                 groups.firstOrNull { existing ->
                     val lead = existing.first()
-                    lead.second == candidate.second && lead.third == candidate.third && sameNews(lead.first, candidate.first)
+                    lead.second.map { it.id } == candidate.second.map { it.id } && lead.third == candidate.third &&
+                        sameNews(lead.first, candidate.first)
                 }
             if (group != null) group += candidate else groups += mutableListOf(candidate)
         }
@@ -45,7 +46,7 @@ class CategorizeWeeklyNews(
                 val (lead, companies, category) = group.first()
                 WeeklyStory(
                     id = lead.id,
-                    companies = companies,
+                    companies = companies.map { it.name },
                     category = category,
                     headline = lead.headline,
                     source = lead.source,
@@ -58,6 +59,7 @@ class CategorizeWeeklyNews(
                             .map { it.first.source }
                             .filter { it != lead.source }
                             .distinct(),
+                    companyId = companies.first().id,
                 )
             }.sortedWith(compareBy<WeeklyStory> { it.category.ordinal }.thenByDescending { it.publishedAt }.thenBy { it.id })
     }

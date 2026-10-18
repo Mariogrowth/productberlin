@@ -16,40 +16,50 @@ external interface WeeklyStoryItemProps : Props {
     var story: WeeklyStory
 }
 
-/** One story: companies, date, English headline (original on hover) linking to the first report, and other outlets. */
+/** One story: the company's mark, companies, date, English headline (original on hover) linking to the first report, and other outlets. */
 val WeeklyStoryItem =
     FC<WeeklyStoryItemProps> { props ->
         val story = props.story
         article {
             className = ClassName("weekly-story")
-            div {
-                className = ClassName("weekly-story-top")
-                span {
-                    className = ClassName("weekly-story-company")
-                    +story.companies.joinToString(" · ")
-                }
-                time {
-                    dateTime = story.publishedAt.take(10)
-                    +shortDate(story.publishedAt)
-                }
+            CompanyMark {
+                companyId = story.companyId
+                companyName = story.companies.first()
+                logoUrl = story.logoUrl
+                logoFallbackUrl = story.logoFallbackUrl
+                variant = "story-mark"
             }
-            h4 {
-                story.translatedHeadline?.let { title = "Original: ${story.headline}" }
-                val headline = story.translatedHeadline ?: story.headline
-                val link = story.url?.takeIf { SAFE_LINK.matches(it) }
-                if (link != null) {
-                    a {
-                        href = link
+            div {
+                className = ClassName("weekly-story-body")
+                div {
+                    className = ClassName("weekly-story-top")
+                    span {
+                        className = ClassName("weekly-story-company")
+                        +story.companies.joinToString(" · ")
+                    }
+                    time {
+                        dateTime = story.publishedAt.take(10)
+                        +shortDate(story.publishedAt)
+                    }
+                }
+                h4 {
+                    story.translatedHeadline?.let { title = "Original: ${story.headline}" }
+                    val headline = story.translatedHeadline ?: story.headline
+                    val link = story.url?.takeIf { SAFE_LINK.matches(it) }
+                    if (link != null) {
+                        a {
+                            href = link
+                            +headline
+                        }
+                    } else {
                         +headline
                     }
-                } else {
-                    +headline
                 }
-            }
-            p {
-                className = ClassName("weekly-story-source")
-                +story.source
-                if (story.alsoIn.isNotEmpty()) +" · also ${story.alsoIn.take(3).joinToString(", ")}"
+                p {
+                    className = ClassName("weekly-story-source")
+                    +story.source
+                    if (story.alsoIn.isNotEmpty()) +" · also ${story.alsoIn.take(3).joinToString(", ")}"
+                }
             }
         }
     }

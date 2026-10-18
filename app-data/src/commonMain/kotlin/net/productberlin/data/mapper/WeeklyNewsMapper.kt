@@ -22,6 +22,9 @@ fun WeeklyNewsDto.toDomain() =
                     story.url,
                     story.translatedHeadline,
                     story.alsoIn,
+                    story.companyId,
+                    story.logoUrl,
+                    story.logoFallbackUrl,
                 )
             },
     )

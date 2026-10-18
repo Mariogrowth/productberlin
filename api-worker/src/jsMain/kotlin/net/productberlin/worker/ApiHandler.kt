@@ -51,7 +51,9 @@ fun handleApi(
                     }.toString(),
                 )
             } else if (path == "/api/news/weekly") {
-                val news = GetWeeklyNews(D1NewsRepository(database, parseCatalogue(catalogue)))()
+                val domains = catalogueDomains(catalogue)
+                val logo = BrandfetchLogo(brandfetchClientId)
+                val news = GetWeeklyNews(D1NewsRepository(database, parseCatalogue(catalogue)) { logo.urls(domains[it]) })()
                 response(200, wireJson.encodeToString(news.toDto()))
             } else {
                 val domains = catalogueDomains(catalogue)

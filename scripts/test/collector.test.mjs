@@ -477,6 +477,7 @@ test('the weekly news endpoint categorises the published week and groups the sam
   const first = news.stories.filter(s => s.companies.includes(catalogue[0].name));
   assert.equal(first.length, 1);
   assert.equal(first[0].category, 'Launches');
+  assert.equal(first[0].companyId, catalogue[0].id, 'the catalogue ID, for the company mark');
   assert.ok(first[0].alsoIn.length >= 1, JSON.stringify(first[0]));
   assert.ok(news.stories.every(s => s.category === 'Launches'));
   assert.equal(new Set(news.stories.map(s => s.companies.join())).size, news.stories.length, 'one story per company');

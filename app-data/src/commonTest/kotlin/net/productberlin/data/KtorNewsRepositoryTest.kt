@@ -43,7 +43,8 @@ class KtorNewsRepositoryTest {
             val body =
                 """{"weekLabel":"2026-10-05 – 2026-10-11","stories":[
                 {"id":"f1","companies":["finmid"],"category":"Funding","headline":"finmid raises €17M","source":"Startbase",
-                 "publishedAt":"2026-10-07T09:00:00.000Z","url":"https://news.example/f1","alsoIn":["quasa.io"]},
+                 "publishedAt":"2026-10-07T09:00:00.000Z","url":"https://news.example/f1","alsoIn":["quasa.io"],
+                 "companyId":"finmid","logoUrl":"https://cdn.example/icon","logoFallbackUrl":"https://cdn.example/logo"},
                 {"id":"x","companies":["X"],"category":"FutureCategory","headline":"h","source":"s","publishedAt":"2026-10-07"}]}"""
             assertEquals(
                 WeeklyNews(
@@ -58,6 +59,9 @@ class KtorNewsRepositoryTest {
                             "2026-10-07T09:00:00.000Z",
                             "https://news.example/f1",
                             alsoIn = listOf("quasa.io"),
+                            companyId = "finmid",
+                            logoUrl = "https://cdn.example/icon",
+                            logoFallbackUrl = "https://cdn.example/logo",
                         ),
                     ),
                 ),

@@ -13,4 +13,7 @@ data class WeeklyStoryDto(
     val url: String? = null,
     val translatedHeadline: String? = null,
     val alsoIn: List<String> = emptyList(),
+    val companyId: String = "",
+    val logoUrl: String? = null,
+    val logoFallbackUrl: String? = null,
 )
