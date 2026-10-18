@@ -80,7 +80,9 @@ class BootstrapTest {
                 }
             }
             if (loadsApi) {
-                assertEquals(listOf("${window.location.origin}/api/rankings/weekly"), requests)
+                // The homepage loads the ranking and the week's news.
+                val expected = listOf("/api/rankings/weekly", "/api/news/weekly")
+                assertEquals(expected.map { "${window.location.origin}$it" }.sorted(), requests.sorted())
                 assertTrue(element.textContent.orEmpty().contains("Bootstrap week"))
                 assertTrue(element.textContent.orEmpty().contains("A quiet week"))
             } else {

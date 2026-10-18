@@ -11,10 +11,12 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
+import net.productberlin.domain.usecase.GetWeeklyNews
 import net.productberlin.domain.usecase.GetWeeklyRanking
 import net.productberlin.worker.collection.parseCatalogue
 import net.productberlin.worker.logo.BrandfetchLogo
 import net.productberlin.worker.mapper.toDto
+import net.productberlin.worker.repository.D1NewsRepository
 import net.productberlin.worker.repository.D1StartupRepository
 
 /** Cloudflare interop is confined to this boundary and the D1 adapter. */
@@ -28,7 +30,7 @@ fun handleApi(
     brandfetchClientId: String?,
 ): Promise<dynamic> =
     CoroutineScope(EmptyCoroutineContext).promise {
-        if (path != "/api/health" && path != "/api/rankings/weekly") {
+        if (path != "/api/health" && path != "/api/rankings/weekly" && path != "/api/news/weekly") {
             return@promise response(404, """{"error":"Not found"}""")
         }
         if (method != "GET" && method != "HEAD") {
@@ -48,6 +50,9 @@ fun handleApi(
                         put("version", version)
                     }.toString(),
                 )
+            } else if (path == "/api/news/weekly") {
+                val news = GetWeeklyNews(D1NewsRepository(database, parseCatalogue(catalogue)))()
+                response(200, wireJson.encodeToString(news.toDto()))
             } else {
                 val domains = catalogueDomains(catalogue)
                 val logo = BrandfetchLogo(brandfetchClientId)

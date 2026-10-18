@@ -1,6 +1,7 @@
 package net.productberlin.presentation
 
 import net.productberlin.domain.state.RankingState
+import net.productberlin.domain.usecase.GetWeeklyNews
 import net.productberlin.domain.usecase.GetWeeklyRanking
 import net.productberlin.domain.usecase.SubscribeToNewsletter
 import net.productberlin.presentation.designsystem.layouts.feedback.Banner
@@ -33,6 +34,7 @@ import web.html.button
 
 external interface AppProps : Props {
     var getRanking: GetWeeklyRanking
+    var getNews: GetWeeklyNews
     var subscribe: SubscribeToNewsletter
     var subscriptionConfirmed: Boolean?
 }
@@ -42,6 +44,7 @@ val App =
         var attempt by useState(0)
         var showConfirmation by useState(props.subscriptionConfirmed == true)
         val state = useWeeklyRanking(props.getRanking, attempt)
+        val news = useWeeklyNews(props.getNews)
         val ranking = (state as? RankingState.Ready)?.ranking
 
         a {
@@ -147,6 +150,10 @@ val App =
                         className = ClassName("note-arrow")
                     }
                 }
+            }
+            // Only for live editions with stories: demo editions and quiet or failed loads show no section.
+            if (ranking?.isMock == false && news != null && news.stories.isNotEmpty()) {
+                WeeklyNewsSection { this.news = news }
             }
             NewsletterSignup { subscribe = props.subscribe }
             footer {
