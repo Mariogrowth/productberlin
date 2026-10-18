@@ -114,4 +114,13 @@ class WeeklyNewsSectionTest : ComponentTest() {
         )
         assertEquals("N26", marks.item(1)?.textContent)
     }
+
+    @Test
+    fun aStartupOutsideTheCatalogueIsMarkedNewWithItsLetterMark() {
+        val procuros = story("p1", NewsCategory.Funding, "Procuros", "Berlin logistics startup Procuros raises €20M").copy(isNew = true)
+        render(WeeklyNewsSection.create { this.news = WeeklyNews("Week", listOf(procuros)) })
+        assertEquals("ProcurosNEW", container.querySelector(".weekly-story-company")?.textContent)
+        assertEquals("Not in the Product.berlin catalogue yet", container.querySelector(".weekly-story-new")?.getAttribute("title"))
+        assertEquals("Pr", container.querySelector(".weekly-story .company-mark")?.textContent)
+    }
 }

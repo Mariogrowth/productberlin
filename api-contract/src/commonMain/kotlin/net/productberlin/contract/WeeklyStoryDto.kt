@@ -16,4 +16,5 @@ data class WeeklyStoryDto(
     val companyId: String = "",
     val logoUrl: String? = null,
     val logoFallbackUrl: String? = null,
+    val isNew: Boolean = false,
 )

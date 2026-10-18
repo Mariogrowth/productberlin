@@ -115,7 +115,7 @@ before(async () => {
     },
   }));
   db = (await mf.getBindings()).DB;
-  for (const file of ['0001_initial.sql', '0002_weekly_collection.sql', '0003_translated_headlines.sql', '0004_hiring_counts.sql', '0005_article_history.sql']) {
+  for (const file of ['0001_initial.sql', '0002_weekly_collection.sql', '0003_translated_headlines.sql', '0004_hiring_counts.sql', '0005_article_history.sql', '0006_feed_stories.sql']) {
     const sql = await readFile(resolve('cloudflare/migrations', file), 'utf8');
     await db.batch(sql.split(';').map(s => s.trim()).filter(Boolean).map(s => db.prepare(s)));
   }
@@ -126,7 +126,7 @@ after(async () => {
 });
 
 beforeEach(async () => {
-  await db.batch(['news_articles', 'ranking_entries', 'ranking_snapshots', 'startups', 'collection_runs', 'hiring_counts', 'hiring_runs', 'collected_articles', 'collected_weeks'].map(table => db.prepare(`DELETE FROM ${table}`)));
+  await db.batch(['news_articles', 'ranking_entries', 'ranking_snapshots', 'startups', 'collection_runs', 'hiring_counts', 'hiring_runs', 'collected_articles', 'collected_weeks', 'feed_stories', 'feed_items'].map(table => db.prepare(`DELETE FROM ${table}`)));
   calls = [];
   mode = 'success';
   takeoverDone = false;
@@ -326,7 +326,7 @@ test('rank movement ignores newer mock, draft and incomplete earlier-week snapsh
 test('untrusted publishers neither count nor show, and syndicated headlines show once', async () => {
   assert.equal((await scheduled(weekOne)).outcome, 'ok');
   const baseline = Object.fromEntries((await ranking()).startups.map(s => [s.id, s.mentionCount]));
-  await db.batch(['news_articles', 'ranking_entries', 'ranking_snapshots', 'startups', 'collection_runs', 'hiring_counts', 'hiring_runs', 'collected_articles', 'collected_weeks'].map(table => db.prepare(`DELETE FROM ${table}`)));
+  await db.batch(['news_articles', 'ranking_entries', 'ranking_snapshots', 'startups', 'collection_runs', 'hiring_counts', 'hiring_runs', 'collected_articles', 'collected_weeks', 'feed_stories', 'feed_items'].map(table => db.prepare(`DELETE FROM ${table}`)));
   mode = 'publishers';
   assert.equal((await scheduled(weekOne)).outcome, 'ok');
   const filtered = await ranking();
@@ -481,4 +481,37 @@ test('the weekly news endpoint categorises the published week and groups the sam
   assert.ok(first[0].alsoIn.length >= 1, JSON.stringify(first[0]));
   assert.ok(news.stories.every(s => s.category === 'Launches'));
   assert.equal(new Set(news.stories.map(s => s.companies.join())).size, news.stories.length, 'one story per company');
+});
+
+test('publisher-feed stories reach the weekly news: model verdicts, new startups and keyword-rule items', async () => {
+  const call = (method, body) => mf.dispatchFetch('https://local.test/api/internal/feeds', {
+    method, body, headers: { Authorization: `Bearer ${COLLECTOR_TOKEN}`, 'Content-Type': 'application/json' },
+  });
+  // The feed endpoint accepts only recent items, so this edition is for the latest complete week by the real clock.
+  assert.equal((await scheduled(Date.now())).outcome, 'ok');
+  const week = await ranking();
+  if (!week.weekLabel.match(/^\d{4}-\d{2}-\d{2}/)) return; // Monday before 06:00 UTC: no edition yet this week.
+  const inWeek = new Date(Date.parse(week.weekLabel.slice(0, 10) + 'T12:00:00Z') + DAY).toISOString();
+  const plan = await (await call('GET')).json();
+  assert.ok(plan.feeds.length >= 5 && plan.feeds.every(f => f.url.startsWith('https://')));
+  assert.deepEqual(plan.known, []);
+  const company = catalogue[1];
+  const items = [
+    { feed: plan.feeds[0].id, title: 'Procuros: Berliner Logistik-Startup erhält 20 Mio. Euro', link: 'https://feed.example/procuros?utm=rss', publishedAt: inWeek,
+      verdict: { stories: [{ companyId: null, companyName: 'Procuros', category: 'Funding', headline: 'Berlin logistics startup Procuros raises €20M' }] } },
+    { feed: plan.feeds[0].id, title: 'Vienna startup raises €3M', link: 'https://feed.example/vienna', publishedAt: inWeek, verdict: { stories: [] } },
+    { feed: plan.feeds[1].id, title: `${company.name} ${company.contextKeywords?.[0] ?? ''} appoints new CFO`, link: 'https://feed.example/rules', publishedAt: inWeek },
+  ];
+  const stored = await (await call('POST', JSON.stringify({ items }))).json();
+  assert.deepEqual(stored, { received: 3, valid: 3, stored: 3 });
+  assert.deepEqual((await (await call('GET')).json()).known.sort(), ['https://feed.example/procuros', 'https://feed.example/rules', 'https://feed.example/vienna']);
+  const news = await (await mf.dispatchFetch('https://local.test/api/news/weekly')).json();
+  const procuros = news.stories.find(s => s.companies[0] === 'Procuros');
+  assert.equal(procuros.isNew, true);
+  assert.equal(procuros.category, 'Funding');
+  assert.equal(procuros.translatedHeadline, 'Berlin logistics startup Procuros raises €20M');
+  assert.equal(procuros.url, 'https://feed.example/procuros?utm=rss');
+  const people = news.stories.find(s => s.companyId === company.id && s.category === 'People');
+  assert.ok(people, 'the keyword rules judged the item without a verdict');
+  assert.ok(!news.stories.some(s => s.headline.includes('Vienna')));
 });

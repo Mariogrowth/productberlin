@@ -1,0 +1,121 @@
+package net.productberlin.worker.feeds
+
+import kotlin.js.Date
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.addJsonObject
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
+import kotlinx.serialization.json.putJsonArray
+import net.productberlin.domain.entity.NewsCategory
+import net.productberlin.domain.entity.StartupCandidate
+import net.productberlin.worker.bearerRejection
+import net.productberlin.worker.newsletter.EndpointResponse
+
+/**
+ * `/api/internal/feeds`, used by the GitHub collector for the weekly news.
+ * - `GET`: the publisher feeds to read, and the items already read in the last [WINDOW_DAYS] days.
+ * - `POST`: new items, each with the model's verdict (the Berlin startup stories in it) or none, in which case the
+ *   keyword rules judge it when the news is built. The verdict is untrusted model output: only known categories,
+ *   catalogue IDs that exist (anything else is a new company), bounded lengths, HTTPS links and recent dates are kept.
+ * Both require `Authorization: Bearer <COLLECTOR_TOKEN>`.
+ */
+internal class FeedEndpoint(
+    private val expectedToken: String?,
+    private val repository: FeedRepository,
+    private val feeds: List<PublisherFeed>,
+    private val catalogue: List<StartupCandidate>,
+    private val now: Double,
+) {
+    suspend fun handle(
+        method: String,
+        authorization: String?,
+        body: String,
+    ): EndpointResponse {
+        bearerRejection(expectedToken, authorization)?.let { return it }
+        return when (method) {
+            "GET" -> plan()
+            "POST" -> store(body)
+            else -> EndpointResponse(405, """{"error":"method_not_allowed"}""", allow = "GET, POST")
+        }
+    }
+
+    private suspend fun plan(): EndpointResponse {
+        val known = repository.knownKeys(Date(now - WINDOW_DAYS * DAY).toISOString())
+        val body =
+            buildJsonObject {
+                putJsonArray("feeds") {
+                    for (feed in feeds) {
+                        addJsonObject {
+                            put("id", feed.id)
+                            put("name", feed.name)
+                            put("url", feed.url)
+                            put("pages", feed.pages)
+                        }
+                    }
+                }
+                putJsonArray("known") { known.forEach { add(JsonPrimitive(it)) } }
+                put("since", Date(now - WINDOW_DAYS * DAY).toISOString())
+            }
+        return EndpointResponse(200, body.toString())
+    }
+
+    private suspend fun store(body: String): EndpointResponse {
+        if (body.length > MAX_BODY) return EndpointResponse(413, """{"error":"payload_too_large"}""")
+        val payload =
+            try {
+                JSON.parse<dynamic>(body)
+            } catch (invalid: Throwable) {
+                return EndpointResponse(400, """{"error":"invalid_json"}""")
+            }
+        val raw = payload?.items.unsafeCast<Array<dynamic>?>() ?: return EndpointResponse(400, """{"error":"invalid_items"}""")
+        if (raw.size > MAX_ITEMS) return EndpointResponse(413, """{"error":"too_many_items"}""")
+        val items = raw.mapNotNull(::item).distinctBy { it.key }
+        val stored = repository.store(items, Date(now).toISOString())
+        return EndpointResponse(200, """{"received":${raw.size},"valid":${items.size},"stored":$stored}""")
+    }
+
+    private fun item(value: dynamic): FeedItem? {
+        val feed = feeds.firstOrNull { it.id == (value?.feed as? String) } ?: return null
+        val link = (value.link as? String)?.trim()?.takeIf { SAFE_LINK.matches(it) && it.length <= 500 } ?: return null
+        val title = text(value.title, 300) ?: return null
+        val published = (value.publishedAt as? String)?.let { Date.parse(it) }?.takeIf { !it.isNaN() } ?: return null
+        if (published < now - WINDOW_DAYS * DAY || published > now + DAY) return null
+        val verdict = value.verdict
+        val stories =
+            if (verdict == null || verdict == undefined) {
+                null
+            } else {
+                (verdict.stories.unsafeCast<Array<dynamic>?>() ?: return null).take(MAX_STORIES).mapNotNull(::story)
+            }
+        return FeedItem(itemKey(link), feed, title, text(value.translatedTitle, 300), link, Date(published).toISOString(), stories)
+    }
+
+    private fun story(value: dynamic): VerdictStory? {
+        val category = NewsCategory.entries.firstOrNull { it.name == (value?.category as? String) } ?: return null
+        val name = text(value.companyName, 80) ?: return null
+        val headline = text(value.headline, 160) ?: return null
+        val id = (value.companyId as? String)?.takeIf { candidate -> catalogue.any { it.id == candidate } }
+        return VerdictStory(id, id?.let { known -> catalogue.first { it.id == known }.name } ?: name, category, headline)
+    }
+
+    /** Single-line text without control characters, at most [max] characters, or null. */
+    private fun text(
+        value: dynamic,
+        max: Int,
+    ): String? =
+        (value as? String)
+            ?.replace(CONTROL, " ")
+            ?.replace(Regex("\\s+"), " ")
+            ?.trim()
+            ?.takeIf { it.isNotEmpty() && it.length <= max }
+
+    private companion object {
+        const val DAY = 86_400_000.0
+        const val WINDOW_DAYS = 21
+        const val MAX_BODY = 2_000_000
+        const val MAX_ITEMS = 400
+        const val MAX_STORIES = 5
+        val SAFE_LINK = Regex("^https://[^\\s/<>]+/[^\\s<>\"]*$")
+        val CONTROL = Regex("[\\u0000-\\u001f\\u007f]")
+    }
+}

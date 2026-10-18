@@ -1,0 +1,8 @@
+[
+  { "id": "gruenderszene", "name": "Gründerszene", "url": "https://www.businessinsider.de/gruenderszene/feed/", "pages": 2 },
+  { "id": "deutsche-startups", "name": "deutsche-startups.de", "url": "https://www.deutsche-startups.de/feed/", "pages": 2 },
+  { "id": "eu-startups", "name": "EU-Startups", "url": "https://www.eu-startups.com/feed/", "pages": 3 },
+  { "id": "tech-eu", "name": "Tech.eu", "url": "https://tech.eu/feed/", "pages": 1 },
+  { "id": "sifted", "name": "Sifted", "url": "https://sifted.eu/feed", "pages": 1 },
+  { "id": "trending-topics", "name": "Trending Topics", "url": "https://www.trendingtopics.eu/feed/", "pages": 3 }
+]

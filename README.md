@@ -184,6 +184,16 @@ Under the ranking, the homepage shows the categorised news for the **same week a
 
 Each story shows its first company's mark: the same Brandfetch icon, full logo or letter-mark fallback as the ranking (`CompanyMark`), with logo URLs built only for companies that have a story.
 
+**Publisher feeds.** The collect workflow also reads the startup publishers' RSS feeds in `cloudflare/feeds.json` (Gründerszene, deutsche-startups.de, EU-Startups, Tech.eu, Sifted, Trending Topics):
+
+1. `scripts/collect-feeds.mjs` asks `GET /api/internal/feeds` (same `COLLECTOR_TOKEN`) which feeds to read and which items it already has.
+2. It reads each feed, paging back over the last 21 days, and keeps only new items.
+3. With the GitHub secret `ANTHROPIC_API_KEY`, it asks Claude Haiku (`claude-haiku-4-5-20251001`, in batches of 15) which Berlin startups each item is substantially about, with a category and an English headline. The prompt lists the catalogue and tells the model to treat item text as data. Costs are a few euros a month at most, because each item is classified once.
+4. It posts the items and verdicts to `POST /api/internal/feeds`. **The Worker treats model output as untrusted**: it keeps only known categories, catalogue IDs that exist (anything else is a new company, and catalogue names replace the model's spelling), bounded single-line text, HTTPS links and dates from the last 21 days, at most 5 stories per item. Every item read is stored in `feed_items` (migration `0006`), with its stories in `feed_stories`, so nothing is classified twice.
+5. Without the key, or when the model fails, items are posted without a verdict (titles translated with DeepL when available). The news then judges them like Google News articles: catalogue names in the headline and `ClassifyHeadline`.
+
+`/api/news/weekly` merges the week's Google News articles, rule-judged feed items and model stories. The same news across sources becomes one story. Startups outside the catalogue are marked **NEW** and shown with a letter mark.
+
 The page's "All" view leaves out **Other** (interviews, features, opinion), which has its own filter. Demo editions, weeks without stories and failed loads show no section. Coverage is the catalogue companies found by the weekly Google News searches; publisher feeds and model-based classification are planned next.
 
 ## Key-check prototype (`/key-check`)
