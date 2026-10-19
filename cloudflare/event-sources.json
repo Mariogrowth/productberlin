@@ -1,0 +1,275 @@
+[
+  {
+    "id": "merantix-ai-campus",
+    "name": "Merantix AI Campus",
+    "kind": "tech",
+    "feed": "https://api.lu.ma/ics/get?entity=calendar&id=cal-7sHKxsqqNNbPA7k",
+    "berlinBased": true
+  },
+  {
+    "id": "merantix-momentum",
+    "name": "Merantix Momentum",
+    "kind": "tech",
+    "feed": "https://api.lu.ma/ics/get?entity=calendar&id=cal-yXunL3PoYQLb3rB",
+    "berlinBased": true
+  },
+  {
+    "id": "the-delta",
+    "name": "The Delta",
+    "kind": "startup",
+    "feed": "https://api.lu.ma/ics/get?entity=calendar&id=cal-2fhmoASDoE2l7VS",
+    "berlinBased": true
+  },
+  {
+    "id": "berlin-ai",
+    "name": "Berlin AI",
+    "kind": "tech",
+    "feed": "https://api.lu.ma/ics/get?entity=calendar&id=cal-4Ti7TqshtHEm18H",
+    "berlinBased": true
+  },
+  {
+    "id": "silicon-allee",
+    "name": "Silicon Allee × Fraunhofer HHI",
+    "kind": "startup",
+    "feed": "https://api.lu.ma/ics/get?entity=calendar&id=cal-zumjp2xAymV5GF4",
+    "berlinBased": true
+  },
+  {
+    "id": "selbst-und-staendig",
+    "name": "Selbst & Ständig",
+    "kind": "startup",
+    "feed": "https://api.lu.ma/ics/get?entity=calendar&id=cal-wC8zQNCdxh8yN3f",
+    "berlinBased": true
+  },
+  {
+    "id": "ampli-berlin",
+    "name": "Ampli Berlin",
+    "kind": "tech",
+    "feed": "https://api.lu.ma/ics/get?entity=calendar&id=cal-1Ss62osGUiE1aWR",
+    "berlinBased": true
+  },
+  {
+    "id": "ixdf-berlin",
+    "name": "IxDF Berlin",
+    "kind": "tech",
+    "feed": "https://api.lu.ma/ics/get?entity=calendar&id=cal-ZThfef9g2mxletM",
+    "berlinBased": true
+  },
+  {
+    "id": "tech-europe",
+    "name": "{Tech: Europe}",
+    "kind": "startup",
+    "feed": "https://api.lu.ma/ics/get?entity=calendar&id=cal-qyEpCltsspbMoJR",
+    "berlinBased": false
+  },
+  {
+    "id": "the22nd",
+    "name": "the22nd",
+    "kind": "startup",
+    "feed": "https://api.lu.ma/ics/get?entity=calendar&id=cal-08K6J3UvTU1eAeM",
+    "berlinBased": false
+  },
+  {
+    "id": "point-nine",
+    "name": "Point Nine",
+    "kind": "startup",
+    "feed": "https://api.lu.ma/ics/get?entity=calendar&id=cal-dOeSkCDYS3mZBJx",
+    "berlinBased": false
+  },
+  {
+    "id": "prototype",
+    "name": "PROTOTYPE",
+    "kind": "startup",
+    "feed": "https://api.lu.ma/ics/get?entity=calendar&id=cal-rvz4lKsrXBT6BNP",
+    "berlinBased": false
+  },
+  {
+    "id": "lennys-newsletter",
+    "name": "Lenny's Newsletter Meetups",
+    "kind": "startup",
+    "feed": "https://api.lu.ma/ics/get?entity=calendar&id=cal-LxSRAvoOnOWxF9M",
+    "berlinBased": false
+  },
+  {
+    "id": "mind-the-product",
+    "name": "Mind the Product",
+    "kind": "startup",
+    "feed": "https://api.lu.ma/ics/get?entity=calendar&id=cal-GRmbTlz73vj0bcl",
+    "berlinBased": false
+  },
+  {
+    "id": "founders-founders",
+    "name": "Founders Founders",
+    "kind": "startup",
+    "feed": "https://api.lu.ma/ics/get?entity=calendar&id=cal-gXrNT3gFQU4mE12",
+    "berlinBased": false
+  },
+  {
+    "id": "nebius-startups",
+    "name": "Nebius for Startups",
+    "kind": "startup",
+    "feed": "https://api.lu.ma/ics/get?entity=calendar&id=cal-7ZrvR8kyMPpO3vQ",
+    "berlinBased": false
+  },
+  {
+    "id": "replit",
+    "name": "Replit",
+    "kind": "tech",
+    "feed": "https://api.lu.ma/ics/get?entity=calendar&id=cal-F5ogUSLhImU4Dc2",
+    "berlinBased": false
+  },
+  {
+    "id": "hyperbolic",
+    "name": "Hyperbolic",
+    "kind": "tech",
+    "feed": "https://api.lu.ma/ics/get?entity=calendar&id=cal-0NxNpsEahEPkVQi",
+    "berlinBased": false
+  },
+  {
+    "id": "baseten",
+    "name": "Baseten",
+    "kind": "tech",
+    "feed": "https://api.lu.ma/ics/get?entity=calendar&id=cal-l76607AsonZ1F7F",
+    "berlinBased": false
+  },
+  {
+    "id": "together-ai",
+    "name": "Together AI",
+    "kind": "tech",
+    "feed": "https://api.lu.ma/ics/get?entity=calendar&id=cal-Icg56OoJNDuOt3e",
+    "berlinBased": false
+  },
+  {
+    "id": "claude-community",
+    "name": "Claude Community",
+    "kind": "tech",
+    "feed": "https://api.lu.ma/ics/get?entity=calendar&id=cal-TOpA5LAFfuDeFpu",
+    "berlinBased": false
+  },
+  {
+    "id": "langchain",
+    "name": "LangChain",
+    "kind": "tech",
+    "feed": "https://api.lu.ma/ics/get?entity=calendar&id=cal-mvNH1VHlaFtSMFx",
+    "berlinBased": false
+  },
+  {
+    "id": "hugging-face",
+    "name": "Hugging Face",
+    "kind": "tech",
+    "feed": "https://api.lu.ma/ics/get?entity=calendar&id=cal-BHCbNUcyZTBdvrw",
+    "berlinBased": false
+  },
+  {
+    "id": "elevenlabs",
+    "name": "ElevenLabs",
+    "kind": "tech",
+    "feed": "https://api.lu.ma/ics/get?entity=calendar&id=cal-mPiXcxrFngw3uC3",
+    "berlinBased": false
+  },
+  {
+    "id": "into-design-systems",
+    "name": "Into Design Systems",
+    "kind": "tech",
+    "feed": "https://api.lu.ma/ics/get?entity=calendar&id=cal-STH3OlGbIUGAReD",
+    "berlinBased": false
+  },
+  {
+    "id": "berlinstartups",
+    "name": "Startups.Berlin",
+    "kind": "startup",
+    "feed": "https://www.meetup.com/berlinstartups/events/ical/",
+    "berlinBased": true
+  },
+  {
+    "id": "startupschoolberlin",
+    "name": "Berlin Startup School",
+    "kind": "startup",
+    "feed": "https://www.meetup.com/startupschoolberlin/events/ical/",
+    "berlinBased": true
+  },
+  {
+    "id": "founders-running-club-berlin",
+    "name": "Founders Running Club Berlin",
+    "kind": "startup",
+    "feed": "https://www.meetup.com/founders-running-club-berlin/events/ical/",
+    "berlinBased": true
+  },
+  {
+    "id": "onproduct",
+    "name": "On Product",
+    "kind": "startup",
+    "feed": "https://www.meetup.com/onproduct/events/ical/",
+    "berlinBased": true
+  },
+  {
+    "id": "data-science-retreat",
+    "name": "Data Science Retreat",
+    "kind": "tech",
+    "feed": "https://www.meetup.com/data-science-retreat/events/ical/",
+    "berlinBased": true
+  },
+  {
+    "id": "pydata-berlin",
+    "name": "PyData Berlin",
+    "kind": "tech",
+    "feed": "https://www.meetup.com/PyData-Berlin/events/ical/",
+    "berlinBased": true
+  },
+  {
+    "id": "global-ai-berlin",
+    "name": "Global AI Berlin",
+    "kind": "tech",
+    "feed": "https://www.meetup.com/global-ai-berlin/events/ical/",
+    "berlinBased": true
+  },
+  {
+    "id": "women-in-big-data-berlin-meetup-group",
+    "name": "Women in Big Data Berlin",
+    "kind": "tech",
+    "feed": "https://www.meetup.com/women-in-big-data-berlin-meetup-group/events/ical/",
+    "berlinBased": true
+  },
+  {
+    "id": "build-learn-data-science-saturdays",
+    "name": "Build & Learn: AI with Coffee",
+    "kind": "tech",
+    "feed": "https://www.meetup.com/build-learn-data-science-saturdays/events/ical/",
+    "berlinBased": true
+  },
+  {
+    "id": "berlinbanktechnights",
+    "name": "Berlin BankTech Nights",
+    "kind": "tech",
+    "feed": "https://www.meetup.com/berlinbanktechnights/events/ical/",
+    "berlinBased": true
+  },
+  {
+    "id": "codecentric-berlin",
+    "name": "codecentric Berlin",
+    "kind": "tech",
+    "feed": "https://www.meetup.com/codecentric-berlin/events/ical/",
+    "berlinBased": true
+  },
+  {
+    "id": "berlin-tech-social",
+    "name": "Berlin Tech Mixer",
+    "kind": "tech",
+    "feed": "https://www.meetup.com/berlin-tech-social/events/ical/",
+    "berlinBased": true
+  },
+  {
+    "id": "aibuildersclub",
+    "name": "AI Builders",
+    "kind": "tech",
+    "feed": "https://www.meetup.com/aibuildersclub/events/ical/",
+    "berlinBased": false
+  },
+  {
+    "id": "grammarly-tech-talks",
+    "name": "Grammarly Tech Talks",
+    "kind": "tech",
+    "feed": "https://www.meetup.com/grammarly-tech-talks/events/ical/",
+    "berlinBased": false
+  }
+]

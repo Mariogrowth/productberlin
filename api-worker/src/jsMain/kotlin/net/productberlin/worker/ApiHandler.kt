@@ -3,6 +3,7 @@
 package net.productberlin.worker
 
 import kotlin.coroutines.EmptyCoroutineContext
+import kotlin.js.Date
 import kotlin.js.Promise
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.await
@@ -11,11 +12,13 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
+import net.productberlin.domain.usecase.GetUpcomingEvents
 import net.productberlin.domain.usecase.GetWeeklyNews
 import net.productberlin.domain.usecase.GetWeeklyRanking
 import net.productberlin.worker.collection.parseCatalogue
 import net.productberlin.worker.logo.BrandfetchLogo
 import net.productberlin.worker.mapper.toDto
+import net.productberlin.worker.repository.D1EventRepository
 import net.productberlin.worker.repository.D1NewsRepository
 import net.productberlin.worker.repository.D1StartupRepository
 
@@ -30,7 +33,7 @@ fun handleApi(
     brandfetchClientId: String?,
 ): Promise<dynamic> =
     CoroutineScope(EmptyCoroutineContext).promise {
-        if (path != "/api/health" && path != "/api/rankings/weekly" && path != "/api/news/weekly") {
+        if (path != "/api/health" && path != "/api/rankings/weekly" && path != "/api/news/weekly" && path != "/api/events") {
             return@promise response(404, """{"error":"Not found"}""")
         }
         if (method != "GET" && method != "HEAD") {
@@ -50,6 +53,9 @@ fun handleApi(
                         put("version", version)
                     }.toString(),
                 )
+            } else if (path == "/api/events") {
+                val events = GetUpcomingEvents(D1EventRepository(database, Date.now()))()
+                response(200, wireJson.encodeToString(events.toDto()))
             } else if (path == "/api/news/weekly") {
                 val domains = catalogueDomains(catalogue)
                 val logo = BrandfetchLogo(brandfetchClientId)

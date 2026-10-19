@@ -41,6 +41,7 @@ internal fun mountApplication(): Root {
                 App.create {
                     getRanking = container.koin.get()
                     getNews = container.koin.get()
+                    getEvents = container.koin.get()
                     subscribe = container.koin.get()
                     subscriptionConfirmed = confirmed
                 },

@@ -115,7 +115,7 @@ before(async () => {
     },
   }));
   db = (await mf.getBindings()).DB;
-  for (const file of ['0001_initial.sql', '0002_weekly_collection.sql', '0003_translated_headlines.sql', '0004_hiring_counts.sql', '0005_article_history.sql', '0006_feed_items.sql']) {
+  for (const file of ['0001_initial.sql', '0002_weekly_collection.sql', '0003_translated_headlines.sql', '0004_hiring_counts.sql', '0005_article_history.sql', '0006_feed_items.sql', '0007_events.sql']) {
     const sql = await readFile(resolve('cloudflare/migrations', file), 'utf8');
     await db.batch(sql.split(';').map(s => s.trim()).filter(Boolean).map(s => db.prepare(s)));
   }
@@ -126,7 +126,7 @@ after(async () => {
 });
 
 beforeEach(async () => {
-  await db.batch(['news_articles', 'ranking_entries', 'ranking_snapshots', 'startups', 'collection_runs', 'hiring_counts', 'hiring_runs', 'collected_articles', 'collected_weeks', 'feed_items'].map(table => db.prepare(`DELETE FROM ${table}`)));
+  await db.batch(['news_articles', 'ranking_entries', 'ranking_snapshots', 'startups', 'collection_runs', 'hiring_counts', 'hiring_runs', 'collected_articles', 'collected_weeks', 'feed_items', 'events', 'event_collections'].map(table => db.prepare(`DELETE FROM ${table}`)));
   calls = [];
   mode = 'success';
   takeoverDone = false;
@@ -326,7 +326,7 @@ test('rank movement ignores newer mock, draft and incomplete earlier-week snapsh
 test('untrusted publishers neither count nor show, and syndicated headlines show once', async () => {
   assert.equal((await scheduled(weekOne)).outcome, 'ok');
   const baseline = Object.fromEntries((await ranking()).startups.map(s => [s.id, s.mentionCount]));
-  await db.batch(['news_articles', 'ranking_entries', 'ranking_snapshots', 'startups', 'collection_runs', 'hiring_counts', 'hiring_runs', 'collected_articles', 'collected_weeks', 'feed_items'].map(table => db.prepare(`DELETE FROM ${table}`)));
+  await db.batch(['news_articles', 'ranking_entries', 'ranking_snapshots', 'startups', 'collection_runs', 'hiring_counts', 'hiring_runs', 'collected_articles', 'collected_weeks', 'feed_items', 'events', 'event_collections'].map(table => db.prepare(`DELETE FROM ${table}`)));
   mode = 'publishers';
   assert.equal((await scheduled(weekOne)).outcome, 'ok');
   const filtered = await ranking();
@@ -509,4 +509,35 @@ test('publisher-feed items reach the weekly news, judged like Google News articl
   assert.equal(people.url, 'https://feed.example/cfo?utm=rss');
   assert.equal(people.translatedHeadline, `${company.name} ${company.contextKeywords?.[0] ?? ''} appoints new CFO`.replace(/\s+/g, ' '), 'stored as clean single-line text');
   assert.ok(!news.stories.some(s => s.headline.includes('Vienna')), 'no catalogue company in the headline: not shown');
+});
+
+test('organisers\' calendar entries become the coming week\'s Berlin events', async () => {
+  const call = (method, body) => mf.dispatchFetch('https://local.test/api/internal/events', {
+    method, body, headers: { Authorization: `Bearer ${COLLECTOR_TOKEN}`, 'Content-Type': 'application/json' },
+  });
+  const plan = await (await call('GET')).json();
+  assert.equal(plan.due, true);
+  assert.ok(plan.sources.length >= 30 && plan.sources.every(s => s.feed.startsWith('https://')));
+  const at = days => new Date(Date.now() + days * DAY).toISOString();
+  const local = plan.sources.find(s => s.id === 'merantix-ai-campus');
+  const global = plan.sources.find(s => s.id === 'replit');
+  const sources = [
+    { id: local.id, entries: [
+      { uid: 'e1', title: 'UNCONFERENCE: Engineering AI Together', startsAt: at(2), location: 'Merantix AI Campus, Max-Urich-Straße 3, 13355 Berlin, Germany', url: 'https://luma.com/e1' },
+      { uid: 'e2', title: 'Demo Day', startsAt: at(1), location: '', url: 'https://luma.com/e2' },
+      { uid: 'e3', title: 'Next month', startsAt: at(20), location: '', url: 'https://luma.com/e3' },
+    ] },
+    { id: global.id, entries: [
+      { uid: 'r1', title: 'Builders & Brews SF', startsAt: at(1), location: 'Motoring Coffee, 1525 Union St, San Francisco, CA 94123, USA' },
+    ] },
+  ];
+  assert.deepEqual(await (await call('POST', JSON.stringify({ sources }))).json(), { sources: 2, events: 3 });
+  assert.equal((await (await call('GET')).json()).due, false, 'collected just now');
+  const { events } = await (await mf.dispatchFetch('https://local.test/api/events')).json();
+  assert.deepEqual(events.map(e => [e.title, e.kind]), [['Demo Day', 'Startup'], ['UNCONFERENCE: Engineering AI Together', 'Tech']], 'coming week only, soonest first');
+  assert.equal(events[1].venue, 'Merantix AI Campus');
+  assert.equal(events[1].organiser, 'Merantix AI Campus');
+  // A later collection replaces the source's upcoming events: a cancelled event disappears.
+  await call('POST', JSON.stringify({ sources: [{ id: local.id, entries: [sources[0].entries[0]] }] }));
+  assert.deepEqual((await (await mf.dispatchFetch('https://local.test/api/events')).json()).events.map(e => e.title), ['UNCONFERENCE: Engineering AI Together']);
 });

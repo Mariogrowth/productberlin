@@ -194,6 +194,20 @@ Each story shows its first company's mark: the same Brandfetch icon, full logo o
 
 The page's "All" view leaves out **Other** (interviews, features, opinion), which has its own filter. Demo editions, weeks without stories and failed loads show no section. Coverage is the catalogue companies found by the weekly Google News searches; publisher feeds and model-based classification are planned next.
 
+## Startup events in Berlin (homepage)
+
+Under the news, the homepage lists the coming week's in-person Berlin startup and tech events. "Startups & founders" is the default filter; "Tech & AI" and "All" are one click away. Times are shown in Berlin time, and titles link to the organiser's page, where people register.
+
+- **Sources:** `cloudflare/event-sources.json` lists 39 curated organisers (Luma calendars and Meetup groups), each with a kind (`startup` or `tech`) and `berlinBased`. Feeds are the organisers' public iCal subscription links.
+- **Collection:** the collect workflow runs `scripts/collect-events.mjs`. It asks `GET /api/internal/events` (same `COLLECTOR_TOKEN`) whether a refresh is due, at most every 6 hours. It reads every feed (four at a time), keeps the next three weeks (cancelled and all-day entries skipped, Berlin local times converted to UTC), and posts the entries per organiser.
+- **Rules** (`JudgeCalendarEntry`, `app-domain`):
+  - Online sessions are left out.
+  - Berlin organisers' events count unless their address names another place.
+  - International organisers' events need Berlin evidence in the address, title or link. Luma hides guest-only addresses in feeds, so some of their Berlin events are missed.
+  - Titles about pitches, demo days, investors, founders or hackathons are startup events.
+- **Storage:** each collection replaces an organiser's upcoming events in one D1 batch (migration `0007`), so changed and cancelled events disappear. An organiser whose feed failed keeps its events. `GET /api/events` returns the coming week, with the same event listed by two organisers shown once.
+- **Upkeep:** add or remove organisers in `event-sources.json` (a normal deployment).
+
 ## Key-check prototype (`/key-check`)
 
 An unlisted page (`X-Robots-Tag: noindex`) where someone pastes a domain and sees which API keys the site exposes to every visitor. The ranking page does not link to it.
