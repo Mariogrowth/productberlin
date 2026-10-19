@@ -15,8 +15,10 @@ import net.productberlin.domain.entity.Startup
 import net.productberlin.domain.entity.WeeklyNews
 import net.productberlin.domain.entity.WeeklyRanking
 import net.productberlin.domain.entity.WeeklyStory
+import net.productberlin.domain.repository.EventRepository
 import net.productberlin.domain.repository.NewsRepository
 import net.productberlin.domain.repository.StartupRepository
+import net.productberlin.domain.usecase.GetUpcomingEvents
 import net.productberlin.domain.usecase.GetWeeklyNews
 import net.productberlin.domain.usecase.GetWeeklyRanking
 import net.productberlin.presentation.testing.ComponentTest
@@ -118,6 +120,12 @@ class AppTest : ComponentTest() {
                     override suspend fun getWeeklyRanking() = load()
                 },
             )
+        val eventsUseCase =
+            GetUpcomingEvents(
+                object : EventRepository {
+                    override suspend fun getUpcomingEvents() = emptyList<net.productberlin.domain.entity.StartupEvent>()
+                },
+            )
         val newsUseCase =
             GetWeeklyNews(
                 object : NewsRepository {
@@ -128,6 +136,7 @@ class AppTest : ComponentTest() {
             App.create {
                 getRanking = useCase
                 getNews = newsUseCase
+                getEvents = eventsUseCase
                 subscriptionConfirmed = confirmed
             },
         )

@@ -2,12 +2,14 @@
 import catalogue from '../cloudflare/startups.json';
 import publishers from '../cloudflare/publishers.json';
 import feeds from '../cloudflare/feeds.json';
+import eventSources from '../cloudflare/event-sources.json';
 import { parseRssXml } from './rss-parser.mjs';
-import { handleApi, handleCollection, handleFeeds, handleHiring, handleKeyCheck, handleScheduled, handleSubscription } from './build/dist/js/productionLibrary/Productberlin-api-worker.mjs';
+import { handleApi, handleCollection, handleEvents, handleFeeds, handleHiring, handleKeyCheck, handleScheduled, handleSubscription } from './build/dist/js/productionLibrary/Productberlin-api-worker.mjs';
 
 const catalogueJson = JSON.stringify(catalogue);
 const publishersJson = JSON.stringify(publishers);
 const feedsJson = JSON.stringify(feeds);
+const eventSourcesJson = JSON.stringify(eventSources);
 
 export default {
   // Not triggered in production (no cron): Google News blocks Cloudflare, so the GitHub collector feeds
@@ -26,6 +28,14 @@ export default {
       const result = await handleCollection(
         request.method, request.headers.get('Authorization'), env.COLLECTOR_TOKEN, body, env.DB, catalogueJson, publishersJson,
       );
+      const headers = { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' };
+      if (result.allow) headers.Allow = result.allow;
+      return new Response(result.body, { status: result.status, headers });
+    }
+    if (url.pathname === '/api/internal/events') {
+      // Organisers' calendar entries from the GitHub collector; bearer-token protected.
+      const body = request.method === 'POST' ? (await request.text()).slice(0, 2_000_001) : '';
+      const result = await handleEvents(request.method, request.headers.get('Authorization'), env.COLLECTOR_TOKEN, body, env.DB, eventSourcesJson);
       const headers = { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' };
       if (result.allow) headers.Allow = result.allow;
       return new Response(result.body, { status: result.status, headers });
