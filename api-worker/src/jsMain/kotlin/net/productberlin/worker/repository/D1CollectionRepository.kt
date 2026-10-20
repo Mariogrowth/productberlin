@@ -45,16 +45,24 @@ internal class D1CollectionRepository(
         return row != null && row.status == "succeeded"
     }
 
-    override suspend fun previousPositions(beforeWeek: String): Map<String, Int> {
+    override suspend fun previousPositions(beforeWeek: String): Map<String, Int> = positions(beforeWeek, "startups")
+
+    override suspend fun previousScaleupPositions(beforeWeek: String): Map<String, Int> = positions(beforeWeek, "scaleups")
+
+    private suspend fun positions(
+        beforeWeek: String,
+        section: String,
+    ): Map<String, Int> {
         val result =
             statement(
                 """
                 SELECT startup_id, position FROM ranking_entries WHERE snapshot_id=(
-                    SELECT id FROM ranking_snapshots WHERE status='published' AND is_mock=0 AND week_start < ?
+                    SELECT id FROM ranking_snapshots WHERE status='published' AND is_mock=0 AND week_start < ? AND section=?
                     AND (SELECT COUNT(*) FROM ranking_entries WHERE snapshot_id=ranking_snapshots.id)=expected_count
                     ORDER BY week_start DESC, created_at DESC, id DESC LIMIT 1)
                 """.trimIndent(),
                 beforeWeek,
+                section,
             ).all().unsafeCast<Promise<dynamic>>().await()
         return result.results.unsafeCast<Array<dynamic>>().associate { (it.startup_id as String) to (it.position as Number).toInt() }
     }
@@ -65,83 +73,108 @@ internal class D1CollectionRepository(
         token: String,
     ): Boolean {
         require(ranking.startups.size in 1..10 && ranking.startups.all { (it.mentionCount ?: 0) > 0 })
+        require(ranking.scaleups.size <= 10 && ranking.scaleups.all { (it.mentionCount ?: 0) > 0 })
         val snapshot = "google-news-${window.collectionKey}"
         val json = Json { encodeDefaults = true }.encodeToString(ranking.toDto())
-        val draft = "EXISTS (SELECT 1 FROM ranking_snapshots WHERE id=? AND status='draft')"
-        val batch =
-            arrayOf(
-                statement(
-                    """
-                    INSERT INTO ranking_snapshots (id,week_start,week_label,status,is_mock,created_at,expected_count,search_query,article_count)
-                    SELECT ?,?,?,'draft',0,?,?,?,? WHERE EXISTS (
-                        SELECT 1 FROM collection_runs WHERE week_start=? AND lease_token=? AND status='running')
-                    ON CONFLICT(id) DO NOTHING
-                    """.trimIndent(),
-                    snapshot,
-                    window.start.take(10),
-                    ranking.weekLabel,
-                    ranking.updatedAt,
-                    ranking.startups.size,
-                    window.query,
-                    ranking.articleCount,
-                    window.collectionKey,
-                    token,
-                ),
-                statement(
-                    """
-                    INSERT INTO startups (id,name,description,category)
-                    SELECT json_extract(value,'$.id'),json_extract(value,'$.name'),json_extract(value,'$.description'),
-                        json_extract(value,'$.category') FROM json_each(?, '$.startups') WHERE $draft
-                    ON CONFLICT(id) DO UPDATE SET name=excluded.name, description=excluded.description, category=excluded.category
-                    """.trimIndent(),
-                    json,
-                    snapshot,
-                ),
-                statement(
-                    """
-                    INSERT INTO ranking_entries (snapshot_id,startup_id,position,movement,reason,mention_count)
-                    SELECT ?,json_extract(value,'$.id'),CAST(key AS INTEGER)+1,json_extract(value,'$.movement'),
-                        json_extract(value,'$.reason'),json_extract(value,'$.mentionCount') FROM json_each(?, '$.startups') WHERE $draft
-                    """.trimIndent(),
-                    snapshot,
-                    json,
-                    snapshot,
-                ),
-                statement(
-                    """
-                    INSERT INTO news_articles (id,snapshot_id,startup_id,headline,source,url,published_at,summary,translated_headline)
-                    SELECT ? || ':' || json_extract(s.value,'$.id') || ':' || n.key,?,json_extract(s.value,'$.id'),
-                        json_extract(n.value,'$.headline'),json_extract(n.value,'$.source'),json_extract(n.value,'$.url'),
-                        json_extract(n.value,'$.publishedAt'),json_extract(n.value,'$.summary'),json_extract(n.value,'$.translatedHeadline')
-                    FROM json_each(?, '$.startups') s JOIN json_each(s.value,'$.news') n WHERE $draft
-                    """.trimIndent(),
-                    snapshot,
-                    snapshot,
-                    json,
-                    snapshot,
-                ),
-                statement(
-                    """
-                    UPDATE ranking_snapshots SET status='published' WHERE id=? AND status='draft'
-                    AND (SELECT COUNT(*) FROM ranking_entries WHERE snapshot_id=?)=expected_count
-                    """.trimIndent(),
-                    snapshot,
-                    snapshot,
-                ),
-                statement(
-                    """
-                    UPDATE collection_runs SET status='succeeded',finished_at=?,error=NULL
-                    WHERE week_start=? AND lease_token=? AND status='running'
-                    AND EXISTS (SELECT 1 FROM ranking_snapshots WHERE id=? AND status='published')
-                    """.trimIndent(),
-                    ranking.updatedAt,
-                    window.collectionKey,
-                    token,
-                    snapshot,
-                ),
+        // The startup list and, when any scaleup qualifies, the scaleup list: one snapshot each, all in one transaction.
+        val sections =
+            listOfNotNull(
+                Triple(snapshot, "startups", ranking.startups.size),
+                Triple("$snapshot-scaleups", "scaleups", ranking.scaleups.size).takeIf { ranking.scaleups.isNotEmpty() },
             )
-        val results = database.batch(batch).unsafeCast<Promise<Array<dynamic>>>().await()
+        val batch = mutableListOf<dynamic>()
+        for ((id, section, count) in sections) batch.addAll(sectionStatements(window, ranking, token, json, id, section, count))
+        batch.add(
+            statement(
+                """
+                UPDATE collection_runs SET status='succeeded',finished_at=?,error=NULL
+                WHERE week_start=? AND lease_token=? AND status='running'
+                AND (SELECT COUNT(*) FROM ranking_snapshots WHERE id IN (?, ?) AND status='published')=?
+                """.trimIndent(),
+                ranking.updatedAt,
+                window.collectionKey,
+                token,
+                snapshot,
+                "$snapshot-scaleups",
+                sections.size,
+            ),
+        )
+        val results = database.batch(batch.toTypedArray()).unsafeCast<Promise<Array<dynamic>>>().await()
         return (results.last().meta.changes as Number).toInt() == 1
+    }
+
+    /** Draft snapshot, startups, entries and news for one list, then publication once all its entries are written. */
+    private fun sectionStatements(
+        window: CollectionWindow,
+        ranking: WeeklyRanking,
+        token: String,
+        json: String,
+        snapshot: String,
+        section: String,
+        count: Int,
+    ): List<dynamic> {
+        val draft = "EXISTS (SELECT 1 FROM ranking_snapshots WHERE id=? AND status='draft')"
+        return listOf(
+            statement(
+                """
+                INSERT INTO ranking_snapshots (id,week_start,week_label,status,is_mock,created_at,expected_count,search_query,article_count,section)
+                SELECT ?,?,?,'draft',0,?,?,?,?,? WHERE EXISTS (
+                    SELECT 1 FROM collection_runs WHERE week_start=? AND lease_token=? AND status='running')
+                ON CONFLICT(id) DO NOTHING
+                """.trimIndent(),
+                snapshot,
+                window.start.take(10),
+                ranking.weekLabel,
+                ranking.updatedAt,
+                count,
+                window.query,
+                ranking.articleCount,
+                section,
+                window.collectionKey,
+                token,
+            ),
+            statement(
+                """
+                INSERT INTO startups (id,name,description,category)
+                SELECT json_extract(value,'$.id'),json_extract(value,'$.name'),json_extract(value,'$.description'),
+                    json_extract(value,'$.category') FROM json_each(?, '$.$section') WHERE $draft
+                ON CONFLICT(id) DO UPDATE SET name=excluded.name, description=excluded.description, category=excluded.category
+                """.trimIndent(),
+                json,
+                snapshot,
+            ),
+            statement(
+                """
+                INSERT INTO ranking_entries (snapshot_id,startup_id,position,movement,reason,mention_count)
+                SELECT ?,json_extract(value,'$.id'),CAST(key AS INTEGER)+1,json_extract(value,'$.movement'),
+                    json_extract(value,'$.reason'),json_extract(value,'$.mentionCount') FROM json_each(?, '$.$section') WHERE $draft
+                """.trimIndent(),
+                snapshot,
+                json,
+                snapshot,
+            ),
+            statement(
+                """
+                INSERT INTO news_articles (id,snapshot_id,startup_id,headline,source,url,published_at,summary,translated_headline)
+                SELECT ? || ':' || json_extract(s.value,'$.id') || ':' || n.key,?,json_extract(s.value,'$.id'),
+                    json_extract(n.value,'$.headline'),json_extract(n.value,'$.source'),json_extract(n.value,'$.url'),
+                    json_extract(n.value,'$.publishedAt'),json_extract(n.value,'$.summary'),json_extract(n.value,'$.translatedHeadline')
+                FROM json_each(?, '$.$section') s JOIN json_each(s.value,'$.news') n WHERE $draft
+                """.trimIndent(),
+                snapshot,
+                snapshot,
+                json,
+                snapshot,
+            ),
+            statement(
+                """
+                UPDATE ranking_snapshots SET status='published' WHERE id=? AND status='draft'
+                AND (SELECT COUNT(*) FROM ranking_entries WHERE snapshot_id=?)=expected_count
+                """.trimIndent(),
+                snapshot,
+                snapshot,
+            ),
+        )
     }
 
     override suspend fun fail(

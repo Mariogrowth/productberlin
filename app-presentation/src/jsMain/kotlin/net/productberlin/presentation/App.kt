@@ -89,7 +89,7 @@ val App =
             className = ClassName("page-content")
             div {
                 className = ClassName("ranking-meta")
-                h2 { +"The weekly ten" }
+                h2 { +"Berlin startups this week" }
                 span { +((state as? RankingState.Ready)?.ranking?.weekLabel ?: "This week") }
             }
             div {
@@ -154,6 +154,35 @@ val App =
                     }
                 }
             }
+            // Scaleups are ranked by the same press momentum, separately, so startups keep the main list.
+            if (ranking != null && ranking.scaleups.isNotEmpty()) {
+                section {
+                    className = ClassName("scaleups")
+                    ariaLabelledBy = ElementId("scaleups-title")
+                    div {
+                        className = ClassName("ranking-meta")
+                        h2 {
+                            id = ElementId("scaleups-title")
+                            +"Scaleups in the news"
+                        }
+                        span { +"Ranked separately" }
+                    }
+                    div {
+                        className = ClassName("ranking-card scaleup-card")
+                        ol {
+                            className = ClassName("startup-list")
+                            ranking.scaleups.forEachIndexed { index, scaleup ->
+                                StartupRow {
+                                    key = Key(scaleup.id)
+                                    company = scaleup
+                                    position = index + 1
+                                    isMock = ranking.isMock
+                                }
+                            }
+                        }
+                    }
+                }
+            }
             // Only for live editions with stories: demo editions and quiet or failed loads show no section.
             if (ranking?.isMock == false && news != null && news.stories.isNotEmpty()) {
                 WeeklyNewsSection { this.news = news }
@@ -190,7 +219,8 @@ val App =
                                 "This metric ranks up to ten catalogued Berlin startups by their press momentum " +
                                     "over the previous four UTC weeks, weighting recent weeks and news such as funding " +
                                     "and launches most, refreshing every Monday at 06:00 UTC " +
-                                    "as an indicator of media visibility rather than company quality."
+                                    "as an indicator of media visibility rather than company quality. " +
+                                    "Scaleups (listed companies, unicorns and very large companies) are ranked separately."
                             }
                         )
                     }

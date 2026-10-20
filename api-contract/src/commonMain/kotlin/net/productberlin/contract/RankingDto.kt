@@ -10,4 +10,5 @@ data class RankingDto(
     val updatedAt: String? = null,
     val searchQuery: String? = null,
     val articleCount: Int? = null,
+    val scaleups: List<StartupDto> = emptyList(),
 )

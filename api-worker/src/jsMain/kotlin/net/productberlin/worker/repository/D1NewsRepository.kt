@@ -82,7 +82,7 @@ internal class D1NewsRepository(
 private val LATEST_LIVE_EDITION =
     """
     SELECT week_start, week_label FROM ranking_snapshots
-    WHERE status = 'published' AND is_mock = 0
+    WHERE status = 'published' AND is_mock = 0 AND section = 'startups'
       AND (SELECT COUNT(*) FROM ranking_entries WHERE snapshot_id = ranking_snapshots.id) = expected_count
     ORDER BY week_start DESC, created_at DESC, id DESC LIMIT 1
     """.trimIndent()

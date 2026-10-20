@@ -29,6 +29,7 @@ internal fun parseCatalogue(json: String): List<StartupCandidate> =
                 value["aliases"]?.jsonArray?.map { string(it) } ?: emptyList(),
                 value["contextKeywords"]?.jsonArray?.map { string(it) } ?: emptyList(),
                 value["domain"]?.let { string(it) },
+                isScaleup = value["stage"]?.let { string(it) }?.also { require(it in STAGES) { "Unknown stage $it" } } == "scaleup",
             )
         }.also { catalogue ->
             require(catalogue.isNotEmpty() && catalogue.size <= 500) { "Catalogue must have 1–500 companies" }
@@ -36,6 +37,8 @@ internal fun parseCatalogue(json: String): List<StartupCandidate> =
             require(catalogue.all { Regex("[a-z0-9-]+").matches(it.id) }) { "Invalid catalogue ID" }
             require(catalogue.all { it.domain?.let(BARE_HOSTNAME::matches) ?: true }) { "Invalid catalogue domain" }
         }
+
+private val STAGES = setOf("startup", "scaleup")
 
 /** A bare lowercase hostname such as `n26.com`: no scheme, path, port or credentials. */
 internal val BARE_HOSTNAME = Regex("([a-z0-9]([a-z0-9-]*[a-z0-9])?\\.)+[a-z]{2,}")
