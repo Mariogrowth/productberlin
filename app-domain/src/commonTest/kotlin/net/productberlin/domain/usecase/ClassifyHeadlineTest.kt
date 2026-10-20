@@ -140,4 +140,29 @@ class ClassifyHeadlineTest {
                 HeadlineEvent.Consumer,
             ).map { it.weight },
         )
+
+    @Test
+    fun productAndDisputeHeadlinesMentioningInvestmentsAreNotFunding() {
+        assertEquals(
+            HeadlineEvent.Launch,
+            event(
+                "Trade Republic kommt mit komplett kostenlosen AV-Depots an den Markt",
+                translated = "Trade Republic is launching a service offering completely free AV investment accounts",
+            ),
+        )
+        assertEquals(HeadlineEvent.Other, event("Trade Republic Undercuts Germany’s 1% Pension Cost Cap with Fee-Free Account"))
+        assertEquals(
+            HeadlineEvent.Negative,
+            event(
+                "Meinung: Solaris-Bank im Streit mit Altinvestoren, Deichmann mit Nachfolgekandidat",
+                translated = "Opinion: Solaris Bank in dispute with existing investors, Deichmann names succession candidate",
+            ),
+        )
+        assertEquals(HeadlineEvent.Growth, event("A16z-backed UK fintech Sequence sold to Intuit in reported \$200M deal"))
+        assertEquals(
+            HeadlineEvent.Growth,
+            event("Kampfdrohne im Bau: KI-Rüstungs-Startup Helsing investiert 18 Millionen Euro in Unterallgäuer Firma"),
+        )
+        assertEquals(HeadlineEvent.Negative, event("Rank and Yank in Berlin: Inside Trade Republic’s Culture of Ratings and Dismissals"))
+    }
 }

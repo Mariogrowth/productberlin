@@ -47,7 +47,7 @@ class ClassifyHeadline {
                         """pleite|schließt|schliesst|schließung|closes|closure|shuts? down|-aus\b|\baus für\b|sozialplan|""" +
                         """lawsuit|klage|verklagt|\bsued\b|fraud|betrug|razzia|bußgeld|ermittl|scandal|skandal|verlust|""" +
                         """\blosses\b|kritik|criticism|ärger|rückruf|recall|hacker|hacked|cyberangriff|erpress|datenleck|""" +
-                        """data breach|steps down|rücktritt|resigns|verlässt|delayed|delays|verzögert|verzögerung)""",
+                        """data breach|steps down|rücktritt|resigns|verlässt|delayed|delays|verzögert|verzögerung|streit|dispute|dismissals)""",
                 ),
             )
         val CONSUMER =
@@ -55,8 +55,11 @@ class ClassifyHeadline {
         val FUNDING =
             listOf(
                 Regex(
-                    """(raises?\b|raised|funding|series [a-e]\b|\bseed\b|finanzierung|sammelt|sammeln|eingesammelt|investoren|""" +
-                        """bewertung|valuation|unicorn|einhorn|backed|kapitalspritze|investiert|invests|investment)""",
+                    // Only words that mean raising money: "investment", "investors" or "backed" alone also appear in product
+                    // news ("free investment accounts") and disputes ("dispute with investors").
+                    """(\braises?\b|\braised\b|\bfunding\b|series [a-e]\b|\bseed\b|seed-runde|seedrunde|finanzierungsrunde|""" +
+                        """\bfinanzierung\b|sammel\w* [^,:;]*(\bein\b|millionen|mio\b)|eingesammelt|kapitalspritze|investment round|""" +
+                        """investitionsrunde|valuation|milliarden-bewertung|bewertung von|unicorn|einhorn)""",
                 ),
                 // "17 Millionen Euro für Fahrzeugkredite", "€17 million for vehicle loans".
                 Regex("""\d[\d,.]*\s*(mio\.?|millionen|million|mn|m)\b\s*(euro|dollar)?\s*(für|for)\b"""),
@@ -77,6 +80,7 @@ class ClassifyHeadline {
                 Regex(
                     """(expands|expansion|expandiert|übernimmt|übernahme|acquires|acquisition|partnership|partnerschaft|""" +
                         """partners with|kooperation|customers?\b|kunden|wins\b|gewinnt|award|auszeichnung|opens|eröffnet|""" +
+                        """sold to|verkauft an|investiert [^,:;]* in\b|invests [^,:;]* in\b|""" +
                         """\barr\b|umsatz|revenue|profitab|growth|wachstum|wächst|rekord|record|milestone|meilenstein|deal with|signs)""",
                 ),
             )
