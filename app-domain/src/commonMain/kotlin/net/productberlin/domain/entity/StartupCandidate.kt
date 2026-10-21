@@ -9,4 +9,6 @@ data class StartupCandidate(
     val aliases: List<String> = emptyList(),
     val contextKeywords: List<String> = emptyList(),
     val domain: String? = null,
+    /** Listed, unicorn or very large: ranked in its own "Scaleups in the news" list, not among the startups. */
+    val isScaleup: Boolean = false,
 )

@@ -227,6 +227,46 @@ class WeeklyCollectorTest {
         }
 
     @Test
+    fun scaleupsAreRankedInTheirOwnListAndPublisherFeedItemsCount() =
+        runTest {
+            val companies = catalogue + StartupCandidate("trade-republic", "Trade Republic", "Broker", "Fintech", isScaleup = true)
+            // The feed item is a second outlet for mika: alone, Google News would give mika one publisher only.
+            val history =
+                object : net.productberlin.worker.repository.ArticleHistoryRepository by MemoryHistory() {
+                    override suspend fun feedArticles(weekStart: String) =
+                        if (weekStart == window.weekStart) {
+                            listOf(NewsArticle("feed-1", "mika accounting raises €6M", "Gründerszene", "2026-09-24T12:00:00.000Z"))
+                        } else {
+                            emptyList()
+                        }
+                }
+            val repository = RecordingRepository()
+            val source =
+                object : NewsSource {
+                    override suspend fun search(search: NewsSearch) =
+                        listOf(
+                            story("one"),
+                            NewsArticle("tr1", "Trade Republic launches pension account", "Handelsblatt", "2026-09-25T12:00:00.000Z"),
+                            NewsArticle("tr2", "Trade Republic profit jumps", "WiWo", "2026-09-25T13:00:00.000Z"),
+                        )
+                }
+            WeeklyCollector(source, repository, history).refresh(companies, window, window.end, "token")
+            val ranking = repository.published!!
+            assertEquals(listOf("mika"), ranking.startups.map { it.id })
+            assertEquals(
+                listOf("one", "feed-1"),
+                ranking.startups
+                    .single()
+                    .news
+                    .map { it.id }
+                    .sorted()
+                    .reversed(),
+            )
+            assertEquals(listOf("trade-republic"), ranking.scaleups.map { it.id })
+            assertEquals(null, ranking.scaleups.single().movement, "new in the scaleup list")
+        }
+
+    @Test
     fun historyWeeksAreStoredOnceWithoutPublishing() =
         runTest {
             val repository = RecordingRepository()

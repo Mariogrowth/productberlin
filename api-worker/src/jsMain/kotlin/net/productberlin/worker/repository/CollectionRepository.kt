@@ -12,6 +12,9 @@ internal interface CollectionRepository {
 
     suspend fun previousPositions(beforeWeek: String): Map<String, Int>
 
+    /** Positions in the latest earlier published scaleup list. */
+    suspend fun previousScaleupPositions(beforeWeek: String): Map<String, Int> = emptyMap()
+
     /** Whether the week's collection has already been published. */
     suspend fun isCompleted(week: String): Boolean = false
 

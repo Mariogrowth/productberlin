@@ -7,7 +7,8 @@ import { after, before, beforeEach, test } from 'node:test';
 import { Miniflare, convertV4MiniflareOptions } from 'miniflare';
 
 let mf, db, directory, mode = 'success', calls = [];
-const catalogue = JSON.parse(await readFile('cloudflare/startups.json', 'utf8')).slice(0, 12);
+// Twelve startups (scaleups are ranked in their own list, tested separately).
+const catalogue = JSON.parse(await readFile('cloudflare/startups.json', 'utf8')).filter(c => c.stage !== 'scaleup').slice(0, 12);
 const weekOne = Date.parse('2026-09-28T06:00:00Z');
 const COLLECTOR_TOKEN = 'c'.repeat(48);
 // Searches the Worker makes for the real bundled catalogue: names (plus distinct aliases) packed into ≤28-word groups.
@@ -115,7 +116,7 @@ before(async () => {
     },
   }));
   db = (await mf.getBindings()).DB;
-  for (const file of ['0001_initial.sql', '0002_weekly_collection.sql', '0003_translated_headlines.sql', '0004_hiring_counts.sql', '0005_article_history.sql', '0006_feed_items.sql', '0007_events.sql']) {
+  for (const file of ['0001_initial.sql', '0002_weekly_collection.sql', '0003_translated_headlines.sql', '0004_hiring_counts.sql', '0005_article_history.sql', '0006_feed_items.sql', '0007_events.sql', '0008_ranking_sections.sql']) {
     const sql = await readFile(resolve('cloudflare/migrations', file), 'utf8');
     await db.batch(sql.split(';').map(s => s.trim()).filter(Boolean).map(s => db.prepare(s)));
   }
@@ -156,7 +157,7 @@ test('scheduled collector publishes ten ranked companies and at most five dated 
     assert.match(startup.news[0].url, /^https:\/\/news.google.com\/rss\/articles\//);
     assert.equal(startup.news[0].source, 'Publisher');
   }
-  assert.equal((await db.prepare("SELECT status FROM collection_runs WHERE week_start='2026-09-28-momentum-v1'").first()).status, 'succeeded');
+  assert.equal((await db.prepare("SELECT status FROM collection_runs WHERE week_start='2026-09-28-momentum-v2'").first()).status, 'succeeded');
 });
 
 test('duplicate events skip collection, and a failed next week retains the previous published snapshot', async () => {
@@ -168,7 +169,7 @@ test('duplicate events skip collection, and a failed next week retains the previ
   mode = 'unavailable';
   assert.notEqual((await scheduled(weekOne + 7 * 86_400_000)).outcome, 'ok');
   assert.deepEqual(await ranking(), previous);
-  assert.equal((await db.prepare("SELECT status FROM collection_runs WHERE week_start='2026-10-05-momentum-v1'").first()).status, 'failed');
+  assert.equal((await db.prepare("SELECT status FROM collection_runs WHERE week_start='2026-10-05-momentum-v2'").first()).status, 'failed');
 });
 
 test('off-schedule events during a week neither refetch nor replace the published edition', async () => {
@@ -189,7 +190,7 @@ test('a failed Monday collection is retried for the same week by a later event t
   mode = 'success';
   assert.equal((await scheduled(weekOne + 3 * DAY)).outcome, 'ok');
   assert.equal((await ranking()).weekLabel, '2026-09-21 – 2026-09-27');
-  assert.equal((await db.prepare("SELECT status FROM collection_runs WHERE week_start='2026-09-28-momentum-v1'").first()).status, 'succeeded');
+  assert.equal((await db.prepare("SELECT status FROM collection_runs WHERE week_start='2026-09-28-momentum-v2'").first()).status, 'succeeded');
 });
 
 test('D1 publication rolls back all writes on failure, then a retry publishes with movement', async () => {
@@ -215,11 +216,11 @@ test('empty and malformed feeds retain data; an active lease skips and an expire
     assert.notEqual((await scheduled(next)).outcome, 'ok');
     assert.deepEqual(await ranking(), previous);
   }
-  await db.prepare("UPDATE collection_runs SET status='running',lease_until='2099-01-01T00:00:00.000Z' WHERE week_start='2026-10-12-momentum-v1'").run();
+  await db.prepare("UPDATE collection_runs SET status='running',lease_until='2099-01-01T00:00:00.000Z' WHERE week_start='2026-10-12-momentum-v2'").run();
   const count = calls.length;
   assert.equal((await scheduled(next)).outcome, 'ok');
   assert.equal(calls.length, count);
-  await db.prepare("UPDATE collection_runs SET lease_until='2000-01-01T00:00:00.000Z' WHERE week_start='2026-10-12-momentum-v1'").run();
+  await db.prepare("UPDATE collection_runs SET lease_until='2000-01-01T00:00:00.000Z' WHERE week_start='2026-10-12-momentum-v2'").run();
   mode = 'success';
   assert.equal((await scheduled(next)).outcome, 'ok');
   assert.equal((await ranking()).weekLabel, '2026-10-05 – 2026-10-11');
@@ -247,7 +248,7 @@ test('every stage of the D1 batch is atomic, including the final success audit w
       assert.notEqual((await scheduled(weekOne + 7 * 86_400_000)).outcome, 'ok', target);
       assert.deepEqual(await contents(), stored, target);
       assert.deepEqual(await ranking(), previous, target);
-      const run = await db.prepare("SELECT status,error FROM collection_runs WHERE week_start='2026-10-05-momentum-v1'").first();
+      const run = await db.prepare("SELECT status,error FROM collection_runs WHERE week_start='2026-10-05-momentum-v2'").first();
       assert.equal(run.status, 'failed');
       assert.ok(run.error.length > 0 && run.error.length <= 500);
     } finally {
@@ -274,7 +275,7 @@ test('a worker whose lease was replaced cannot publish or mark the new owner fai
   mode = 'lost-lease';
   assert.notEqual((await scheduled(weekOne + 7 * 86_400_000)).outcome, 'ok');
   assert.deepEqual(await contents(), stored);
-  const run = await db.prepare("SELECT lease_token,status,error FROM collection_runs WHERE week_start='2026-10-05-momentum-v1'").first();
+  const run = await db.prepare("SELECT lease_token,status,error FROM collection_runs WHERE week_start='2026-10-05-momentum-v2'").first();
   assert.deepEqual(run, { lease_token: 'new-owner', status: 'running', error: null });
 });
 
@@ -540,4 +541,35 @@ test('organisers\' calendar entries become the coming week\'s Berlin events', as
   // A later collection replaces the source's upcoming events: a cancelled event disappears.
   await call('POST', JSON.stringify({ sources: [{ id: local.id, entries: [sources[0].entries[0]] }] }));
   assert.deepEqual((await (await mf.dispatchFetch('https://local.test/api/events')).json()).events.map(e => e.title), ['UNCONFERENCE: Engineering AI Together']);
+});
+
+test('scaleups are ranked in their own list, published with the startup list and served next to it', async () => {
+  const scaleup = fullCatalogue.find(c => c.stage === 'scaleup' && !c.contextKeywords?.length);
+  const call = (method = 'GET', body) => mf.dispatchFetch('https://local.test/api/internal/collection', {
+    method, body, headers: { Authorization: `Bearer ${COLLECTOR_TOKEN}`, 'Content-Type': 'application/json' },
+  });
+  const empty = { rss: { channel: { item: [] } } };
+  let plan = await (await call()).json();
+  while (plan.due && plan.mode === 'history') {
+    await call('POST', JSON.stringify({ collectionKey: plan.collectionKey, results: plan.searches.map(s => ({ ...s, feed: empty })) }));
+    plan = await (await call()).json();
+  }
+  if (!plan.due) return; // Monday before 06:00 UTC: the edition waits.
+  const weekStart = Date.parse(plan.week.slice(0, 10) + 'T00:00:00Z');
+  const item = (company, id, source) => ({
+    title: `${company.name} ${company.contextKeywords?.[0] ?? ''} launches product ${id} - ${source}`, link: `https://news.google.com/rss/articles/${id}`,
+    guid: id, pubDate: new Date(weekStart + 2 * DAY).toUTCString(), source: { '#text': source, '@_url': 'https://www.handelsblatt.com' },
+  });
+  const feed = { rss: { channel: { item: [
+    item(catalogue[0], 's1', 'Handelsblatt'), item(catalogue[0], 's2', 'WiWo'),
+    item(scaleup, 'b1', 'Handelsblatt'), item(scaleup, 'b2', 'WiWo'), item(scaleup, 'b3', 'FAZ'),
+  ] } } };
+  const posted = await call('POST', JSON.stringify({ collectionKey: plan.collectionKey, results: plan.searches.map((s, i) => ({ ...s, feed: i === 0 ? feed : empty })) }));
+  assert.equal((await posted.json()).outcome, 'published');
+  const live = await ranking();
+  assert.deepEqual(live.startups.map(s => s.id), [catalogue[0].id], 'the scaleup never takes a startup place');
+  assert.deepEqual(live.scaleups.map(s => s.id), [scaleup.id]);
+  assert.equal(live.scaleups[0].news.length, 3);
+  const sections = (await db.prepare("SELECT section, expected_count FROM ranking_snapshots WHERE status='published' ORDER BY section").all()).results;
+  assert.deepEqual(sections.map(r => [r.section, r.expected_count]), [['scaleups', 1], ['startups', 1]]);
 });

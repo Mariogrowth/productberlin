@@ -155,6 +155,27 @@ class AppTest : ComponentTest() {
         }
 
     @Test
+    fun scaleupsGetTheirOwnListUnderTheStartupRanking() =
+        runTest {
+            val scaleup = Startup("trade-republic", "Trade Republic", "Broker", "Fintech", 1, "Reason", emptyList())
+            show { ranking.copy(scaleups = listOf(scaleup)) }
+            awaitUi { container.querySelector(".scaleups") != null }
+            assertEquals("Berlin startups this week", container.querySelector(".ranking-meta h2")?.textContent)
+            assertEquals("Scaleups in the news", container.querySelector(".scaleups h2")?.textContent)
+            assertEquals("Trade Republic", container.querySelector(".scaleups .startup-row h3")?.textContent)
+            assertEquals("1.", container.querySelector(".scaleups .rank")?.textContent, "numbered within its own list")
+            assertNotNull(container.querySelector(".ranking-layout + .scaleups"))
+        }
+
+    @Test
+    fun noScaleupsMeansNoScaleupList() =
+        runTest {
+            show { ranking }
+            awaitUi { container.querySelector(".startup-list") != null }
+            assertNull(container.querySelector(".scaleups"))
+        }
+
+    @Test
     fun demoEditionsQuietWeeksAndFailedNewsShowNoSection() =
         runTest {
             for ((rankingFor, news) in listOf<Pair<WeeklyRanking, suspend () -> WeeklyNews>>(

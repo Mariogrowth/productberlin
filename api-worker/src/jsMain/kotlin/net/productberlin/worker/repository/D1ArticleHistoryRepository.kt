@@ -1,5 +1,6 @@
 package net.productberlin.worker.repository
 
+import kotlin.js.Date
 import kotlin.js.Promise
 import kotlinx.coroutines.await
 import kotlinx.serialization.json.JsonPrimitive
@@ -44,6 +45,28 @@ internal class D1ArticleHistoryRepository(
                     (rows.first().reviewed as Number).toInt(),
                 )
             }
+    }
+
+    override suspend fun feedArticles(weekStart: String): List<NewsArticle> {
+        val from = "${weekStart}T00:00:00.000Z"
+        val result =
+            statement(
+                "SELECT key,source,title,translated_title,link,published_at FROM feed_items WHERE published_at >= ? AND published_at < ?",
+                from,
+                Date(Date.parse(from) + 7 * 86_400_000.0).toISOString(),
+            ).all()
+                .unsafeCast<Promise<dynamic>>()
+                .await()
+        return result.results.unsafeCast<Array<dynamic>>().map {
+            NewsArticle(
+                it.key as String,
+                it.title as String,
+                it.source as String,
+                it.published_at as String,
+                it.link as String,
+                translatedHeadline = it.translated_title as String?,
+            )
+        }
     }
 
     override suspend fun record(

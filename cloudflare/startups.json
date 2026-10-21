@@ -17,7 +17,8 @@
     "description": "AI for computational pathology.",
     "category": "Health tech",
     "domain": "aignostics.com",
-    "aliases": []
+    "aliases": [],
+    "stage": "scaleup"
   },
   {
     "id": "n26",
@@ -29,7 +30,8 @@
     "jobBoard": {
       "provider": "greenhouse",
       "handle": "n26"
-    }
+    },
+    "stage": "scaleup"
   },
   {
     "id": "parloa",
@@ -41,7 +43,8 @@
     "jobBoard": {
       "provider": "greenhouse",
       "handle": "parloa"
-    }
+    },
+    "stage": "scaleup"
   },
   {
     "id": "sennder",
@@ -57,7 +60,8 @@
     "description": "Home solar and energy systems.",
     "category": "Climate tech",
     "domain": "enpal.com",
-    "aliases": []
+    "aliases": [],
+    "stage": "scaleup"
   },
   {
     "id": "trade-republic",
@@ -65,7 +69,8 @@
     "description": "Investing and savings.",
     "category": "Fintech",
     "domain": "traderepublic.com",
-    "aliases": []
+    "aliases": [],
+    "stage": "scaleup"
   },
   {
     "id": "deepset",
@@ -85,7 +90,8 @@
     "description": "Search supporting climate action.",
     "category": "Climate tech",
     "domain": "ecosia.org",
-    "aliases": []
+    "aliases": [],
+    "stage": "scaleup"
   },
   {
     "id": "mika",
@@ -124,7 +130,8 @@
     "jobBoard": {
       "provider": "greenhouse",
       "handle": "blacklane"
-    }
+    },
+    "stage": "scaleup"
   },
   {
     "id": "noxtua",
@@ -206,7 +213,8 @@
     "category": "Insurtech",
     "domain": "wefox.com",
     "aliases": [],
-    "contextKeywords": []
+    "contextKeywords": [],
+    "stage": "scaleup"
   },
   {
     "id": "raisin",
@@ -232,7 +240,8 @@
     "jobBoard": {
       "provider": "greenhouse",
       "handle": "raisin"
-    }
+    },
+    "stage": "scaleup"
   },
   {
     "id": "getyourguide",
@@ -247,7 +256,8 @@
     "jobBoard": {
       "provider": "greenhouse",
       "handle": "getyourguide"
-    }
+    },
+    "stage": "scaleup"
   },
   {
     "id": "contentful",
@@ -260,7 +270,8 @@
     "jobBoard": {
       "provider": "greenhouse",
       "handle": "contentful"
-    }
+    },
+    "stage": "scaleup"
   },
   {
     "id": "omio",
@@ -273,7 +284,8 @@
     "jobBoard": {
       "provider": "smartrecruiters",
       "handle": "omio"
-    }
+    },
+    "stage": "scaleup"
   },
   {
     "id": "forto",
@@ -299,7 +311,8 @@
     "jobBoard": {
       "provider": "ashby",
       "handle": "babbel"
-    }
+    },
+    "stage": "scaleup"
   },
   {
     "id": "helsing",
@@ -332,7 +345,8 @@
     "jobBoard": {
       "provider": "greenhouse",
       "handle": "helsing"
-    }
+    },
+    "stage": "scaleup"
   },
   {
     "id": "n8n",
@@ -344,7 +358,8 @@
     "jobBoard": {
       "provider": "ashby",
       "handle": "n8n"
-    }
+    },
+    "stage": "scaleup"
   },
   {
     "id": "langfuse",
@@ -489,7 +504,8 @@
     "description": "Mobile tax return app.",
     "category": "Fintech",
     "domain": "taxfix.de",
-    "aliases": []
+    "aliases": [],
+    "stage": "scaleup"
   },
   {
     "id": "lemon-markets",
@@ -571,7 +587,8 @@
       "Finanzierung",
       "Kapital",
       "BaFin"
-    ]
+    ],
+    "stage": "scaleup"
   },
   {
     "id": "mambu",
@@ -579,7 +596,8 @@
     "description": "Cloud banking platform.",
     "category": "Fintech",
     "domain": "mambu.com",
-    "aliases": []
+    "aliases": [],
+    "stage": "scaleup"
   },
   {
     "id": "payrails",
@@ -870,7 +888,8 @@
       "adtech",
       "app analytics",
       "apps"
-    ]
+    ],
+    "stage": "scaleup"
   },
   {
     "id": "swaarm",
@@ -924,7 +943,8 @@
     "domain": "berlin-brands-group.com",
     "aliases": [
       "Chal-Tec"
-    ]
+    ],
+    "stage": "scaleup"
   },
   {
     "id": "sellerx",
@@ -1071,7 +1091,8 @@
     "description": "Online retailer of car parts.",
     "category": "E-commerce",
     "domain": "autodoc.de",
-    "aliases": []
+    "aliases": [],
+    "stage": "scaleup"
   },
   {
     "id": "distribusion",
@@ -1157,7 +1178,8 @@
     "jobBoard": {
       "provider": "greenhouse",
       "handle": "grover"
-    }
+    },
+    "stage": "scaleup"
   },
   {
     "id": "urban-sports-club",
@@ -1169,7 +1191,8 @@
     "jobBoard": {
       "provider": "personio",
       "handle": "urbansportsclub"
-    }
+    },
+    "stage": "scaleup"
   },
   {
     "id": "born",
@@ -1195,7 +1218,8 @@
     "description": "Audio streaming and creator platform.",
     "category": "Media",
     "domain": "soundcloud.com",
-    "aliases": []
+    "aliases": [],
+    "stage": "scaleup"
   },
   {
     "id": "onefootball",
@@ -1308,7 +1332,8 @@
     "description": "Flight delay compensation claims for passengers.",
     "category": "Legal tech",
     "domain": "airhelp.com",
-    "aliases": []
+    "aliases": [],
+    "stage": "scaleup"
   },
   {
     "id": "g2-esports",
@@ -3162,7 +3187,8 @@
     "description": "Online consumer-loan comparison.",
     "category": "Fintech",
     "domain": "smava.de",
-    "aliases": []
+    "aliases": [],
+    "stage": "scaleup"
   },
   {
     "id": "sumup",
@@ -3174,7 +3200,8 @@
     "jobBoard": {
       "provider": "greenhouse",
       "handle": "sumup"
-    }
+    },
+    "stage": "scaleup"
   },
   {
     "id": "delivery-hero",
@@ -3186,7 +3213,8 @@
     "jobBoard": {
       "provider": "smartrecruiters",
       "handle": "deliveryhero"
-    }
+    },
+    "stage": "scaleup"
   },
   {
     "id": "zalando",
@@ -3194,7 +3222,8 @@
     "description": "Online fashion and lifestyle platform.",
     "category": "E-commerce",
     "domain": "zalando.com",
-    "aliases": []
+    "aliases": [],
+    "stage": "scaleup"
   },
   {
     "id": "hellofresh",
@@ -3206,7 +3235,8 @@
     "jobBoard": {
       "provider": "greenhouse",
       "handle": "hellofresh"
-    }
+    },
+    "stage": "scaleup"
   },
   {
     "id": "flink",
@@ -3236,7 +3266,8 @@
       "startup",
       "funding",
       "Finanzierung"
-    ]
+    ],
+    "stage": "scaleup"
   },
   {
     "id": "einhorn",
@@ -3642,7 +3673,8 @@
     "domain": "hometogo.com",
     "aliases": [
       "Home To Go"
-    ]
+    ],
+    "stage": "scaleup"
   },
   {
     "id": "miles",

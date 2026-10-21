@@ -7,4 +7,6 @@ data class WeeklyRanking(
     val updatedAt: String? = null,
     val searchQuery: String? = null,
     val articleCount: Int? = null,
+    /** Scaleups ranked by the same press momentum, shown separately so startups get the main list. */
+    val scaleups: List<Startup> = emptyList(),
 )

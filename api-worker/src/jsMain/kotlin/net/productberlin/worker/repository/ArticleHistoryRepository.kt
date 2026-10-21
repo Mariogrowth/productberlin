@@ -14,4 +14,7 @@ internal interface ArticleHistoryRepository {
         reviewed: Int,
         recordedAt: String,
     ): Boolean
+
+    /** The publisher-feed items of the week starting [weekStart] (Monday), which count in the ranking too. */
+    suspend fun feedArticles(weekStart: String): List<NewsArticle> = emptyList()
 }

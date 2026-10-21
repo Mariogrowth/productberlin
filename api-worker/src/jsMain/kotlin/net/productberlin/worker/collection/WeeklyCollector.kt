@@ -3,6 +3,7 @@ package net.productberlin.worker.collection
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.js.Date
 import kotlinx.coroutines.delay
+import net.productberlin.domain.entity.MomentumRanking
 import net.productberlin.domain.entity.NewsArticle
 import net.productberlin.domain.entity.Startup
 import net.productberlin.domain.entity.StartupCandidate
@@ -55,38 +56,26 @@ internal class WeeklyCollector(
             // retry can still fill the week.
             check(articles.isNotEmpty()) { "No trusted articles this week; retaining the previous ranking" }
             history.record(window.weekStart, mentioning(catalogue, articles), articles.size, now)
-            // Press momentum: this week plus the three before it, from stored history. Missing weeks count as quiet.
+            // Press momentum: this week plus the three before it, from stored history plus each week's publisher-feed
+            // items. Missing weeks count as quiet.
             val earlier = window.previousWeeks(MOMENTUM_WEEKS - 1)
             val stored = history.recorded(earlier.map { it.weekStart })
-            val weeks = listOf(articles) + earlier.map { stored[it.weekStart]?.articles.orEmpty() }
-            val reviewed = articles.size + stored.values.sumOf { it.reviewed }
-            val top = RankStartupMomentum()(catalogue, weeks)
-            check(top.isNotEmpty()) { "No catalogue company has counted coverage from two publishers; retaining the previous ranking" }
-            val previous = repository.previousPositions(window.start.take(10))
-            val from = earlier.last().weekStart
-            val startups =
-                top.mapIndexed { index, entry ->
-                    val stories =
-                        entry.articles
-                            // The same headline syndicated under differently spelled publisher names is shown once.
-                            .distinctBy { it.headline.lowercase().trim() }
-                            .take(5)
-                    val company = entry.company
-                    val count = entry.articles.size
-                    Startup(
-                        company.id,
-                        company.name,
-                        company.description,
-                        company.category,
-                        previous[company.id]?.minus(index + 1),
-                        "$count article${if (count == 1) "" else "s"} from ${entry.publishers} trusted publishers counted for " +
-                            "${company.name} between $from and ${window.label.substringAfter("– ")}. Ranked by press momentum: " +
-                            "recent weeks and funding, launches and growth news count most.",
-                        stories,
-                        count,
-                    )
+            val weeks =
+                (listOf(window) + earlier).mapIndexed { age, week ->
+                    val google = if (age == 0) articles else stored[week.weekStart]?.articles.orEmpty()
+                    google + history.feedArticles(week.weekStart)
                 }
-            val ranking = WeeklyRanking(window.label, startups, false, now, window.query, reviewed)
+            val reviewed = articles.size + stored.values.sumOf { it.reviewed }
+            // Startups and scaleups are ranked separately, so a big company's press never takes a startup's place.
+            val startupList = RankStartupMomentum()(catalogue.filterNot { it.isScaleup }, weeks)
+            val scaleupList = RankStartupMomentum()(catalogue.filter { it.isScaleup }, weeks)
+            check(
+                startupList.isNotEmpty(),
+            ) { "No catalogue startup has counted coverage from two publishers; retaining the previous ranking" }
+            val from = earlier.last().weekStart
+            val startups = entries(startupList, repository.previousPositions(window.start.take(10)), from, window)
+            val scaleups = entries(scaleupList, repository.previousScaleupPositions(window.start.take(10)), from, window)
+            val ranking = WeeklyRanking(window.label, startups, false, now, window.query, reviewed, scaleups)
             check(repository.publish(window, ranking, token)) { "Collection lease lost before publication" }
             return "published"
         } catch (error: Throwable) {
@@ -94,6 +83,34 @@ internal class WeeklyCollector(
             throw error
         }
     }
+
+    private fun entries(
+        ranked: List<MomentumRanking>,
+        previous: Map<String, Int>,
+        from: String,
+        window: CollectionWindow,
+    ): List<Startup> =
+        ranked.mapIndexed { index, entry ->
+            val stories =
+                entry.articles
+                    // The same headline syndicated under differently spelled publisher names is shown once.
+                    .distinctBy { it.headline.lowercase().trim() }
+                    .take(5)
+            val company = entry.company
+            val count = entry.articles.size
+            Startup(
+                company.id,
+                company.name,
+                company.description,
+                company.category,
+                previous[company.id]?.minus(index + 1),
+                "$count article${if (count == 1) "" else "s"} from ${entry.publishers} trusted publishers counted for " +
+                    "${company.name} between $from and ${window.label.substringAfter("– ")}. Ranked by press momentum: " +
+                    "recent weeks and funding, launches and growth news count most.",
+                stories,
+                count,
+            )
+        }
 
     /** Runs every catalogue search for [window] and returns its valid, distinct trusted articles. */
     private suspend fun fetchWeek(
