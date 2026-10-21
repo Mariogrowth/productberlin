@@ -90,4 +90,12 @@ class FrontPageTest {
         assertEquals("t3", line.newest.id)
         assertEquals(listOf("t2", "t4"), line.more.map { it.id })
     }
+
+    @Test
+    fun troubleOnlyLeadsWhenThereIsNothingElse() {
+        val trouble = story("t", "Trade Republic", NewsCategory.Trouble, "Interest row with consumer groups", outlets = 4)
+        val launch = story("l", "Nox", NewsCategory.Launches, "Nox starts night trains")
+        assertEquals("l", WeeklyNews("Week", listOf(trouble, launch)).toFrontPage().lead?.id)
+        assertEquals("t", WeeklyNews("Week", listOf(trouble)).toFrontPage().lead?.id)
+    }
 }

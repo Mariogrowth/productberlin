@@ -10,6 +10,7 @@ import react.Key
 import react.Props
 import react.dom.html.ReactHTML.a
 import react.dom.html.ReactHTML.article
+import react.dom.html.ReactHTML.aside
 import react.dom.html.ReactHTML.button
 import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.h2
@@ -49,44 +50,52 @@ val WeeklyNewsSection =
                 }
                 span { +props.news.weekLabel }
             }
-            page.lead?.let { lead ->
-                Story {
-                    story = lead
-                    size = "lead"
-                }
-            }
-            if (page.teasers.isNotEmpty()) {
+            // Front page: lead and teasers on the left, the ticker as a sidebar on the right (stacked on phones).
+            div {
+                className = ClassName("news-front")
                 div {
-                    className = ClassName("news-teasers")
-                    page.teasers.forEach {
+                    className = ClassName("news-main")
+                    page.lead?.let { lead ->
                         Story {
-                            key = Key(it.id)
-                            story = it
-                            size = "teaser"
+                            story = lead
+                            size = "lead"
                         }
                     }
-                }
-            }
-            if (page.ticker.isNotEmpty()) {
-                div {
-                    className = ClassName("news-ticker")
-                    h3 { +"Ticker" }
-                    ul {
-                        val lines = if (showAll) page.ticker else page.ticker.take(TICKER_PREVIEW)
-                        lines.forEach {
-                            Ticker {
-                                key = Key(it.company)
-                                line = it
+                    if (page.teasers.isNotEmpty()) {
+                        div {
+                            className = ClassName("news-teasers")
+                            page.teasers.forEach {
+                                Story {
+                                    key = Key(it.id)
+                                    story = it
+                                    size = "teaser"
+                                }
                             }
                         }
                     }
-                    if (page.ticker.size > TICKER_PREVIEW) {
-                        button {
-                            type = ButtonType.button
-                            className = ClassName("news-ticker-more")
-                            ariaExpanded = showAll
-                            onClick = { showAll = !showAll }
-                            +(if (showAll) "Show less" else "Show all ${page.ticker.size}")
+                }
+                if (page.ticker.isNotEmpty()) {
+                    aside {
+                        className = ClassName("news-ticker")
+                        ariaLabel = "Ticker"
+                        h3 { +"Ticker" }
+                        ul {
+                            val lines = if (showAll) page.ticker else page.ticker.take(TICKER_PREVIEW)
+                            lines.forEach {
+                                Ticker {
+                                    key = Key(it.company)
+                                    line = it
+                                }
+                            }
+                        }
+                        if (page.ticker.size > TICKER_PREVIEW) {
+                            button {
+                                type = ButtonType.button
+                                className = ClassName("news-ticker-more")
+                                ariaExpanded = showAll
+                                onClick = { showAll = !showAll }
+                                +(if (showAll) "Show less" else "Show all ${page.ticker.size}")
+                            }
                         }
                     }
                 }
@@ -107,23 +116,25 @@ private val Story =
         val story = props.story
         article {
             className = ClassName("news-${props.size}")
-            story.kicker()?.let {
-                p {
-                    className = ClassName("news-kicker")
-                    +it
-                }
+            // The company's logo stands in for a photo: press photos belong to the publishers.
+            CompanyMark {
+                companyId = story.companyId
+                companyName = story.companies.first()
+                logoUrl = story.logoUrl
+                logoFallbackUrl = story.logoFallbackUrl
+                variant = "${props.size}-mark"
             }
-            h3 { Headline { this.story = story } }
             div {
-                className = ClassName("news-byline")
-                CompanyMark {
-                    companyId = story.companyId
-                    companyName = story.companies.first()
-                    logoUrl = story.logoUrl
-                    logoFallbackUrl = story.logoFallbackUrl
-                    variant = "story-mark"
+                className = ClassName("news-body")
+                story.kicker()?.let {
+                    p {
+                        className = ClassName("news-kicker")
+                        +it
+                    }
                 }
-                span {
+                h3 { Headline { this.story = story } }
+                p {
+                    className = ClassName("news-byline")
                     span {
                         className = ClassName("news-company")
                         +story.companies.joinToString(" · ")
@@ -131,10 +142,11 @@ private val Story =
                     +" · ${story.source}"
                     val others = story.alsoIn.size
                     if (others > 0) +" · also $others more ${if (others == 1) "outlet" else "outlets"}"
-                }
-                time {
-                    dateTime = story.publishedAt.take(10)
-                    +shortDate(story.publishedAt)
+                    +" · "
+                    time {
+                        dateTime = story.publishedAt.take(10)
+                        +shortDate(story.publishedAt)
+                    }
                 }
             }
         }
@@ -151,33 +163,34 @@ private val Ticker =
         var open by useState(false)
         li {
             className = ClassName("news-ticker-line")
-            time {
-                dateTime = line.newest.publishedAt.take(10)
-                +shortDate(line.newest.publishedAt)
-            }
-            div {
+            p {
+                className = ClassName("news-ticker-meta")
+                time {
+                    dateTime = line.newest.publishedAt.take(10)
+                    +shortDate(line.newest.publishedAt)
+                }
+                +" · "
                 span {
                     className = ClassName("news-company")
                     +line.company
                 }
-                +" "
-                Headline { story = line.newest }
-                if (line.more.isNotEmpty()) {
-                    button {
-                        type = ButtonType.button
-                        className = ClassName("news-ticker-count")
-                        ariaExpanded = open
-                        onClick = { open = !open }
-                        +(if (open) "less" else "+${line.more.size} more")
-                    }
+            }
+            Headline { story = line.newest }
+            if (line.more.isNotEmpty()) {
+                button {
+                    type = ButtonType.button
+                    className = ClassName("news-ticker-count")
+                    ariaExpanded = open
+                    onClick = { open = !open }
+                    +(if (open) "less" else "+${line.more.size} more")
                 }
-                if (open) {
-                    ul {
-                        line.more.forEach {
-                            li {
-                                key = Key(it.id)
-                                Headline { story = it }
-                            }
+            }
+            if (open) {
+                ul {
+                    line.more.forEach {
+                        li {
+                            key = Key(it.id)
+                            Headline { story = it }
                         }
                     }
                 }

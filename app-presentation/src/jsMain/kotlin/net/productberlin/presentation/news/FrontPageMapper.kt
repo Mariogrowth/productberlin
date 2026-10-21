@@ -5,17 +5,20 @@ import net.productberlin.domain.entity.WeeklyNews
 import net.productberlin.domain.entity.WeeklyStory
 
 /**
- * - **Lead:** the week's biggest funding round; without one, the most-covered story (most outlets), then the newest.
+ * - **Lead:** the week's biggest funding round; without one, the most-covered story (most outlets), then the newest,
+ *   never trouble unless there is nothing else.
  * - **Teasers:** up to three more of the strongest stories, one per category and company, in category order.
  * - **Ticker:** everything else, newest first, one line per company, so a company in the news every day takes one line.
  */
 internal fun WeeklyNews.toFrontPage(): FrontPage {
     val main = stories.filter { it.category != NewsCategory.Other }
     val strength = compareByDescending<WeeklyStory> { it.alsoIn.size }.thenByDescending { it.publishedAt }
+    // Good news leads: trouble only when there is nothing else this week.
     val lead =
         main
             .filter { it.category == NewsCategory.Funding && it.amount() != null }
             .maxByOrNull { it.amount()!!.euros }
+            ?: main.filter { it.category != NewsCategory.Trouble }.sortedWith(strength).firstOrNull()
             ?: main.sortedWith(strength).firstOrNull()
     val teasers = mutableListOf<WeeklyStory>()
     for (category in NewsCategory.entries.filter { it != NewsCategory.Other }) {
