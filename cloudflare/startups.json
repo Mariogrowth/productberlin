@@ -3765,5 +3765,48 @@
     "aliases": [
       "Hey Jobs"
     ]
+  },
+  {
+    "id": "liqid",
+    "name": "LIQID",
+    "description": "Digital wealth management and robo-advisor.",
+    "category": "Fintech",
+    "domain": "liqid.de",
+    "aliases": [],
+    "contextKeywords": [
+      "Robo-Advisor",
+      "Vermögensverwalter",
+      "Vermögensverwaltung",
+      "wealth",
+      "Geldanlage",
+      "Anleger",
+      "investors",
+      "Fintech",
+      "Berlin",
+      "Berliner"
+    ]
+  },
+  {
+    "id": "kuro",
+    "name": "Kuro",
+    "description": "Knowledge graph for how buildings get built.",
+    "category": "Proptech",
+    "domain": "kuro.build",
+    "aliases": [
+      "Kuro Engineering"
+    ],
+    "contextKeywords": [
+      "ConTech",
+      "construction",
+      "Bau",
+      "Gebäude",
+      "buildings",
+      "Finanzierungsrunde",
+      "funding",
+      "Startup",
+      "Start-up",
+      "Berlin",
+      "Berliner"
+    ]
   }
 ]

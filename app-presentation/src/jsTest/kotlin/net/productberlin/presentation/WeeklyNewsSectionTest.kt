@@ -40,7 +40,38 @@ class WeeklyNewsSectionTest : ComponentTest() {
             ) + (1..10).map { story("o$it", "Company $it", NewsCategory.Other, "Interview $it", "2026-10-1${it % 8}") },
         )
 
-    private fun render() = render(WeeklyNewsSection.create { this.news = this@WeeklyNewsSectionTest.news })
+    private fun render(news: WeeklyNews = this.news) = render(WeeklyNewsSection.create { this.news = news })
+
+    @Test
+    fun earlierStoriesWorthCatchingUpOnGetTheirOwnBand() {
+        val earlier =
+            listOf(
+                story("n1", "Noxtua", NewsCategory.Funding, "Noxtua raises €100M Series C", "2026-09-23").copy(alsoIn = listOf("FAZ")),
+                story("d1", "Delivery Hero", NewsCategory.Growth, "Uber’s \$14.8 billion takeover bid for Delivery Hero", "2026-09-24"),
+            )
+        render(news.copy(earlierLabel = "2026-09-14 – 2026-10-04", earlier = earlier))
+        val band = container.querySelector(".news-catch-up")!!
+        assertEquals("Catch up", band.querySelector("h3")?.textContent)
+        assertTrue(band.textContent!!.contains("2026-09-14 – 2026-10-04"))
+        val rows = band.querySelectorAll("li")
+        assertEquals(2, rows.length)
+        assertEquals("FUNDING · €100M", rows.item(0)?.querySelector(".news-kicker")?.textContent)
+        assertEquals("https://news.example/n1", rows.item(0)?.querySelector("a")?.getAttribute("href"))
+        assertTrue(
+            rows
+                .item(0)!!
+                .querySelector(".news-byline")!!
+                .textContent!!
+                .contains("Noxtua · Publisher · +1 outlet · Sep 23"),
+        )
+        assertEquals("DEAL · \$14.8B", rows.item(1)?.querySelector(".news-kicker")?.textContent)
+    }
+
+    @Test
+    fun noBandWithoutEarlierStories() {
+        render()
+        assertNull(container.querySelector(".news-catch-up"))
+    }
 
     @Test
     fun theLeadStoryHasItsKickerHeadlineLinkAndOutlets() {

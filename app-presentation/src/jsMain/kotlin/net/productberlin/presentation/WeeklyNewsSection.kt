@@ -1,5 +1,6 @@
 package net.productberlin.presentation
 
+import net.productberlin.domain.entity.StartupEvent
 import net.productberlin.domain.entity.WeeklyNews
 import net.productberlin.domain.entity.WeeklyStory
 import net.productberlin.presentation.news.TickerLine
@@ -29,11 +30,16 @@ import web.html.button
 
 external interface WeeklyNewsSectionProps : Props {
     var news: WeeklyNews
+
+    /** The coming week's events, shown as the news column's last section; none hides it. */
+    var events: List<StartupEvent>?
 }
 
 /**
  * "This week in Berlin startups", laid out like a front page: a lead story, a row of teasers, then a compact ticker
- * with everything else, one line per company. Size and position show importance; the colours stay neutral.
+ * with everything else, one line per company, a band of earlier stories worth catching up on, and the coming week's
+ * events. Size and position
+ * show importance; the colours stay neutral.
  */
 val WeeklyNewsSection =
     FC<WeeklyNewsSectionProps> { props ->
@@ -46,7 +52,7 @@ val WeeklyNewsSection =
                 className = ClassName("ranking-meta")
                 h2 {
                     id = ElementId("weekly-news-title")
-                    +"This week in Berlin startups"
+                    +"Berlin startup news"
                 }
                 span { +props.news.weekLabel }
             }
@@ -71,6 +77,12 @@ val WeeklyNewsSection =
                                     size = "teaser"
                                 }
                             }
+                        }
+                    }
+                    if (page.catchUp.isNotEmpty()) {
+                        CatchUpBand {
+                            stories = page.catchUp
+                            label = props.news.earlierLabel
                         }
                     }
                 }
@@ -98,6 +110,13 @@ val WeeklyNewsSection =
                             }
                         }
                     }
+                }
+            }
+            // Full width under the news: the coming week as a planner.
+            props.events?.takeIf { it.isNotEmpty() }?.let {
+                EventsSection {
+                    events = it
+                    nested = true
                 }
             }
         }
@@ -197,26 +216,3 @@ private val Ticker =
             }
         }
     }
-
-private external interface HeadlineProps : Props {
-    var story: WeeklyStory
-}
-
-/** The English headline (original on hover), linking to the first report when its link is safe. */
-private val Headline =
-    FC<HeadlineProps> { props ->
-        val story = props.story
-        val text = story.translatedHeadline ?: story.headline
-        val link = story.url?.takeIf { SAFE_LINK.matches(it) }
-        if (link != null) {
-            a {
-                href = link
-                story.translatedHeadline?.let { title = "Original: ${story.headline}" }
-                +text
-            }
-        } else {
-            span { +text }
-        }
-    }
-
-private val SAFE_LINK = Regex("^https://[^\\s/<>]+/[^\\s<>]*$")

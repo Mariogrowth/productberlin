@@ -112,6 +112,7 @@ class AppTest : ComponentTest() {
     private fun show(
         confirmed: Boolean = false,
         news: suspend () -> WeeklyNews = { WeeklyNews("Test week", emptyList()) },
+        events: List<net.productberlin.domain.entity.StartupEvent> = emptyList(),
         load: suspend () -> WeeklyRanking,
     ) {
         val useCase =
@@ -123,7 +124,7 @@ class AppTest : ComponentTest() {
         val eventsUseCase =
             GetUpcomingEvents(
                 object : EventRepository {
-                    override suspend fun getUpcomingEvents() = emptyList<net.productberlin.domain.entity.StartupEvent>()
+                    override suspend fun getUpcomingEvents() = events
                 },
             )
         val newsUseCase =
@@ -151,7 +152,35 @@ class AppTest : ComponentTest() {
             show(news = { WeeklyNews("Test week", listOf(story)) }) { ranking }
             awaitUi { container.querySelector(".weekly-news") != null }
             assertNotNull(container.querySelector(".ranking-layout + .weekly-news + .newsletter"), "ranking, then news, then the signup")
-            assertEquals("This week in Berlin startups", container.querySelector(".weekly-news h2")?.textContent)
+            assertEquals("Berlin startup news", container.querySelector(".weekly-news h2")?.textContent)
+        }
+
+    private val event =
+        net.productberlin.domain.entity.StartupEvent(
+            "a:1",
+            "Angels & Beers",
+            "2026-10-21T17:00:00.000Z",
+            null,
+            "Startups.Berlin",
+            net.productberlin.domain.entity.EventKind.Startup,
+        )
+
+    @Test
+    fun eventsAreTheLastSectionOfTheNews() =
+        runTest {
+            show(news = { WeeklyNews("Test week", listOf(story)) }, events = listOf(event)) { ranking }
+            awaitUi { container.querySelector(".weekly-news .news-events") != null }
+            assertNotNull(container.querySelector(".weekly-news > .news-front + .news-events"), "full width, under the stories and ticker")
+            assertEquals(1, container.querySelectorAll(".news-events").length)
+        }
+
+    @Test
+    fun withoutNewsTheEventsStandAlone() =
+        runTest {
+            show(events = listOf(event)) { ranking }
+            awaitUi { container.querySelector(".news-events") != null }
+            assertNull(container.querySelector(".weekly-news"))
+            assertEquals("Events in Berlin", container.querySelector(".news-events h2")?.textContent)
         }
 
     @Test

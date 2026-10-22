@@ -468,12 +468,14 @@ test('the key checker allows one scan per visitor per minute, not counting inval
 
 test('the weekly news endpoint categorises the published week and groups the same news from several outlets', async () => {
   const empty = await (await mf.dispatchFetch('https://local.test/api/news/weekly')).json();
-  assert.deepEqual(empty, { weekLabel: 'No published news yet', stories: [] }, 'nothing before a live edition');
+  assert.deepEqual(empty, { weekLabel: 'No published news yet', stories: [], earlierLabel: null, earlier: [] }, 'nothing before a live edition');
   assert.equal((await scheduled(weekOne)).outcome, 'ok');
   const response = await mf.dispatchFetch('https://local.test/api/news/weekly');
   assert.equal(response.status, 200);
   const news = await response.json();
-  assert.equal(news.weekLabel, (await ranking()).weekLabel, 'the same week as the ranking');
+  const rankingWeek = (await ranking()).weekLabel;
+  assert.equal(news.weekLabel.slice(-10), rankingWeek.slice(-10), 'ends with the ranking\'s week');
+  assert.equal(Date.parse(rankingWeek.slice(0, 10)) - Date.parse(news.weekLabel.slice(0, 10)), 7 * DAY, 'and starts a week before it');
   // Each test company's headlines say "<name> launches product …" through several outlets: one launch story each.
   const first = news.stories.filter(s => s.companies.includes(catalogue[0].name));
   assert.equal(first.length, 1);
@@ -484,7 +486,7 @@ test('the weekly news endpoint categorises the published week and groups the sam
   assert.equal(new Set(news.stories.map(s => s.companies.join())).size, news.stories.length, 'one story per company');
 });
 
-test('publisher-feed items reach the weekly news, judged like Google News articles', async () => {
+test('publisher-feed items reach the weekly news, judged like Google News articles, older rounds as catch-up', async () => {
   const call = (method, body) => mf.dispatchFetch('https://local.test/api/internal/feeds', {
     method, body, headers: { Authorization: `Bearer ${COLLECTOR_TOKEN}`, 'Content-Type': 'application/json' },
   });
@@ -497,19 +499,27 @@ test('publisher-feed items reach the weekly news, judged like Google News articl
   assert.ok(plan.feeds.length >= 5 && plan.feeds.every(f => f.url.startsWith('https://')));
   assert.deepEqual(plan.known, []);
   const company = catalogue[1];
+  const earlierCompany = catalogue[2];
   const items = [
     { feed: plan.feeds[1].id, title: `${company.name} ${company.contextKeywords?.[0] ?? ''} ernennt neuen CFO`, link: 'https://feed.example/cfo?utm=rss',
       publishedAt: inWeek, translatedTitle: `${company.name} ${company.contextKeywords?.[0] ?? ''} appoints new CFO` },
     { feed: plan.feeds[0].id, title: 'Vienna startup raises €3M', link: 'https://feed.example/vienna', publishedAt: inWeek },
+    // Three weeks before the edition: too old for the front page, but a round worth catching up on.
+    { feed: plan.feeds[0].id, title: `${earlierCompany.name} ${earlierCompany.contextKeywords?.[0] ?? ''} raises €12M Series A`,
+      link: 'https://feed.example/round', publishedAt: new Date(Date.parse(inWeek) - 21 * DAY).toISOString() },
   ];
-  assert.deepEqual(await (await call('POST', JSON.stringify({ items }))).json(), { received: 2, valid: 2, stored: 2 });
-  assert.deepEqual((await (await call('GET')).json()).known.sort(), ['https://feed.example/cfo', 'https://feed.example/vienna']);
+  assert.deepEqual(await (await call('POST', JSON.stringify({ items }))).json(), { received: 3, valid: 3, stored: 3 });
+  assert.deepEqual((await (await call('GET')).json()).known.sort(), ['https://feed.example/cfo', 'https://feed.example/round', 'https://feed.example/vienna']);
   const news = await (await mf.dispatchFetch('https://local.test/api/news/weekly')).json();
   const people = news.stories.find(s => s.companyId === company.id && s.category === 'People');
   assert.ok(people, JSON.stringify(news.stories.map(s => [s.companyId, s.category])));
   assert.equal(people.url, 'https://feed.example/cfo?utm=rss');
   assert.equal(people.translatedHeadline, `${company.name} ${company.contextKeywords?.[0] ?? ''} appoints new CFO`.replace(/\s+/g, ' '), 'stored as clean single-line text');
   assert.ok(!news.stories.some(s => s.headline.includes('Vienna')), 'no catalogue company in the headline: not shown');
+  assert.ok(!news.stories.some(s => s.url === 'https://feed.example/round'), 'older than the two-week window');
+  const round = news.earlier.find(s => s.companyId === earlierCompany.id);
+  assert.equal(round?.category, 'Funding', JSON.stringify(news.earlier));
+  assert.match(news.earlierLabel, /^\d{4}-\d{2}-\d{2} – \d{4}-\d{2}-\d{2}$/);
 });
 
 test('organisers\' calendar entries become the coming week\'s Berlin events', async () => {

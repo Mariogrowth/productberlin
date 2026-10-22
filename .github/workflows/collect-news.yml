@@ -5,6 +5,7 @@ name: Collect weekly news
 # any earlier week missing from the Worker's stored history is fetched first, in the same run.
 # Then it reads the startup publishers' feeds (cloudflare/feeds.json) for the weekly news, and, at most every six
 # hours, the curated organisers' public calendars (cloudflare/event-sources.json) for Berlin startup events.
+# On Mondays it lists Berlin startups in the week's news that the catalogue lacks, for a person to review.
 # Afterwards it records each catalogue company's open roles from its public job board, once per week; nothing on the
 # site reads those counts yet. It runs even when the news step fails, and never affects the news edition.
 on:
@@ -17,6 +18,10 @@ on:
         type: choice
         options: [production, staging]
         default: production
+      feed_backfill_pages:
+        description: One-off - read this many pages of each publisher feed (up to 30) to fill the last six weeks
+        type: number
+        default: 0
 permissions:
   contents: read
 concurrency:
@@ -46,11 +51,15 @@ jobs:
           COLLECTOR_URL: ${{ vars.DEPLOY_URL }}
           COLLECTOR_TOKEN: ${{ secrets.COLLECTOR_TOKEN }}
           DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
+          FEED_BACKFILL_PAGES: ${{ inputs.feed_backfill_pages || 0 }}
       - run: node scripts/collect-events.mjs
         if: ${{ !cancelled() }}
         env:
           COLLECTOR_URL: ${{ vars.DEPLOY_URL }}
           COLLECTOR_TOKEN: ${{ secrets.COLLECTOR_TOKEN }}
+      # Mondays 07:00 UTC: Berlin startups in the week's news that the catalogue lacks, listed in the run summary.
+      - run: node scripts/discover-companies.mjs
+        if: ${{ !cancelled() }}
       - run: node scripts/collect-jobs.mjs
         if: ${{ !cancelled() }}
         env:

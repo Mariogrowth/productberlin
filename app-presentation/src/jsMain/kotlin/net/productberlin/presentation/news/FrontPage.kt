@@ -2,11 +2,15 @@ package net.productberlin.presentation.news
 
 import net.productberlin.domain.entity.WeeklyStory
 
-/** The week's news arranged like a front page: one lead story, a row of teasers, and a compact ticker. */
+/**
+ * The news arranged like a front page: one lead story, a row of teasers, a compact ticker, and a short band of
+ * earlier stories worth catching up on.
+ */
 internal data class FrontPage(
     val lead: WeeklyStory?,
     val teasers: List<WeeklyStory>,
     val ticker: List<TickerLine>,
+    val catchUp: List<WeeklyStory> = emptyList(),
 )
 
 /** One company's remaining stories of the week: the newest leads, the rest are "+N more". */
