@@ -17,6 +17,8 @@ const FEEDS = {
   ]),
   'https://ds.example/feed/?paged=2': rss([['Older still', 'https://ds.example/older', day(40)]]),
   'https://tt.example/feed/': rss([['N26 holt Ex-Postbank-Finanzchef als CFO', 'https://tt.example/n26-cfo', day(3)]]),
+  'https://tt.example/feed/?paged=2': rss([['Kuro: Berliner ConTech-Startup sammelt 10 Millionen Euro', 'https://tt.example/kuro', day(15)]]),
+  'https://tt.example/feed/?paged=3': rss([['Before the window', 'https://tt.example/before', day(25)]]),
 };
 const plan = {
   feeds: [{ id: 'ds', name: 'deutsche-startups.de', url: 'https://ds.example/feed/', pages: 2 }, { id: 'tt', name: 'Trending Topics', url: 'https://tt.example/feed/', pages: 1 }],
@@ -101,4 +103,18 @@ test('nothing new means no post', async () => {
   } finally {
     plan.known = original;
   }
+});
+
+test('a backfill reads deeper than the usual pages until it passes the window', async () => {
+  const usual = fakeFetch();
+  await run(usual, { deeplApiKey: null });
+  assert.ok(!usual.calls.feeds.includes('https://tt.example/feed/?paged=2'));
+
+  const backfill = fakeFetch();
+  await run(backfill, { deeplApiKey: null, backfillPages: 10, pageDelay: 0 });
+  assert.ok(backfill.calls.feeds.includes('https://tt.example/feed/?paged=3'));
+  assert.ok(!backfill.calls.feeds.includes('https://tt.example/feed/?paged=4'), 'stops once a page is older than the window');
+  const links = backfill.calls.posts.flatMap(post => post.items.map(item => item.link));
+  assert.ok(links.includes('https://tt.example/kuro'));
+  assert.ok(!links.includes('https://tt.example/before'));
 });

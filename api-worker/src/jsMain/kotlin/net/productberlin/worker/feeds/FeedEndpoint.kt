@@ -93,7 +93,10 @@ internal class FeedEndpoint(
 
     private companion object {
         const val DAY = 86_400_000.0
-        const val WINDOW_DAYS = 21
+
+        // Six weeks: the news shows two weeks plus three earlier weeks to catch up on, and a one-off backfill can fill
+        // them for feeds that started later.
+        const val WINDOW_DAYS = 42
         const val MAX_BODY = 2_000_000
         const val MAX_ITEMS = 400
         val SAFE_LINK = Regex("^https://[^\\s/<>]+/[^\\s<>\"]*$")

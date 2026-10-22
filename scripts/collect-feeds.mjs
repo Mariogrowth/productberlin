@@ -1,6 +1,6 @@
 // Publisher-feed collector for the weekly news, run by GitHub Actions after the news collector.
 // 1. Ask the Worker which feeds to read and which items it already has (GET /api/internal/feeds).
-// 2. Read each feed, paging back over the Worker's window, and keep only new items.
+// 2. Read each feed, paging back over the Worker's window (deeper with FEED_BACKFILL_PAGES), and keep only new items.
 // 3. Translate non-English titles with DeepL when DEEPL_API_KEY is set.
 // 4. Post the items (POST). The Worker validates them; the news judges them like Google News articles (catalogue
 //    names in the headline, keyword categories).
@@ -29,7 +29,14 @@ export function feedItems(parsed, feed) {
   });
 }
 
-export async function collectFeeds({ baseUrl, token, deeplApiKey, fetchImpl = fetch, log = console.log }) {
+/**
+ * Reads each feed's first `feed.pages` pages; `backfillPages` reads deeper for a one-off backfill of the Worker's whole
+ * window (paging still stops once a page is older than the window), pausing between pages so publishers do not
+ * rate-limit it.
+ */
+export async function collectFeeds({
+  baseUrl, token, deeplApiKey, backfillPages = 0, pageDelay = backfillPages ? 3_000 : 0, fetchImpl = fetch, log = console.log,
+}) {
   if (!baseUrl || !/^https?:\/\//.test(baseUrl)) throw new Error('Set COLLECTOR_URL to the site origin, e.g. https://product.berlin');
   if (!token) throw new Error('Set COLLECTOR_TOKEN');
   const endpoint = new URL('/api/internal/feeds', baseUrl);
@@ -43,7 +50,8 @@ export async function collectFeeds({ baseUrl, token, deeplApiKey, fetchImpl = fe
   const found = new Map();
   let read = 0;
   for (const feed of plan.feeds) {
-    for (let page = 1; page <= feed.pages; page++) {
+    for (let page = 1; page <= Math.max(feed.pages, backfillPages); page++) {
+      if (page > 1 && pageDelay) await new Promise(resolve => setTimeout(resolve, pageDelay));
       const url = page === 1 ? feed.url : `${feed.url}${feed.url.includes('?') ? '&' : '?'}paged=${page}`;
       try {
         const response = await fetchImpl(url, {
@@ -91,6 +99,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     baseUrl: process.env.COLLECTOR_URL,
     token: process.env.COLLECTOR_TOKEN,
     deeplApiKey: process.env.DEEPL_API_KEY,
+    backfillPages: Math.min(Number(process.env.FEED_BACKFILL_PAGES) || 0, 30),
   });
   if (process.env.GITHUB_STEP_SUMMARY) {
     const { appendFileSync } = await import('node:fs');

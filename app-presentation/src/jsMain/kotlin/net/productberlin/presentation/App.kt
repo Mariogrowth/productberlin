@@ -184,12 +184,16 @@ val App =
                 }
             }
             // Only for live editions with stories: demo editions and quiet or failed loads show no section.
+            // Events close the news section; live editions only, none when nothing is listed or they cannot load. In a week
+            // without news they stand alone.
+            val liveEvents = events.takeIf { ranking?.isMock == false }.orEmpty()
             if (ranking?.isMock == false && news != null && news.stories.isNotEmpty()) {
-                WeeklyNewsSection { this.news = news }
-            }
-            // Live editions only; no section when nothing is listed or the events cannot load.
-            if (ranking?.isMock == false && events.isNotEmpty()) {
-                EventsSection { this.events = events }
+                WeeklyNewsSection {
+                    this.news = news
+                    this.events = liveEvents
+                }
+            } else if (liveEvents.isNotEmpty()) {
+                EventsSection { this.events = liveEvents }
             }
             NewsletterSignup { subscribe = props.subscribe }
             footer {

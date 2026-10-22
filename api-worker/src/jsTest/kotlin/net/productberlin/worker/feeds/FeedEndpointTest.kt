@@ -51,7 +51,7 @@ class FeedEndpointTest {
             assertEquals("https://ds.example/feed/", plan.feeds[0].url)
             assertEquals(2, plan.feeds[0].pages)
             assertEquals(listOf("https://ds.example/procuros"), plan.known.unsafeCast<Array<String>>().toList())
-            assertEquals("2026-09-27T12:00:00.000Z", plan.since)
+            assertEquals("2026-09-06T12:00:00.000Z", plan.since, "six weeks: the news window plus the earlier weeks")
         }
 
     @Test

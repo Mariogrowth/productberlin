@@ -1,6 +1,7 @@
 package net.productberlin.data.mapper
 
 import net.productberlin.contract.WeeklyNewsDto
+import net.productberlin.contract.WeeklyStoryDto
 import net.productberlin.domain.entity.NewsCategory
 import net.productberlin.domain.entity.WeeklyNews
 import net.productberlin.domain.entity.WeeklyStory
@@ -9,22 +10,25 @@ import net.productberlin.domain.entity.WeeklyStory
 fun WeeklyNewsDto.toDomain() =
     WeeklyNews(
         weekLabel = weekLabel,
-        stories =
-            stories.mapNotNull { story ->
-                val category = NewsCategory.entries.firstOrNull { it.name == story.category } ?: return@mapNotNull null
-                WeeklyStory(
-                    story.id,
-                    story.companies,
-                    category,
-                    story.headline,
-                    story.source,
-                    story.publishedAt,
-                    story.url,
-                    story.translatedHeadline,
-                    story.alsoIn,
-                    story.companyId,
-                    story.logoUrl,
-                    story.logoFallbackUrl,
-                )
-            },
+        stories = stories.mapNotNull { it.toDomain() },
+        earlierLabel = earlierLabel,
+        earlier = earlier.mapNotNull { it.toDomain() },
     )
+
+private fun WeeklyStoryDto.toDomain(): WeeklyStory? {
+    val category = NewsCategory.entries.firstOrNull { it.name == category } ?: return null
+    return WeeklyStory(
+        id,
+        companies,
+        category,
+        headline,
+        source,
+        publishedAt,
+        url,
+        translatedHeadline,
+        alsoIn,
+        companyId,
+        logoUrl,
+        logoFallbackUrl,
+    )
+}

@@ -16,17 +16,28 @@ class ClassifyHeadline {
         fun any(patterns: List<Regex>) = texts.any { text -> patterns.any { it.containsMatchIn(text) } }
         return when {
             any(MARKET) -> HeadlineEvent.Market
+
+            // Opinion columns and commentary mention companies in passing: ordinary coverage, never a category story.
+            any(OPINION) -> HeadlineEvent.Other
+
             any(NEGATIVE) -> HeadlineEvent.Negative
+
             any(CONSUMER) -> HeadlineEvent.Consumer
+
             any(FUNDING) -> HeadlineEvent.Funding
+
             any(LAUNCH) -> HeadlineEvent.Launch
+
             any(PEOPLE) -> HeadlineEvent.People
+
             any(GROWTH) -> HeadlineEvent.Growth
+
             else -> HeadlineEvent.Other
         }
     }
 
     private companion object {
+        val OPINION = listOf(Regex("""^\s*(meinung|opinion|kommentar|kolumne|op-ed)\s*:"""))
         val MARKET =
             listOf(
                 // Any "Aktie(n)" word or compound, trading venues and indices, and market-column vocabulary.
@@ -47,7 +58,7 @@ class ClassifyHeadline {
                         """pleite|schließt|schliesst|schließung|closes|closure|shuts? down|-aus\b|\baus für\b|sozialplan|""" +
                         """lawsuit|klage|verklagt|\bsued\b|fraud|betrug|razzia|bußgeld|ermittl|scandal|skandal|verlust|""" +
                         """\blosses\b|kritik|criticism|ärger|rückruf|recall|hacker|hacked|cyberangriff|erpress|datenleck|""" +
-                        """data breach|steps down|rücktritt|resigns|verlässt|delayed|delays|verzögert|verzögerung)""",
+                        """data breach|steps down|rücktritt|resigns|verlässt|delayed|delays|verzögert|verzögerung|streit|dispute|dismissals)""",
                 ),
             )
         val CONSUMER =
@@ -55,13 +66,19 @@ class ClassifyHeadline {
         val FUNDING =
             listOf(
                 Regex(
-                    """(raises?\b|raised|funding|series [a-e]\b|\bseed\b|finanzierung|sammelt|sammeln|eingesammelt|investoren|""" +
-                        """bewertung|valuation|unicorn|einhorn|backed|kapitalspritze|investiert|invests|investment)""",
+                    // Only words that mean raising money: "investment", "investors" or "backed" alone also appear in product
+                    // news ("free investment accounts") and disputes ("dispute with investors").
+                    """(\braises?\b|\braised\b|\bfunding\b|series [a-e]\b|\bseed\b|seed-runde|seedrunde|finanzierungsrunde|""" +
+                        """\bfinanzierung\b|sammel\w* [^,:;]*(\bein\b|millionen|mio\b)|eingesammelt|kapitalspritze|investment round|""" +
+                        """investitionsrunde|valuation|milliarden-bewertung|bewertung von|unicorn|einhorn)""",
                 ),
                 // "17 Millionen Euro für Fahrzeugkredite", "€17 million for vehicle loans".
-                Regex("""\d[\d,.]*\s*(mio\.?|millionen|million|mn|m)\b\s*(euro|dollar)?\s*(für|for)\b"""),
-                // "erhält 6 Millionen Euro", "sichert sich 20 Mio.", "secures €10M".
-                Regex("""(erhält|sichert sich|secures|lands|bags)[^,:;]*(\d[\d,.]*\s*(mio|millionen|million|mn|m)\b|millionen|million)"""),
+                // "17 Mio. Euro für": the dot after "Mio" ends the word, so the unit carries its own boundary.
+                Regex("""\d[\d,.]*\s*(mio\.|mio\b|millionen\b|million\b|mn\b|m\b)\s*(euro|dollar)?\s*(für|for)\b"""),
+                // "erhält 6 Millionen Euro", "sichert sich 20 Mio.", "holt sich 17 Millionen", "secures €10M".
+                Regex(
+                    """(erhält|sichert sich|\bholt\b|secures|lands|bags)[^,:;]*(\d[\d,.]*\s*(mio|millionen|million|mn|m)\b|millionen|million)""",
+                ),
             )
         val LAUNCH =
             listOf(Regex("""(launch|startet|lanciert|rolls out|unveils|introduces|präsentiert|bringt [^,:;]*(auf den markt|heraus))"""))
@@ -75,8 +92,9 @@ class ClassifyHeadline {
         val GROWTH =
             listOf(
                 Regex(
-                    """(expands|expansion|expandiert|übernimmt|übernahme|acquires|acquisition|partnership|partnerschaft|""" +
+                    """(expands|expansion|expandiert|übernimmt|übernahme|acquires|acquisition|takeover|partnership|partnerschaft|""" +
                         """partners with|kooperation|customers?\b|kunden|wins\b|gewinnt|award|auszeichnung|opens|eröffnet|""" +
+                        """sold to|verkauft an|\bkauft\b|\bbuys\b|investiert [^,:;]* in\b|invests [^,:;]* in\b|""" +
                         """\barr\b|umsatz|revenue|profitab|growth|wachstum|wächst|rekord|record|milestone|meilenstein|deal with|signs)""",
                 ),
             )

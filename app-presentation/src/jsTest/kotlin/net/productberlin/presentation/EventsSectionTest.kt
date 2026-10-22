@@ -2,6 +2,7 @@ package net.productberlin.presentation
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import net.productberlin.domain.entity.EventKind
 import net.productberlin.domain.entity.StartupEvent
@@ -44,34 +45,81 @@ class EventsSectionTest : ComponentTest() {
             ),
         )
 
-    private fun choose(label: String) {
-        val list = container.querySelectorAll(".pb-filter")
-        val chip = (0 until list.length).map { list.item(it)!! }.single { it.textContent!!.startsWith(label) }
-        flushSync { chip.unsafeCast<HTMLButtonElement>().click() }
+    private fun days() = container.querySelectorAll(".event-day").let { l -> (0 until l.length).map { l.item(it)!! } }
+
+    @Test
+    fun aPlannerWithOneColumnPerBerlinDay() {
+        render(EventsSection.create { this.events = this@EventsSectionTest.events })
+        assertEquals("Events in Berlin", container.querySelector(".news-band-head h2")?.textContent, "a heading of its own when alone")
+        val (wednesday, thursday) = days()
+        assertEquals("21", wednesday.querySelector(".event-day-number")?.textContent)
+        assertEquals("Wednesday · Oct", wednesday.querySelector(".event-day-name")?.textContent)
+        val rows = wednesday.querySelectorAll(".event-row")
+        assertEquals("18:00", rows.item(0)?.querySelector("time")?.textContent, "16:00 UTC is 18:00 in Berlin, in time order")
+        assertEquals("PyData Berlin · Vinted · Tech & AI", rows.item(0)?.querySelector("p")?.textContent, "tech talks are marked")
+        val angels = rows.item(1)!!
+        assertEquals("19:00", angels.querySelector("time")?.textContent)
+        assertEquals("https://www.meetup.com/x/", angels.querySelector("a")?.getAttribute("href"))
+        assertEquals("Startups.Berlin", angels.querySelector("p")?.textContent)
+        assertEquals("22", thursday.querySelector(".event-day-number")?.textContent)
+        assertEquals("Merantix AI Campus", thursday.querySelector(".event-row p")?.textContent, "venue not repeated")
     }
 
     @Test
-    fun startupEventsShowFirstGroupedByBerlinDayWithBerlinTimes() {
-        render(EventsSection.create { this.events = this@EventsSectionTest.events })
-        val chips = container.querySelectorAll(".pb-filter").let { l -> (0 until l.length).map { l.item(it)!!.textContent } }
-        assertEquals(listOf("Startups & founders (2)", "Tech & AI (1)", "All (3)"), chips)
-        val days = container.querySelectorAll(".berlin-events-day h3").let { l -> (0 until l.length).map { l.item(it)!!.textContent } }
-        assertEquals(listOf("Wednesday 21 Oct", "Thursday 22 Oct"), days.map { it!!.replace(",", "") })
-        val first = container.querySelector(".berlin-event")!!
-        assertEquals("19:00", first.querySelector("time")?.textContent, "17:00 UTC is 19:00 in Berlin")
-        assertEquals("https://www.meetup.com/x/", first.querySelector("h4 a")?.getAttribute("href"))
-        assertEquals("Startups.Berlin", first.querySelector("p")?.textContent)
-        assertTrue(!container.textContent.orEmpty().contains("PyData"), "tech talks are one click away")
-        assertEquals("07:30", container.querySelectorAll(".berlin-event time").item(1)?.textContent)
-        assertEquals("Merantix AI Campus", container.querySelectorAll(".berlin-event p").item(1)?.textContent, "venue not repeated")
+    fun titlesAreCleanedWithTheOriginalOnHover() {
+        val event =
+            StartupEvent(
+                "r:1",
+                "Founders Running Club :: Berlin",
+                "2026-10-24T08:00:00.000Z",
+                null,
+                "Founders Running Club Berlin",
+                EventKind.Startup,
+                url = "https://luma.com/r",
+            )
+        render(EventsSection.create { this.events = listOf(event) })
+        val link = container.querySelector(".event-row a")!!
+        assertEquals("Founders Running Club", link.textContent)
+        assertEquals("Founders Running Club :: Berlin", link.getAttribute("title"))
     }
 
     @Test
-    fun theOtherFiltersShowTechTalksOrEverything() {
-        render(EventsSection.create { this.events = this@EventsSectionTest.events })
-        choose("Tech & AI")
-        assertEquals("PyData Berlin · Vinted", container.querySelector(".berlin-event p")?.textContent)
-        choose("All")
-        assertEquals(3, container.querySelectorAll(".berlin-event").length)
+    fun aBusyDayShowsThreeFoundersEventsFirstAndUnfoldsTheRest() {
+        val day =
+            (1..4).map {
+                StartupEvent(
+                    "s:$it",
+                    "Founder breakfast $it",
+                    "2026-10-23T0${it + 5}:00:00.000Z",
+                    null,
+                    "Org $it",
+                    EventKind.Startup,
+                )
+            } +
+                StartupEvent("t:1", "AI meetup", "2026-10-23T05:00:00.000Z", null, "AI Berlin", EventKind.Tech)
+        render(EventsSection.create { this.events = day })
+        assertEquals(3, container.querySelectorAll(".event-row").length)
+        assertTrue(
+            !container.textContent.orEmpty().contains("AI meetup"),
+            "the earliest event is a tech talk, but founders' events come first",
+        )
+        val more = container.querySelector(".event-day .news-ticker-count")!!.unsafeCast<HTMLButtonElement>()
+        assertEquals("+2 more", more.textContent)
+        flushSync { more.click() }
+        assertEquals(5, container.querySelectorAll(".event-row").length)
+        assertEquals("AI meetup", container.querySelector(".event-row a, .event-row span")?.textContent, "the whole day is in time order")
+        assertEquals("true", more.getAttribute("aria-expanded"))
+    }
+
+    @Test
+    fun underTheNewsItIsASubsection() {
+        render(
+            EventsSection.create {
+                this.events = this@EventsSectionTest.events
+                nested = true
+            },
+        )
+        assertEquals("Events in Berlin", container.querySelector(".news-band-head h3")?.textContent)
+        assertNull(container.querySelector("h2"))
     }
 }

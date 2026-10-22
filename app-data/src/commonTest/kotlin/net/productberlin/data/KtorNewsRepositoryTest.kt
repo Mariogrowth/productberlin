@@ -71,6 +71,26 @@ class KtorNewsRepositoryTest {
         }
 
     @Test
+    fun readsTheEarlierStoriesWorthCatchingUpOn() =
+        runTest {
+            val body =
+                """{"weekLabel":"2026-10-05 – 2026-10-18","stories":[],"earlierLabel":"2026-09-14 – 2026-10-04","earlier":[
+                {"id":"n1","companies":["Noxtua"],"category":"Funding","headline":"Noxtua raises €100M","source":"Dealroom",
+                 "publishedAt":"2026-09-23T09:00:00.000Z"},
+                {"id":"x","companies":["X"],"category":"FutureCategory","headline":"h","source":"s","publishedAt":"2026-09-23"}]}"""
+            val news = repository(HttpStatusCode.OK, body).getWeeklyNews()
+            assertEquals("2026-09-14 – 2026-10-04", news.earlierLabel)
+            assertEquals(listOf("n1"), news.earlier.map { it.id })
+        }
+
+    @Test
+    fun anOlderWorkerWithoutEarlierStoriesStillWorks() =
+        runTest {
+            val news = repository(HttpStatusCode.OK, """{"weekLabel":"w","stories":[]}""").getWeeklyNews()
+            assertEquals(WeeklyNews("w", emptyList()), news)
+        }
+
+    @Test
     fun aFailingWorkerThrowsSoThePageCanHideTheSection() =
         runTest {
             assertFailsWith<Exception> { repository(HttpStatusCode.ServiceUnavailable, """{"error":"x"}""").getWeeklyNews() }

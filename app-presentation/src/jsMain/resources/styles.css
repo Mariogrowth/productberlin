@@ -131,37 +131,71 @@ footer > p { font-size: 10px; color: #a0a0a7; margin: 9px 0 13px; }
 .key-check-note { margin-top: 40px; font-size: 12px; line-height: 1.6; color: #85858b; }
 @media (max-width: 540px) { .key-check { padding: 32px 16px 56px; } .key-check h1 { font-size: 26px; } .key-check-row { flex-direction: column; } .key-check-row input { flex: none; width: 100%; box-sizing: border-box; } }
 
-/* "This week in Berlin startups", under the ranking: same quiet type as the ranking, no extra colours. */
+/* "Berlin startup news", under the ranking: same quiet type as the ranking, no extra colours. */
 .weekly-news { margin-top: 56px; }
-.weekly-news-filters { margin: 14px 0 6px; }
-.weekly-news-filters .pb-filter { padding: 8px 12px; min-height: 38px; font-size: 13px; }
-.weekly-news-group h3 { margin: 26px 0 4px; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #6e6e76; }
-.weekly-story { padding: 14px 0; border-bottom: 1px solid #ececf0; }
-.weekly-story-top { display: flex; justify-content: space-between; gap: 12px; font-size: 12px; color: #85858b; }
-.weekly-story-company { font-weight: 650; color: #161718; }
-.weekly-story h4 { margin: 4px 0 2px; font-size: 15px; line-height: 1.45; font-weight: 600; letter-spacing: -.1px; }
-.weekly-story h4 a { color: inherit; text-decoration: none; }
-.weekly-story h4 a:hover { text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
-.weekly-story-source { margin: 0; font-size: 12px; color: #85858b; }
-@media (max-width: 540px) { .weekly-news { margin-top: 40px; } .weekly-news-filters .pb-filters { flex-wrap: nowrap; overflow-x: auto; } .weekly-news-filters .pb-filter { flex: none; } }
-/* News stories carry the same company mark as the ranking, smaller. */
-.weekly-story { display: grid; grid-template-columns: 32px minmax(0, 1fr); column-gap: 14px; align-items: start; }
-.company-mark.story-mark { width: 32px; height: 32px; margin-top: 2px; font-size: 22px; letter-spacing: -1.5px; }
-.company-mark.story-mark.mark-n26 { font-size: 11px; }
-.company-mark.story-mark.mark-trade-republic { font-size: 13px; }
-
-/* "Startup events in Berlin", under the news: time column, title linking to the organiser's page. */
-.berlin-events { margin-top: 56px; }
-.berlin-events-day h3 { margin: 26px 0 4px; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #6e6e76; }
-.berlin-event { display: grid; grid-template-columns: 52px minmax(0, 1fr); column-gap: 12px; padding: 12px 0; border-bottom: 1px solid #ececf0; }
-.berlin-event time { font-size: 13px; font-weight: 650; color: #161718; font-variant-numeric: tabular-nums; padding-top: 1px; }
-.berlin-event h4 { margin: 0; font-size: 15px; line-height: 1.4; font-weight: 600; }
-.berlin-event h4 a { color: inherit; text-decoration: none; }
-.berlin-event h4 a:hover { text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
-.berlin-event p { margin: 2px 0 0; font-size: 12px; color: #85858b; }
-@media (max-width: 540px) { .berlin-events { margin-top: 40px; } }
+@media (max-width: 540px) { .weekly-news { margin-top: 40px; } }
 
 /* "Scaleups in the news": the same rows as the startup ranking, in their own card below it. */
 .scaleups { margin-top: 48px; }
 .scaleups .scaleup-card { margin-top: 14px; }
 @media (max-width: 540px) { .scaleups { margin-top: 36px; } }
+
+/* Front-page news: lead and teasers on the left, ticker sidebar on the right; stacked on phones. Importance by size and
+   position, colours stay neutral; the company logo tile stands in for a photo. */
+.news-front { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 32px; margin-top: 16px; align-items: start; }
+.news-kicker { margin: 0 0 6px; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #6e6e76; }
+.news-lead { padding-bottom: 24px; border-bottom: 1px solid #ececf0; }
+.company-mark.lead-mark { width: 100%; height: 168px; border-radius: 14px; font-size: 72px; letter-spacing: -4px; margin-bottom: 16px; }
+.company-mark.lead-mark.has-logo { background: #f4f4f7; }
+.company-mark.lead-mark.has-logo img { width: 96px; height: 96px; margin: auto; border-radius: 18px; }
+.news-lead h3 { margin: 0; font-size: 28px; line-height: 1.22; letter-spacing: -.7px; font-weight: 750; }
+.news-teasers { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 24px; }
+.news-teaser { display: grid; grid-template-columns: 44px minmax(0, 1fr); column-gap: 12px; padding: 18px 0; border-bottom: 1px solid #ececf0; }
+.company-mark.teaser-mark { width: 44px; height: 44px; border-radius: 10px; font-size: 24px; letter-spacing: -1.5px; }
+.news-teaser h3 { margin: 0; font-size: 16px; line-height: 1.35; font-weight: 650; letter-spacing: -.2px; }
+.news-lead h3 a, .news-teaser h3 a, .news-ticker-line a { color: inherit; text-decoration: none; }
+.news-lead h3 a:hover, .news-teaser h3 a:hover, .news-ticker-line a:hover { text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+.news-byline { margin: 10px 0 0; font-size: 12px; color: #85858b; }
+.news-company { font-weight: 650; color: #161718; }
+.news-catch-up { margin-top: 28px; }
+.news-band-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding-bottom: 8px; border-bottom: 2px solid #161718; }
+.news-band-head h2, .news-band-head h3 { margin: 0; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #161718; }
+.news-band-head span { font-size: 12px; color: #85858b; }
+.news-catch-up ul { list-style: none; margin: 0; padding: 0; }
+.news-catch-up li { display: grid; grid-template-columns: 140px minmax(0, 1fr); column-gap: 16px; padding: 14px 0; border-bottom: 1px solid #ececf0; font-size: 15px; line-height: 1.4; font-weight: 600; }
+.news-catch-up li .news-kicker { margin: 3px 0 0; }
+.news-catch-up li .news-byline { margin-top: 4px; font-weight: 400; }
+.news-catch-up a { color: inherit; text-decoration: none; }
+.news-catch-up a:hover { text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+/* "Events in Berlin": a week planner under the news, one column per day; neutral like the rest. */
+.news-events { margin-top: 44px; }
+.event-days { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 8px 28px; }
+.event-day { padding-top: 16px; }
+.event-day h4 { display: flex; align-items: baseline; gap: 10px; margin: 0 0 6px; padding-bottom: 8px; border-bottom: 1px solid #ececf0; font-weight: 400; }
+.event-day-number { font-size: 30px; line-height: 1; font-weight: 750; letter-spacing: -1px; color: #161718; font-variant-numeric: tabular-nums; }
+.event-day-name { font-size: 13px; color: #6e6e76; }
+.event-day ul { list-style: none; margin: 0; padding: 0; }
+.event-row { display: grid; grid-template-columns: 44px minmax(0, 1fr); column-gap: 10px; padding: 9px 0; font-size: 14px; line-height: 1.35; }
+.event-row time { font-size: 12px; font-weight: 600; color: #6e6e76; font-variant-numeric: tabular-nums; padding-top: 2px; }
+.event-row a, .event-row span { color: #161718; font-weight: 600; text-decoration: none; }
+.event-row a:hover { text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+.event-row p { margin: 2px 0 0; font-size: 12px; color: #85858b; }
+.event-day .news-ticker-count { padding: 2px 0 0 54px; }
+.news-ticker { border-left: 1px solid #ececf0; padding-left: 24px; }
+.news-ticker h3 { margin: 0 0 6px; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #6e6e76; }
+.news-ticker > ul { list-style: none; margin: 0; padding: 0; }
+.news-ticker-line { padding: 10px 0; border-bottom: 1px solid #f1f1f4; font-size: 14px; line-height: 1.4; }
+.news-ticker-meta { margin: 0 0 2px; font-size: 11px; color: #85858b; }
+.news-ticker-line ul { list-style: none; margin: 6px 0 0; padding: 0 0 0 10px; border-left: 2px solid #ececf0; font-size: 13px; }
+.news-ticker-line ul li { padding: 3px 0; }
+.news-ticker-count, .news-ticker-more { border: 0; background: none; padding: 0 0 0 6px; font: inherit; font-size: 12px; color: #6e6e76; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.news-ticker-more { display: block; margin: 14px 0 0; padding: 0; }
+@media (max-width: 760px) {
+  .news-front { grid-template-columns: 1fr; gap: 8px; }
+  .news-teasers { grid-template-columns: 1fr; }
+  .news-catch-up li { grid-template-columns: 1fr; }
+  .news-catch-up li .news-kicker { margin: 0 0 4px; }
+  .news-ticker { border-left: 0; padding-left: 0; margin-top: 12px; }
+  .company-mark.lead-mark { height: 120px; font-size: 56px; }
+  .news-lead h3 { font-size: 22px; }
+}

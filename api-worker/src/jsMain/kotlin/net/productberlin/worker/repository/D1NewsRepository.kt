@@ -8,10 +8,12 @@ import net.productberlin.domain.entity.StartupCandidate
 import net.productberlin.domain.entity.WeeklyNews
 import net.productberlin.domain.repository.NewsRepository
 import net.productberlin.domain.usecase.CategorizeWeeklyNews
+import net.productberlin.domain.usecase.SelectCatchUpStories
 import net.productberlin.worker.logo.CompanyLogos
 
 /**
- * The stored articles of the week behind the latest published live ranking, categorised. Demo editions have no
+ * The stored articles of the latest published live ranking's week and the week before, categorised, plus the
+ * weightier stories of the three weeks before that ([SelectCatchUpStories]). Demo editions have no
  * stored articles, so they get no news. Logos are built only for companies with a story, as for the ranking.
  */
 internal class D1NewsRepository(
@@ -27,12 +29,33 @@ internal class D1NewsRepository(
                 .unsafeCast<Promise<dynamic>>()
                 .await()
         if (latest == null) return WeeklyNews("No published news yet", emptyList())
+        // The edition's week and the one before: a single week is often too thin for a front page.
+        val editionStart = Date.parse("${latest.week_start}T00:00:00.000Z")
+        val from = Date(editionStart - 7 * DAY).toISOString()
+        val until = Date(editionStart + 7 * DAY).toISOString()
+        val stories = stories(articles(from, until))
+        // The three weeks before that (the ranking's stored history), only for stories worth catching up on.
+        val earlierFrom = Date(editionStart - 28 * DAY).toISOString()
+        val earlier = SelectCatchUpStories()(stories(articles(earlierFrom, from)))
+        return WeeklyNews(
+            label(from, until),
+            stories,
+            earlierLabel = label(earlierFrom, from).takeIf { earlier.isNotEmpty() },
+            earlier = earlier,
+        )
+    }
+
+    /** Stored Google News articles of the weeks starting in [from, until), and publisher-feed items published then. */
+    private suspend fun articles(
+        from: String,
+        until: String,
+    ): List<NewsArticle> {
         val result =
             database
                 .prepare(
-                    "SELECT id,headline,translated_headline,source,url,published_at FROM collected_articles WHERE week_start=? " +
-                        "ORDER BY published_at, id",
-                ).bind(latest.week_start)
+                    "SELECT id,headline,translated_headline,source,url,published_at FROM collected_articles " +
+                        "WHERE week_start >= ? AND week_start < ? ORDER BY published_at, id",
+                ).bind(from.take(10), until.take(10))
                 .all()
                 .unsafeCast<Promise<dynamic>>()
                 .await()
@@ -47,9 +70,7 @@ internal class D1NewsRepository(
                     translatedHeadline = it.translated_headline as String?,
                 )
             }
-        // Publisher-feed items of the same week, judged like Google News articles.
-        val from = "${latest.week_start}T00:00:00.000Z"
-        val until = Date(Date.parse(from) + 7 * 86_400_000.0).toISOString()
+        // Publisher-feed items of the same weeks, judged like Google News articles.
         val feedRows =
             database
                 .prepare(
@@ -70,14 +91,23 @@ internal class D1NewsRepository(
                     translatedHeadline = it.translated_title as String?,
                 )
             }
-        val stories =
-            CategorizeWeeklyNews()(catalogue, articles + feedArticles).map { story ->
-                val urls = logos(story.companyId)
-                story.copy(logoUrl = urls.icon, logoFallbackUrl = urls.fullLogo)
-            }
-        return WeeklyNews(latest.week_label as String, stories)
+        return articles + feedArticles
     }
+
+    private fun stories(articles: List<NewsArticle>) =
+        CategorizeWeeklyNews()(catalogue, articles).map { story ->
+            val urls = logos(story.companyId)
+            story.copy(logoUrl = urls.icon, logoFallbackUrl = urls.fullLogo)
+        }
+
+    /** "2026-10-05 – 2026-10-18" for the days in [from, until). */
+    private fun label(
+        from: String,
+        until: String,
+    ) = "${from.take(10)} – ${Date(Date.parse(until) - DAY).toISOString().take(10)}"
 }
+
+private const val DAY = 86_400_000.0
 
 private val LATEST_LIVE_EDITION =
     """

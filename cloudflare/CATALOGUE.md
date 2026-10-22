@@ -310,6 +310,17 @@ Not added from the same list:
 
 Add stable IDs, the company's website `domain` (a bare lowercase hostname such as `n26.com`, used for its logo), and distinctive aliases. For ambiguous names, `contextKeywords` must contain at least one relevant word/phrase in a headline, and also constrain the follow-up RSS searches. Include German vocabulary where useful. A real result from either language can count; the same article returned by both searches counts once. Translated or syndicated articles with different titles/IDs can still count separately.
 
+## Additions reviewed on 2026-10-22
+
+Found by comparing the news with an independent list of Berlin startup news (and now suggested weekly by `scripts/discover-companies.mjs`). Each was verified against the company's own imprint or two independent reports before adding.
+
+| Company | Berlin connection source | Note |
+| --- | --- | --- |
+| LIQID | [Company reference](https://www.liqid.de/impressum) | Kurfürstendamm 177, Berlin. Context keywords exclude the unrelated US hardware company Liqid. |
+| Kuro | [Company site](https://kuro.build) | No imprint page; Berlin per the site, [EU-Startups](https://www.eu-startups.com/) ("Berlin-based Kuro") and BornCity ("Berliner ConTech-Startup"). Context keywords exclude unrelated uses of the word. |
+
+Rejected: Procuros. Trending Topics called it a "Berliner Logistik-Startup", but its [imprint](https://procuros.io/imprint) is in Hamburg and EU-Startups reports it as Hamburg-based.
+
 ## Refreshing the catalogue on each weekly run
 
 This is possible with a supported machine-readable feed, but **is not enabled**. No API credentials or export URL are available yet; the Worker continues using the deployed `startups.json`.
