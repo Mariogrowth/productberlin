@@ -73,7 +73,7 @@ Database failures return 503; the UI shows its retry state. The response include
 
 ### Newsletter sign-ups
 
-The email pill below the ranking calls `POST /api/subscriptions`. The Worker validates the address with the shared domain rule and asks [Brevo's double opt-in API](https://developers.brevo.com/reference/createdoicontact) to send template `BREVO_DOI_TEMPLATE_ID` for list `BREVO_LIST_ID` (both in `wrangler.json`). Contacts join the list only after clicking the confirmation link, which must use `{{ params.DOIurl }}` in the template. The link returns them to `/?subscribed=1` on the same site, where a dismissible neutral banner at the top of the page confirms the email is verified, and the marker is removed from the address bar. Repeated or already-known addresses get the same reply as new ones. Every sign-up outcome is shown beneath the pill.
+The email pill, docked to the bottom of the screen once the reader scrolls (or follows the header's Newsletter link, and closable), calls `POST /api/subscriptions`. The Worker validates the address with the shared domain rule and asks [Brevo's double opt-in API](https://developers.brevo.com/reference/createdoicontact) to send template `BREVO_DOI_TEMPLATE_ID` for list `BREVO_LIST_ID` (both in `wrangler.json`). Contacts join the list only after clicking the confirmation link, which must use `{{ params.DOIurl }}` in the template. The link returns them to `/?subscribed=1` on the same site, where a dismissible neutral banner at the top of the page confirms the email is verified, and the marker is removed from the address bar. Repeated or already-known addresses get the same reply as new ones. Every sign-up outcome is shown beneath the pill.
 
 `BREVO_API_KEY` is a Worker **secret**, never a committed var. Deployments read the GitHub secret `BREVO_API` and upload it with the same Worker version as the code (`wrangler deploy --secrets-file`, via a temporary private file). For local sign-ups, copy `.dev.vars.example` to the git-ignored `.dev.vars`. Without a key, the endpoint answers `503` and the form asks visitors to try again. Integration tests run with an invalid list ID, so they can never reach Brevo. The endpoint accepts only same-origin `application/json` bodies up to 1 KB, and the form has a hidden spam-trap field. `/privacy` describes the data the site and the email process. It is served with `X-Robots-Tag: noindex` (from `webApp/src/jsMain/resources/_headers`, applied by Cloudflare static assets), so search engines can crawl it but do not list it; do not block it in `robots.txt`, or crawlers could never see the noindex.
 
@@ -176,7 +176,7 @@ The catalogue is editorial data, not automatic company discovery. It contains 23
 
 ## Berlin startup news (homepage)
 
-Under the ranking, the homepage shows the categorised news for the **published ranking's week and the week before**. `GET /api/news/weekly` reads those weeks' stored articles (`collected_articles`, written by the weekly collection) and `CategorizeWeeklyNews` (`app-domain`):
+Under a news-site header (wordmark and links to the page's sections), the homepage opens with the categorised news, above the rankings, for the **published ranking's week and the week before**. `GET /api/news/weekly` reads those weeks' stored articles (`collected_articles`, written by the weekly collection) and `CategorizeWeeklyNews` (`app-domain`):
 
 - classifies each headline with `ClassifyHeadline` into **Funding**, **Launches**, **Growth & partnerships**, **People**, **Trouble** or **Other**. Share-price notes and consumer content are not shown. Trouble is shown as news but still counts zero in the ranking.
 - merges the same news from several outlets into one story (same companies and category, plus a shared amount or mostly the same words), led by the first report and listing the others as "also in";
@@ -196,10 +196,12 @@ The section is laid out like a front page (`toFrontPage` in `app-presentation`):
 
 - **Lead:** the biggest funding round by amount; without one, the most-covered story, and trouble only when there is nothing else.
 - **Teasers:** up to four, one per category (growth and exits, people, launches, trouble, funding), each company once, preferring exits and then companies with fewer stories. Kickers come from the headline's data (`ReadHeadlineFacts`): "FUNDING · €17M", "EXIT", "DEAL · $14.8B" for a bid, "PEOPLE · CFO".
-- **Ticker:** everything else including **Other** (interviews, features, opinion columns), newest first, one line per company.
-- **Catch up:** the response's `earlier` list, from the three weeks before the window, chosen by `SelectCatchUpStories`: funding rounds with an amount, acquisitions and bids, and senior hires; completed exits first, then the largest amount and widest coverage, one per company. The page shows up to four, skipping companies already featured, and hides the band with fewer than two.
+- **Sidebar:** the ranking's top five with each company's movement, linking to the full list, and **Deals**: up to six funding rounds, exits and bids from the window, one per company, exits first, then the largest amount and widest coverage. **Other** coverage (interviews, features, opinion columns, round-ups) is not shown.
+- **Catch up:** the response's `earlier` list, from the three weeks before the window, chosen by `SelectCatchUpStories`: funding rounds with an amount, acquisitions and bids, and senior hires; completed exits first, then the largest amount and widest coverage, one per company. The page shows up to four, each with its company's logo under the kicker, skipping companies already featured, and hides the band with fewer than two.
 
 Demo editions, weeks without stories and failed loads show no section.
+
+The startup and scaleup lists are hidden for now (`showRankings` on `App` turns them back on); the sidebar keeps the top five, and its "Full list" link appears only with the lists. The footer links to `/privacy`.
 
 ## Startup events in Berlin (homepage)
 

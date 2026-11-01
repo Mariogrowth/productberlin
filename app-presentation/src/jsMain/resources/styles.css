@@ -7,12 +7,18 @@ button { font: inherit; }
 :focus-visible { outline: 3px solid #2929ff; outline-offset: 5px; }
 .skip-link { position: absolute; top: -60px; left: 20px; padding: 12px; background: #fff; z-index: 2; }
 .skip-link:focus { top: 12px; }
-.masthead { text-align: center; padding: 77px 20px 65px; }
-.edition { display: flex; align-items: center; justify-content: center; gap: 7px; color: #7c8087; font-size: 11px; letter-spacing: 1.6px; text-transform: uppercase; font-weight: 500; }
-.live-dot, .demo-dot { display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: #2525ff; }
+/* Site header, set like a news site's: the wordmark and section links above a hairline. */
+.front-width { width: min(1080px, calc(100% - 48px)); margin: 0 auto; }
+.site-header { margin-bottom: 44px; }
+.site-header-main { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 28px 0 20px; border-bottom: 1px solid #161718; }
+.site-wordmark { margin: 0; font-size: 36px; font-weight: 780; letter-spacing: -1.7px; line-height: 1; }
+.site-wordmark a { color: inherit; text-decoration: none; }
+.site-header nav ul { display: flex; gap: 28px; margin: 0; padding: 0; list-style: none; }
+.site-header nav a { color: #161718; font-size: 14px; font-weight: 550; text-decoration: none; white-space: nowrap; }
+.site-header nav a:hover { text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 1px; }
+.demo-dot { display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: #2525ff; }
 h1 { margin: 17px 0 11px; font-size: 50px; font-weight: 780; letter-spacing: -2.4px; line-height: 1.15; }
 .brand-dot { color: #2424ff; }
-.tagline { margin: 0; color: #85878c; font-size: 14px; letter-spacing: .1px; }
 .page-content { width: min(600px, calc(100% - 48px)); margin: 0 auto; }
 .confirmation { width: min(600px, calc(100% - 32px)); margin: 16px auto 0; }
 .ranking-meta { display: flex; align-items: center; justify-content: space-between; padding: 0 6px; margin-bottom: 15px; gap: 12px; }
@@ -65,21 +71,66 @@ h4 { font-size: 12px; line-height: 1.6; font-weight: 550; margin: 6px 0 0; }
 .margin-note p { margin: 0; font-size: 22px; line-height: 1.2; letter-spacing: -.65px; font-weight: 650; transform: rotate(-4deg); }
 .note-arrow { display: block; width: 107px; height: 84px; margin: 13px 0 0 -20px; }
 footer { text-align: center; padding: 29px 0 36px; }
-.newsletter { margin: 40px auto 0; padding: 0 16px; max-width: 520px; }
+/* Newsletter sign-up, docked to the bottom of the screen: it slides up with a slight overshoot once the reader scrolls,
+   then its title, pill and fine print follow in turn and a sheen crosses the button once. Hidden, it is out of the tab
+   order. The form's children join the bar's grid, so on wide screens the privacy link sits under the title beside the
+   pill and never adds a row; on phones title, pill and link stack. A status message takes the link's place. */
+.page-end { padding-bottom: 150px; }
+.newsletter-bar { position: fixed; z-index: 10; left: 50%; bottom: 20px; width: min(780px, calc(100% - 32px)); margin: 0; padding: 14px 60px 14px 24px; background: rgb(255 255 255 / 94%); -webkit-backdrop-filter: saturate(1.4) blur(14px); backdrop-filter: saturate(1.4) blur(14px); border: 1px solid #e6e6ea; border-radius: 20px; box-shadow: 0 18px 40px rgb(20 20 40 / 14%), 0 2px 8px rgb(20 20 40 / 6%); transform: translate(-50%, calc(100% + 48px)); opacity: 0; visibility: hidden; transition: transform .45s cubic-bezier(.4, 0, 1, 1), opacity .3s ease, visibility 0s linear .45s; }
+.newsletter-bar.is-shown { transform: translate(-50%, 0); opacity: 1; visibility: visible; transition: transform .7s cubic-bezier(.2, 1.35, .4, 1), opacity .35s ease, visibility 0s; }
+.newsletter-bar .pb-email-signup { grid-template-columns: minmax(0, 1fr) minmax(0, 380px); grid-template-areas: "title pill" "sub pill"; align-items: center; justify-items: start; column-gap: 24px; row-gap: 2px; text-align: left; }
+.newsletter-bar .pb-email-signup form { display: contents; }
+.newsletter-bar .pb-email-signup-title { grid-area: title; align-self: end; white-space: nowrap; }
+.newsletter-bar .pb-email-signup-pill { grid-area: pill; max-width: none; transition: border-color .3s ease, box-shadow .3s ease; }
+.newsletter-bar :is(.pb-email-signup-message, .pb-email-signup-privacy) { grid-area: sub; align-self: start; margin-top: 0; }
+.newsletter-bar .pb-email-signup-message:not(:empty) { margin-top: 0; animation: newsletter-in .3s cubic-bezier(.2, .8, .2, 1) both; }
+.newsletter-bar .pb-email-signup-message:not(:empty) ~ .pb-email-signup-privacy { display: none; }
+.newsletter-bar .pb-email-signup:has(.pb-success) .pb-email-signup-pill { border-color: var(--pb-success); box-shadow: 0 0 0 3px var(--pb-success-tint); animation: newsletter-pop .45s cubic-bezier(.2, 1.4, .4, 1); }
+.newsletter-bar.is-shown :is(.pb-email-signup-title, .pb-email-signup-privacy) { animation: newsletter-in .5s .2s cubic-bezier(.2, .8, .2, 1) both; }
+.newsletter-bar.is-shown .pb-email-signup-pill { animation: newsletter-grow .55s .28s cubic-bezier(.2, 1.2, .4, 1) both; }
+.newsletter-bar .pb-email-signup-pill .pb-button { position: relative; overflow: hidden; }
+.newsletter-bar .pb-email-signup-pill .pb-button::after { content: ""; position: absolute; inset: 0; background: linear-gradient(105deg, transparent 30%, rgb(255 255 255 / 85%) 50%, transparent 70%); transform: translateX(-120%); pointer-events: none; }
+.newsletter-bar.is-shown .pb-email-signup-pill .pb-button::after { animation: newsletter-sheen .9s .85s ease-in-out; }
+@keyframes newsletter-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes newsletter-grow { from { opacity: 0; transform: scale(.94); } to { opacity: 1; transform: none; } }
+@keyframes newsletter-sheen { from { transform: translateX(-120%); } to { transform: translateX(120%); } }
+@keyframes newsletter-pop { 40% { transform: scale(1.025); } }
+.newsletter-close { position: absolute; top: 50%; right: 14px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; padding: 0; border: 0; border-radius: 50%; background: none; color: #6e6e76; font-size: 22px; line-height: 1; transform: translateY(-50%); transition: background .2s ease, color .2s ease, transform .2s ease; }
+.newsletter-close:hover { background: #f2f2f4; color: #161718; transform: translateY(-50%) rotate(90deg); }
+@media (max-width: 640px) {
+  .newsletter-bar { bottom: 12px; width: calc(100% - 24px); padding: 12px 12px 10px 16px; border-radius: 18px; }
+  .newsletter-bar .pb-email-signup { grid-template-columns: minmax(0, 1fr); grid-template-areas: "title" "pill" "sub"; row-gap: 8px; }
+  .newsletter-bar .pb-email-signup-title { align-self: center; min-height: 32px; display: flex; align-items: center; padding-right: 36px; font-size: 14px; white-space: normal; }
+  .newsletter-bar .pb-email-signup-privacy { justify-self: center; }
+  .newsletter-close { top: 12px; right: 10px; transform: none; }
+  .newsletter-close:hover { transform: rotate(90deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .newsletter-bar, .newsletter-bar.is-shown { transform: translate(-50%, 0); transition: opacity .2s ease, visibility 0s; }
+  .newsletter-bar:not(.is-shown) { transition: opacity .2s ease, visibility 0s linear .2s; }
+  .newsletter-bar *, .newsletter-bar *::after { animation: none !important; }
+  .newsletter-close:hover { transform: translateY(-50%); }
+}
+@media (prefers-reduced-motion: reduce) and (max-width: 640px) {
+  .newsletter-close:hover { transform: none; }
+}
 .newsletter-trap { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
 .demo-label { display: flex; justify-content: center; align-items: center; gap: 6px; color: #88888f; font-size: 10px; }
 .demo-dot { background: #b5b5bd; width: 4px; height: 4px; }
 footer > p { font-size: 10px; color: #a0a0a7; margin: 9px 0 13px; }
-.about-ranking { font-size: 10px; color: #717179; max-width: 420px; margin: 0 auto; }
-.about-ranking summary { list-style: none; text-decoration: underline; text-underline-offset: 3px; }
-.about-ranking p { line-height: 1.8; padding: 8px 15px; color: #85858b; }
+.footer-privacy { font-size: 10px; color: #717179; text-underline-offset: 3px; }
+.footer-privacy:hover { color: #161718; }
 .status-message { padding: 100px 20px; text-align: center; font-size: 14px; color: #777; }
 .status-message button { padding: 10px 18px; background: #2424ff; border: 0; border-radius: 8px; color: white; }
 @media (max-width: 1180px) { .margin-note { display: none; } }
 @media (max-width: 640px) {
- .masthead { padding: 70px 18px 67px; }
+ .front-width { width: auto; margin: 0 20px; }
+ .site-header { margin-bottom: 28px; }
+  .site-header-main { flex-direction: column; align-items: flex-start; gap: 14px; padding: 22px 0 0; }
+ .site-wordmark { font-size: 32px; letter-spacing: -1.5px; }
+ .site-header nav { width: 100%; overflow-x: auto; scrollbar-width: none; }
+ .site-header nav ul { gap: 22px; padding-bottom: 12px; }
  h1 { font-size: 39px; letter-spacing: -1.9px; margin-top: 17px; }
- .edition { font-size: 9px; letter-spacing: 1.3px; }.tagline { font-size: 12px; }
  .page-content { width: auto; margin: 0 25px; }
  .ranking-meta { padding: 0; margin-bottom: 17px; }.ranking-meta h2 { font-size: 9px; }.ranking-meta > span { font-size: 9px; }
  .ranking-card { border: 0; box-shadow: none; border-radius: 0; padding: 0; }
@@ -134,27 +185,31 @@ footer > p { font-size: 10px; color: #a0a0a7; margin: 9px 0 13px; }
 /* "Berlin startup news", under the ranking: same quiet type as the ranking, no extra colours. */
 .weekly-news { margin-top: 56px; }
 @media (max-width: 540px) { .weekly-news { margin-top: 40px; } }
+.front-width > .weekly-news, .front-width > .news-events { margin-top: 0; }
+.weekly-news > .ranking-meta { padding: 0; }
+.rankings { margin-top: 72px; }
+@media (max-width: 540px) { .rankings { margin-top: 48px; } }
 
 /* "Scaleups in the news": the same rows as the startup ranking, in their own card below it. */
 .scaleups { margin-top: 48px; }
 .scaleups .scaleup-card { margin-top: 14px; }
 @media (max-width: 540px) { .scaleups { margin-top: 36px; } }
 
-/* Front-page news: lead and teasers on the left, ticker sidebar on the right; stacked on phones. Importance by size and
+/* Front-page news: lead and teasers on the left, the sidebar on the right; stacked on phones. Importance by size and
    position, colours stay neutral; the company logo tile stands in for a photo. */
 .news-front { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 32px; margin-top: 16px; align-items: start; }
 .news-kicker { margin: 0 0 6px; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #6e6e76; }
 .news-lead { padding-bottom: 24px; border-bottom: 1px solid #ececf0; }
-.company-mark.lead-mark { width: 100%; height: 168px; border-radius: 14px; font-size: 72px; letter-spacing: -4px; margin-bottom: 16px; }
+.company-mark.lead-mark { width: 56px; height: 56px; border-radius: 12px; font-size: 28px; letter-spacing: -1.5px; margin-bottom: 20px; }
 .company-mark.lead-mark.has-logo { background: #f4f4f7; }
-.company-mark.lead-mark.has-logo img { width: 96px; height: 96px; margin: auto; border-radius: 18px; }
-.news-lead h3 { margin: 0; font-size: 28px; line-height: 1.22; letter-spacing: -.7px; font-weight: 750; }
+.company-mark.lead-mark.has-logo img { width: 56px; height: 56px; margin: auto; border-radius: 12px; }
+.news-lead h3 { margin: 0; font-size: 40px; line-height: 1.1; letter-spacing: -1.3px; font-weight: 750; }
 .news-teasers { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 24px; }
 .news-teaser { display: grid; grid-template-columns: 44px minmax(0, 1fr); column-gap: 12px; padding: 18px 0; border-bottom: 1px solid #ececf0; }
 .company-mark.teaser-mark { width: 44px; height: 44px; border-radius: 10px; font-size: 24px; letter-spacing: -1.5px; }
-.news-teaser h3 { margin: 0; font-size: 16px; line-height: 1.35; font-weight: 650; letter-spacing: -.2px; }
-.news-lead h3 a, .news-teaser h3 a, .news-ticker-line a { color: inherit; text-decoration: none; }
-.news-lead h3 a:hover, .news-teaser h3 a:hover, .news-ticker-line a:hover { text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+.news-teaser h3 { margin: 0; font-size: 18px; line-height: 1.3; font-weight: 650; letter-spacing: -.3px; }
+.news-lead h3 a, .news-teaser h3 a { color: inherit; text-decoration: none; }
+.news-lead h3 a:hover, .news-teaser h3 a:hover { text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
 .news-byline { margin: 10px 0 0; font-size: 12px; color: #85858b; }
 .news-company { font-weight: 650; color: #161718; }
 .news-catch-up { margin-top: 28px; }
@@ -164,6 +219,10 @@ footer > p { font-size: 10px; color: #a0a0a7; margin: 9px 0 13px; }
 .news-catch-up ul { list-style: none; margin: 0; padding: 0; }
 .news-catch-up li { display: grid; grid-template-columns: 140px minmax(0, 1fr); column-gap: 16px; padding: 14px 0; border-bottom: 1px solid #ececf0; font-size: 15px; line-height: 1.4; font-weight: 600; }
 .news-catch-up li .news-kicker { margin: 3px 0 0; }
+.company-mark.catch-up-mark { width: 48px; height: 48px; margin-top: 10px; border-radius: 10px; font-size: 24px; letter-spacing: -1.5px; }
+/* Brandfetch icons carry their own white margin: a light frame and a slight zoom keep small marks legible. */
+.company-mark.catch-up-mark.has-logo { border: 1px solid #ececf0; }
+.company-mark.catch-up-mark.has-logo img { transform: scale(1.3); }
 .news-catch-up li .news-byline { margin-top: 4px; font-weight: 400; }
 .news-catch-up a { color: inherit; text-decoration: none; }
 .news-catch-up a:hover { text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
@@ -180,22 +239,29 @@ footer > p { font-size: 10px; color: #a0a0a7; margin: 9px 0 13px; }
 .event-row a, .event-row span { color: #161718; font-weight: 600; text-decoration: none; }
 .event-row a:hover { text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
 .event-row p { margin: 2px 0 0; font-size: 12px; color: #85858b; }
+/* Front-page sidebar: the ranking's top five and the period's deals, each line saying why it matters. */
+.news-sidebar { display: grid; gap: 36px; }
+.news-band-head a { font-size: 12px; color: #6e6e76; text-decoration: none; white-space: nowrap; }
+.news-band-head a:hover { color: #161718; text-decoration: underline; text-underline-offset: 3px; }
+.sidebar-block ol, .sidebar-block ul { list-style: none; margin: 0; padding: 0; }
+.sidebar-top li { display: grid; grid-template-columns: 16px 32px minmax(0, 1fr) auto; align-items: center; column-gap: 12px; padding: 10px 0; border-bottom: 1px solid #ececf0; font-size: 14px; }
+.sidebar-top .rank { font-size: 12px; font-variant-numeric: tabular-nums; }
+.company-mark.sidebar-mark { width: 32px; height: 32px; border-radius: 8px; font-size: 16px; letter-spacing: -1px; }
+.company-mark.sidebar-mark.has-logo { border: 1px solid #ececf0; }
+.company-mark.sidebar-mark.has-logo img { transform: scale(1.3); }
+.sidebar-deals li > a, .sidebar-deals li > div { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: baseline; column-gap: 12px; padding: 11px 0; border-bottom: 1px solid #ececf0; color: #161718; text-decoration: none; font-size: 14px; }
+.sidebar-deals li > a:hover .news-company { text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+.sidebar-deals .news-company { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.deal-kind { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #6e6e76; }
+.deal-amount { min-width: 56px; text-align: right; font-weight: 650; font-variant-numeric: tabular-nums; }
 .event-day .news-ticker-count { padding: 2px 0 0 54px; }
-.news-ticker { border-left: 1px solid #ececf0; padding-left: 24px; }
-.news-ticker h3 { margin: 0 0 6px; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #6e6e76; }
-.news-ticker > ul { list-style: none; margin: 0; padding: 0; }
-.news-ticker-line { padding: 10px 0; border-bottom: 1px solid #f1f1f4; font-size: 14px; line-height: 1.4; }
-.news-ticker-meta { margin: 0 0 2px; font-size: 11px; color: #85858b; }
-.news-ticker-line ul { list-style: none; margin: 6px 0 0; padding: 0 0 0 10px; border-left: 2px solid #ececf0; font-size: 13px; }
-.news-ticker-line ul li { padding: 3px 0; }
-.news-ticker-count, .news-ticker-more { border: 0; background: none; padding: 0 0 0 6px; font: inherit; font-size: 12px; color: #6e6e76; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
-.news-ticker-more { display: block; margin: 14px 0 0; padding: 0; }
+.news-ticker-count { border: 0; background: none; padding: 0 0 0 6px; font: inherit; font-size: 12px; color: #6e6e76; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
 @media (max-width: 760px) {
   .news-front { grid-template-columns: 1fr; gap: 8px; }
   .news-teasers { grid-template-columns: 1fr; }
   .news-catch-up li { grid-template-columns: 1fr; }
+  .company-mark.catch-up-mark { margin: 2px 0 8px; }
   .news-catch-up li .news-kicker { margin: 0 0 4px; }
-  .news-ticker { border-left: 0; padding-left: 0; margin-top: 12px; }
-  .company-mark.lead-mark { height: 120px; font-size: 56px; }
-  .news-lead h3 { font-size: 22px; }
+  .news-lead h3 { font-size: 28px; letter-spacing: -.8px; }
+  .news-teaser h3 { font-size: 17px; }
 }

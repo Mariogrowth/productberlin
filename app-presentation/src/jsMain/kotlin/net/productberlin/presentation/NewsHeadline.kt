@@ -15,7 +15,7 @@ internal val Headline =
     FC<HeadlineProps> { props ->
         val story = props.story
         val text = story.translatedHeadline ?: story.headline
-        val link = story.url?.takeIf { SAFE_LINK.matches(it) }
+        val link = story.safeLink()
         if (link != null) {
             a {
                 href = link
@@ -26,5 +26,8 @@ internal val Headline =
             span { +text }
         }
     }
+
+/** The first report's link when it is an absolute HTTPS URL, else null. */
+internal fun WeeklyStory.safeLink(): String? = url?.takeIf { SAFE_LINK.matches(it) }
 
 private val SAFE_LINK = Regex("^https://[^\\s/<>]+/[^\\s<>]*$")

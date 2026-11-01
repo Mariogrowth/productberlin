@@ -82,7 +82,7 @@ class AppTest : ComponentTest() {
         runTest {
             show { ranking.copy(isMock = true) }
             awaitUi { container.textContent.orEmpty().contains("Demo edition") }
-            assertTrue(container.textContent.orEmpty().contains("fictional stories"))
+            assertTrue(container.textContent.orEmpty().contains("fictional news"))
             assertTrue(!container.textContent.orEmpty().contains("42 articles reviewed"))
         }
 
@@ -113,6 +113,7 @@ class AppTest : ComponentTest() {
         confirmed: Boolean = false,
         news: suspend () -> WeeklyNews = { WeeklyNews("Test week", emptyList()) },
         events: List<net.productberlin.domain.entity.StartupEvent> = emptyList(),
+        rankings: Boolean? = true,
         load: suspend () -> WeeklyRanking,
     ) {
         val useCase =
@@ -139,6 +140,7 @@ class AppTest : ComponentTest() {
                 getNews = newsUseCase
                 getEvents = eventsUseCase
                 subscriptionConfirmed = confirmed
+                rankings?.let { showRankings = it }
             },
         )
     }
@@ -147,13 +149,53 @@ class AppTest : ComponentTest() {
         WeeklyStory("f1", listOf("finmid"), NewsCategory.Funding, "finmid raises €17M", "Startbase", "2026-10-07T09:00:00.000Z")
 
     @Test
-    fun liveWeeksShowTheNewsSectionBetweenTheRankingAndTheSignup() =
+    fun liveWeeksOpenWithTheNewsThenTheRankingsThenTheSignup() =
         runTest {
             show(news = { WeeklyNews("Test week", listOf(story)) }) { ranking }
             awaitUi { container.querySelector(".weekly-news") != null }
-            assertNotNull(container.querySelector(".ranking-layout + .weekly-news + .newsletter"), "ranking, then news, then the signup")
+            assertNotNull(container.querySelector("main > .front-width > #news.weekly-news"), "the news opens the page")
+            assertNotNull(
+                container.querySelector("main > .front-width + #rankings + .page-content > .newsletter"),
+                "then rankings, then the signup",
+            )
             assertEquals("Berlin startup news", container.querySelector(".weekly-news h2")?.textContent)
         }
+
+    @Test
+    fun theHeaderLinksOnlyToTheSectionsOnThePage() =
+        runTest {
+            show(news = { WeeklyNews("Test week", listOf(story)) }, events = listOf(event)) { ranking }
+            awaitUi { container.querySelector("#events") != null }
+            assertEquals("Product.berlin", container.querySelector("header h1")?.textContent)
+            assertEquals(listOf("#news", "#rankings", "#events", "#newsletter"), sectionLinks())
+            sectionLinks().forEach { assertNotNull(container.querySelector(it), "$it is on the page") }
+
+            show(news = { WeeklyNews("Test week", listOf(story)) }) { ranking.copy(isMock = true) }
+            awaitUi { container.querySelector(".startup-list") != null }
+            tick()
+            assertEquals(listOf("#rankings", "#newsletter"), sectionLinks(), "demo editions have no news or events")
+        }
+
+    @Test
+    fun theRankingListsAreHiddenUnlessShown() =
+        runTest {
+            show(news = { WeeklyNews("Test week", listOf(story)) }, rankings = false) { ranking }
+            awaitUi { container.querySelector(".weekly-news") != null }
+            assertNull(container.querySelector("#rankings"))
+            assertNotNull(container.querySelector(".news-sidebar .sidebar-top li"), "the news sidebar keeps the top five")
+            assertNull(container.querySelector(".news-sidebar a[href='#rankings']"), "no link to a hidden list")
+            assertEquals(listOf("#news", "#newsletter"), sectionLinks())
+
+            show(rankings = null) { ranking }
+            awaitUi { container.querySelector("footer") != null }
+            tick()
+            assertNull(container.querySelector("#rankings"), "hidden by default")
+        }
+
+    private fun sectionLinks(): List<String> {
+        val links = container.querySelectorAll("header nav a")
+        return List(links.length) { links.item(it)!!.getAttribute("href").orEmpty() }
+    }
 
     private val event =
         net.productberlin.domain.entity.StartupEvent(
@@ -233,12 +275,14 @@ class AppTest : ComponentTest() {
         }
 
     @Test
-    fun footerEndsWithTheListExplanationAndThePrivacyLinkStaysBesideTheSignup() =
+    fun footerEndsWithThePrivacyPolicyAndTheSignupKeepsItsOwnLink() =
         runTest {
             show { ranking }
             val footer = assertNotNull(container.querySelector("footer"))
             assertTrue(!footer.textContent.orEmpty().contains("Made for the city"))
-            assertNull(footer.querySelector("a[href='/privacy']"))
+            assertEquals("Privacy policy", footer.lastElementChild?.textContent)
+            assertEquals("/privacy", footer.lastElementChild?.getAttribute("href"))
+            assertNull(footer.querySelector("details"), "the ranking explanation is gone")
             assertNotNull(container.querySelector(".newsletter a[href='/privacy']"))
         }
 

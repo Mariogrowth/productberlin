@@ -39,6 +39,7 @@ external interface EventsSectionProps : Props {
 val EventsSection =
     FC<EventsSectionProps> { props ->
         section {
+            id = ElementId("events")
             className = ClassName("news-events")
             ariaLabelledBy = ElementId("news-events-title")
             div {

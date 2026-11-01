@@ -1,9 +1,9 @@
 package net.productberlin.presentation
 
+import net.productberlin.domain.entity.Startup
 import net.productberlin.domain.entity.StartupEvent
 import net.productberlin.domain.entity.WeeklyNews
 import net.productberlin.domain.entity.WeeklyStory
-import net.productberlin.presentation.news.TickerLine
 import net.productberlin.presentation.news.kicker
 import net.productberlin.presentation.news.toFrontPage
 import react.FC
@@ -11,41 +11,39 @@ import react.Key
 import react.Props
 import react.dom.html.ReactHTML.a
 import react.dom.html.ReactHTML.article
-import react.dom.html.ReactHTML.aside
-import react.dom.html.ReactHTML.button
 import react.dom.html.ReactHTML.div
 import react.dom.html.ReactHTML.h2
 import react.dom.html.ReactHTML.h3
-import react.dom.html.ReactHTML.li
 import react.dom.html.ReactHTML.p
 import react.dom.html.ReactHTML.section
 import react.dom.html.ReactHTML.span
 import react.dom.html.ReactHTML.time
-import react.dom.html.ReactHTML.ul
-import react.useState
 import web.cssom.ClassName
 import web.dom.ElementId
-import web.html.ButtonType
-import web.html.button
 
 external interface WeeklyNewsSectionProps : Props {
     var news: WeeklyNews
 
     /** The coming week's events, shown as the news column's last section; none hides it. */
     var events: List<StartupEvent>?
+
+    /** This week's startup ranking, for the sidebar's top five; none leaves only the deals. */
+    var ranking: List<Startup>?
+
+    /** Whether the full ranking lists follow, so the sidebar can link to them. */
+    var linkToRankings: Boolean?
 }
 
 /**
- * "This week in Berlin startups", laid out like a front page: a lead story, a row of teasers, then a compact ticker
- * with everything else, one line per company, a band of earlier stories worth catching up on, and the coming week's
- * events. Size and position
- * show importance; the colours stay neutral.
+ * "Berlin startup news", laid out like a front page: a lead story, a row of teasers and a band of earlier stories worth
+ * catching up on, a sidebar with the ranking's top five and the period's deals, and the coming week's events. Size and
+ * position show importance; the colours stay neutral.
  */
 val WeeklyNewsSection =
     FC<WeeklyNewsSectionProps> { props ->
         val page = props.news.toFrontPage()
-        var showAll by useState(false)
         section {
+            id = ElementId("news")
             className = ClassName("weekly-news")
             ariaLabelledBy = ElementId("weekly-news-title")
             div {
@@ -56,7 +54,7 @@ val WeeklyNewsSection =
                 }
                 span { +props.news.weekLabel }
             }
-            // Front page: lead and teasers on the left, the ticker as a sidebar on the right (stacked on phones).
+            // Front page: lead and teasers on the left, the sidebar on the right (stacked on phones).
             div {
                 className = ClassName("news-front")
                 div {
@@ -86,29 +84,12 @@ val WeeklyNewsSection =
                         }
                     }
                 }
-                if (page.ticker.isNotEmpty()) {
-                    aside {
-                        className = ClassName("news-ticker")
-                        ariaLabel = "Ticker"
-                        h3 { +"Ticker" }
-                        ul {
-                            val lines = if (showAll) page.ticker else page.ticker.take(TICKER_PREVIEW)
-                            lines.forEach {
-                                Ticker {
-                                    key = Key(it.company)
-                                    line = it
-                                }
-                            }
-                        }
-                        if (page.ticker.size > TICKER_PREVIEW) {
-                            button {
-                                type = ButtonType.button
-                                className = ClassName("news-ticker-more")
-                                ariaExpanded = showAll
-                                onClick = { showAll = !showAll }
-                                +(if (showAll) "Show less" else "Show all ${page.ticker.size}")
-                            }
-                        }
+                val ranking = props.ranking.orEmpty()
+                if (ranking.isNotEmpty() || page.deals.isNotEmpty()) {
+                    NewsSidebar {
+                        this.ranking = ranking
+                        linkToFullList = props.linkToRankings
+                        deals = page.deals
                     }
                 }
             }
@@ -121,8 +102,6 @@ val WeeklyNewsSection =
             }
         }
     }
-
-private const val TICKER_PREVIEW = 8
 
 private external interface StoryProps : Props {
     var story: WeeklyStory
@@ -165,52 +144,6 @@ private val Story =
                     time {
                         dateTime = story.publishedAt.take(10)
                         +shortDate(story.publishedAt)
-                    }
-                }
-            }
-        }
-    }
-
-private external interface TickerProps : Props {
-    var line: TickerLine
-}
-
-/** One company's line: newest headline, "+N more" that unfolds its other stories. */
-private val Ticker =
-    FC<TickerProps> { props ->
-        val line = props.line
-        var open by useState(false)
-        li {
-            className = ClassName("news-ticker-line")
-            p {
-                className = ClassName("news-ticker-meta")
-                time {
-                    dateTime = line.newest.publishedAt.take(10)
-                    +shortDate(line.newest.publishedAt)
-                }
-                +" · "
-                span {
-                    className = ClassName("news-company")
-                    +line.company
-                }
-            }
-            Headline { story = line.newest }
-            if (line.more.isNotEmpty()) {
-                button {
-                    type = ButtonType.button
-                    className = ClassName("news-ticker-count")
-                    ariaExpanded = open
-                    onClick = { open = !open }
-                    +(if (open) "less" else "+${line.more.size} more")
-                }
-            }
-            if (open) {
-                ul {
-                    line.more.forEach {
-                        li {
-                            key = Key(it.id)
-                            Headline { story = it }
-                        }
                     }
                 }
             }

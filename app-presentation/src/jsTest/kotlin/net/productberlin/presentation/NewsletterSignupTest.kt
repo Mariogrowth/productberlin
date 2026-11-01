@@ -17,6 +17,7 @@ import react.create
 import react.dom.flushSync
 import web.html.HTMLButtonElement
 import web.html.HTMLInputElement
+import web.window.window
 
 class NewsletterSignupTest : ComponentTest() {
     private class Fake(
@@ -42,7 +43,7 @@ class NewsletterSignupTest : ComponentTest() {
 
     private fun field() = assertNotNull(container.querySelector(".pb-email-signup-pill input")).unsafeCast<HTMLInputElement>()
 
-    private fun button() = assertNotNull(container.querySelector("button")).unsafeCast<HTMLButtonElement>()
+    private fun button() = assertNotNull(container.querySelector(".pb-email-signup button")).unsafeCast<HTMLButtonElement>()
 
     private fun message() = container.querySelector(".pb-email-signup-message")?.textContent.orEmpty()
 
@@ -133,5 +134,73 @@ class NewsletterSignupTest : ComponentTest() {
         runTest {
             mount(Fake())
             assertEquals("/privacy", container.querySelector("a.pb-email-signup-privacy")?.getAttribute("href"))
+        }
+
+    @Test
+    fun onWideScreensThePrivacyLinkNeverMakesTheBarTaller() =
+        runTest {
+            mount(Fake())
+            // Phones stack title, field and link; the wide layout keeps the link beside the field.
+            if (window.innerWidth <= 640) return@runTest
+            val privacy = assertNotNull(container.querySelector("a.pb-email-signup-privacy"))
+            val withLink = bar().getBoundingClientRect().height
+            privacy.asDynamic().style.display = "none"
+            assertEquals(withLink, bar().getBoundingClientRect().height)
+        }
+
+    private fun bar() = assertNotNull(container.querySelector("#newsletter.newsletter-bar"))
+
+    private fun shown() =
+        bar()
+            .getAttribute("class")
+            .orEmpty()
+            .split(" ")
+            .contains("is-shown")
+
+    private val scrollTo = js("(y) => { window.scrollTo(0, y); window.dispatchEvent(new Event('scroll')); }")
+
+    @Test
+    fun theBarSlidesUpOnceTheReaderScrollsAndStays() =
+        runTest {
+            val spacer = web.dom.document.createElement("div")
+            spacer.asDynamic().style.height = "4000px"
+            web.dom.document.body
+                .appendChild(spacer)
+            try {
+                scrollTo(0)
+                mount(Fake())
+                assertEquals(false, shown(), "hidden at the top of the page")
+                assertEquals("Newsletter sign-up", bar().getAttribute("aria-label"))
+                scrollTo(600)
+                waitFor { shown() }
+                assertEquals(true, shown())
+                scrollTo(0)
+                waitFor { !shown() }
+                assertEquals(true, shown(), "it stays once shown")
+            } finally {
+                scrollTo(0)
+                spacer.remove()
+            }
+        }
+
+    @Test
+    fun closingHidesTheBarUntilTheNewsletterLinkIsFollowed() =
+        runTest {
+            window.location.hash = "#newsletter"
+            try {
+                mount(Fake())
+                waitFor { shown() }
+                assertEquals(true, shown(), "the header link opens it")
+                val close = assertNotNull(container.querySelector("button.newsletter-close")).unsafeCast<HTMLButtonElement>()
+                assertEquals("Close newsletter sign-up", close.getAttribute("aria-label"))
+                flushSync { close.click() }
+                assertEquals(false, shown())
+                assertEquals("", window.location.hash, "closing clears the link's target so it can be followed again")
+                window.location.hash = "#newsletter"
+                waitFor { shown() }
+                assertEquals(true, shown())
+            } finally {
+                window.asDynamic().history.replaceState(null, "", window.location.pathname)
+            }
         }
 }
