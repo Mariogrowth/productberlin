@@ -56,34 +56,7 @@ val StartupRow =
                 div {
                     className = ClassName("company-title")
                     h3 { +company.name }
-                    val movement = company.movement
-                    span {
-                        className =
-                            ClassName(
-                                when {
-                                    movement == null -> "movement new"
-                                    movement > 0 -> "movement up"
-                                    movement < 0 -> "movement down"
-                                    else -> "movement steady"
-                                },
-                            )
-                        title =
-                            when {
-                                movement == null -> "New this week"
-                                movement > 0 -> "Up $movement places"
-                                movement < 0 -> "Down ${-movement} places"
-                                else -> "No change this week"
-                            }
-                        ariaLabel = title
-                        +(
-                            when {
-                                movement == null -> "NEW"
-                                movement > 0 -> "▴ $movement"
-                                movement < 0 -> "▾ ${-movement}"
-                                else -> "—"
-                            }
-                        )
-                    }
+                    MovementBadge { movement = company.movement }
                 }
                 p {
                     className = ClassName("company-description")

@@ -7,7 +7,8 @@ import net.productberlin.domain.entity.WeeklyStory
 
 /**
  * Reads the amount, deal and senior role from a story's English translation first, then its original headline, in
- * English and German. Deterministic keyword rules, like [ClassifyHeadline].
+ * English and German, and which of the story's companies it names as an investor. Deterministic keyword rules, like
+ * [ClassifyHeadline].
  */
 class ReadHeadlineFacts {
     operator fun invoke(story: WeeklyStory): HeadlineFacts {
@@ -24,6 +25,21 @@ class ReadHeadlineFacts {
                 texts.firstNotNullOfOrNull { ROLE.find(it)?.value }?.uppercase()?.let {
                     if (it.startsWith("CO-CHEF")) "CO-CEO" else it
                 },
+            investors = story.companies.filter { company -> texts.any { investor(company).containsMatchIn(it) } }.toSet(),
+        )
+    }
+
+    /**
+     * "Zalando backs Sereact", "Zalando invests in …", "Zalando-backed Sereact", "… led by Zalando", "Zalando investiert
+     * in …", "Zalando beteiligt sich an …": the company is the money, not the news.
+     */
+    private fun investor(company: String): Regex {
+        val name = Regex.escape(company.lowercase())
+        return Regex(
+            """(?<![\p{L}\p{N}])$name(?:'s|’s)?(?:\s+(?:backs|invests|co-invests|co-leads|leads (?:the |a )?\S+ round|""" +
+                """investiert|beteiligt sich|steigt bei)|-backed|\s+backed)""" +
+                """|(?:led|co-led|backed|funded) by\s+(?:\S+\s+){0,2}?$name(?![\p{L}\p{N}])""" +
+                """|(?:angeführt|unterstützt) von\s+(?:\S+\s+){0,2}?$name(?![\p{L}\p{N}])""",
         )
     }
 

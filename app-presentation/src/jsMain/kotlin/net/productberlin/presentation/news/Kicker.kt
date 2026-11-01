@@ -45,6 +45,24 @@ internal fun WeeklyStory.kicker(): String? {
     }
 }
 
+/**
+ * The story as a sidebar deal: a funding round, an exit or a bid, under the first company that is not named as the
+ * investor; null for any other news, or when every company is the backer ("Zalando backs Sereact", Sereact not
+ * catalogued).
+ */
+internal fun WeeklyStory.deal(): Deal? {
+    val facts = READ_FACTS(this)
+    val company = companies.firstOrNull { it !in facts.investors } ?: return null
+    val kind =
+        when {
+            category == NewsCategory.Funding -> "Funding"
+            category == NewsCategory.Growth && facts.deal == DealKind.Exit -> "Exit"
+            category == NewsCategory.Growth && facts.deal == DealKind.Bid -> "Bid"
+            else -> return null
+        }
+    return Deal(company, kind, facts.amount?.label(), this)
+}
+
 /** The amount in millions of euros or dollars, for comparing rounds; null when the headline names none. */
 internal fun WeeklyStory.amountMillions(): Double? = READ_FACTS(this).amount?.millions
 

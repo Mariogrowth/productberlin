@@ -47,4 +47,28 @@ class ReadHeadlineFactsTest {
         assertEquals("CO-CEO", facts("Judith Dada wird Co-Chefin von Langdock").role)
         assertEquals(HeadlineFacts(null, null, null), facts("Ecosia im Interview"))
     }
+
+    private fun investors(
+        headline: String,
+        vararg companies: String,
+    ) = read(WeeklyStory("id", companies.toList(), NewsCategory.Funding, headline, "Publisher", "2026-10-01T09:00:00.000Z")).investors
+
+    @Test
+    fun companiesNamedAsTheBackerAreInvestorsNotTheCompanyRaising() {
+        assertEquals(setOf("Zalando"), investors("Zalando backs robotics startup Sereact in Series B for fashion returns", "Zalando"))
+        assertEquals(setOf("Zalando"), investors("Zalando invests in Berlin robotics startup", "Zalando"))
+        assertEquals(setOf("Zalando"), investors("Zalando-backed Sereact raises €25M", "Zalando"))
+        assertEquals(setOf("Zalando"), investors("Sereact raises €25M in a round led by Zalando", "Zalando"))
+        assertEquals(setOf("Zalando"), investors("Zalando investiert in Robotik-Startup Sereact", "Zalando"))
+        assertEquals(setOf("Zalando"), investors("Zalando steigt bei Sereact ein", "Zalando"))
+        assertEquals(setOf("N26"), investors("finmid raises €17M, backed by N26 founders", "finmid", "N26"))
+    }
+
+    @Test
+    fun companiesRaisingOrNamedOtherwiseAreNotInvestors() {
+        assertEquals(emptySet(), investors("finmid raises €17M to push embedded lending", "finmid"))
+        assertEquals(emptySet(), investors("Personio acquires Circula", "Personio", "Circula"))
+        assertEquals(emptySet(), investors("Zalandoo backs a startup", "Zalando"), "whole names only")
+        assertEquals(emptySet(), investors("Backers line up for Zalando’s logistics arm", "Zalando"))
+    }
 }

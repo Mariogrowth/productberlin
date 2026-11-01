@@ -82,19 +82,58 @@ class FrontPageTest {
             "one per category in order (growth, people, launches, trouble, funding), each company once; an exit beats " +
                 "expansion news from a less covered company",
         )
-        assertEquals("Ecosia", page.ticker.first().company, "newest first")
-        assertEquals(setOf("Ecosia", "Circula", "N26", "Trade Republic"), page.ticker.map { it.company }.toSet())
         assertEquals(
-            listOf("t2", "t3"),
-            page.ticker.single { it.company == "Trade Republic" }.let {
-                listOf(it.newest.id) +
-                    it.more.map { s -> s.id }
-            },
+            listOf(
+                Deal("Circula", "Exit", null, page.teasers.first()),
+                Deal("Noxtua", "Funding", "€100M", page.lead!!),
+                Deal("finmid", "Funding", "€17M", page.teasers.last()),
+            ),
+            page.deals,
+            "exits first, then the biggest rounds; growth, launches and other coverage are not deals",
         )
     }
 
     @Test
-    fun withoutFundingTheMostCoveredStoryLeadsAndOneCompanyTakesOneTickerLine() {
+    fun dealsKeepOneLinePerCompanyAndIncludeBids() {
+        val page =
+            WeeklyNews(
+                "Week",
+                listOf(
+                    story("a1", "A", NewsCategory.Funding, "A raises €5M"),
+                    story("a2", "A", NewsCategory.Funding, "A bags €5 million", outlets = 3),
+                    story("b1", "B", NewsCategory.Funding, "B closes its seed round"),
+                    story("d1", "Delivery Hero", NewsCategory.Growth, "Uber’s \$14.8 Billion Takeover Bid for Delivery Hero"),
+                ),
+            ).toFrontPage()
+        assertEquals(
+            listOf("Delivery Hero" to "Bid", "A" to "Funding", "B" to "Funding"),
+            page.deals.map { it.company to it.kind },
+        )
+        assertEquals("a2", page.deals[1].story.id, "the better covered report of the same round")
+        assertEquals(listOf("\$14.8B", "€5M", null), page.deals.map { it.amount })
+    }
+
+    @Test
+    fun anInvestorIsNeverListedAsTheCompanyRaising() {
+        val backer =
+            WeeklyStory(
+                "z1",
+                listOf("Zalando"),
+                NewsCategory.Funding,
+                "Zalando backs robotics startup Sereact in Series B for fashion returns",
+                "Dealroom",
+                "2026-10-09T09:00:00.000Z",
+            )
+        val both = backer.copy(id = "s1", companies = listOf("Zalando", "Sereact"), headline = "Zalando-backed Sereact raises €25M")
+        assertEquals(emptyList(), WeeklyNews("Week", listOf(backer)).toFrontPage().deals, "the raising company is not catalogued")
+        assertEquals(
+            listOf(Deal("Sereact", "Funding", "€25M", both)),
+            WeeklyNews("Week", listOf(both)).toFrontPage().deals,
+        )
+    }
+
+    @Test
+    fun withoutFundingTheMostCoveredStoryLeads() {
         val page =
             WeeklyNews(
                 "Week",
@@ -106,9 +145,7 @@ class FrontPageTest {
                 ),
             ).toFrontPage()
         assertEquals("t1", page.lead?.id)
-        val line = page.ticker.single()
-        assertEquals("t3", line.newest.id)
-        assertEquals(listOf("t2", "t4"), line.more.map { it.id })
+        assertEquals(emptyList(), page.deals)
     }
 
     @Test

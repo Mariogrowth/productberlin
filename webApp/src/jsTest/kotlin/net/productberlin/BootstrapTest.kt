@@ -49,7 +49,7 @@ class BootstrapTest {
     private suspend fun verifyRoute(
         path: String,
         loadsApi: Boolean,
-        expectedText: String = if (loadsApi) "Bootstrap week" else "design system",
+        expectedText: String = if (loadsApi) LOADED_RANKING else "design system",
         afterMount: () -> Unit = {},
     ) {
         val global = js("globalThis")
@@ -65,7 +65,7 @@ class BootstrapTest {
                 requests += if (jsTypeOf(input) == "string") input as String else input.url as String
                 Promise.resolve<dynamic>(
                     js(
-                        "new Response(JSON.stringify({weekLabel:'Bootstrap week',startups:[],isMock:false}),{headers:{'content-type':'application/json'}})",
+                        "new Response(JSON.stringify({weekLabel:'Bootstrap week',startups:[],isMock:false,updatedAt:'2026-09-28T06:00:00Z',articleCount:7}),{headers:{'content-type':'application/json'}})",
                     ),
                 )
             }
@@ -75,7 +75,7 @@ class BootstrapTest {
             withContext(Dispatchers.Default) {
                 repeat(100) {
                     val text = element.textContent.orEmpty()
-                    if (text.contains(expectedText, ignoreCase = true) && (!loadsApi || text.contains("Bootstrap week"))) return@withContext
+                    if (text.contains(expectedText, ignoreCase = true) && (!loadsApi || text.contains(LOADED_RANKING))) return@withContext
                     delay(10)
                 }
             }
@@ -83,8 +83,8 @@ class BootstrapTest {
                 // The homepage loads the ranking, the week's news and the coming week's events.
                 val expected = listOf("/api/rankings/weekly", "/api/news/weekly", "/api/events")
                 assertEquals(expected.map { "${window.location.origin}$it" }.sorted(), requests.sorted())
-                assertTrue(element.textContent.orEmpty().contains("Bootstrap week"))
-                assertTrue(element.textContent.orEmpty().contains("A quiet week"))
+                // The ranking lists are hidden for now; the footer still reports the loaded edition.
+                assertTrue(element.textContent.orEmpty().contains(LOADED_RANKING))
             } else {
                 assertTrue(requests.isEmpty())
             }
@@ -98,3 +98,5 @@ class BootstrapTest {
         }
     }
 }
+
+private const val LOADED_RANKING = "Last updated 2026-09-28 · 7 articles reviewed"

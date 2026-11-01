@@ -21,7 +21,7 @@ external interface CatchUpBandProps : Props {
     var label: String?
 }
 
-/** Earlier stories still worth knowing, one compact row each: kicker, headline, company, outlets and date. */
+/** Earlier stories still worth knowing, one compact row each: kicker with the company logo below, headline, company, outlets and date. */
 val CatchUpBand =
     FC<CatchUpBandProps> { props ->
         section {
@@ -39,9 +39,20 @@ val CatchUpBand =
                 props.stories.forEach { story ->
                     li {
                         key = Key(story.id)
-                        p {
-                            className = ClassName("news-kicker")
-                            +(story.kicker() ?: "")
+                        // The category, with the company's logo below it.
+                        div {
+                            className = ClassName("catch-up-label")
+                            p {
+                                className = ClassName("news-kicker")
+                                +(story.kicker() ?: "")
+                            }
+                            CompanyMark {
+                                companyId = story.companyId
+                                companyName = story.companies.first()
+                                logoUrl = story.logoUrl
+                                logoFallbackUrl = story.logoFallbackUrl
+                                variant = "catch-up-mark"
+                            }
                         }
                         div {
                             Headline { this.story = story }

@@ -9,7 +9,8 @@ import net.productberlin.domain.entity.WeeklyStory
  *   never trouble unless there is nothing else.
  * - **Teasers:** up to four, one per category (growth and exits, people, launches, trouble, funding) and company,
  *   preferring exits, then companies with fewer stories in the period.
- * - **Ticker:** everything else, newest first, one line per company, so a company in the news every day takes one line.
+ * - **Deals:** the period's funding rounds, exits and bids, one per company: exits first, then the biggest amounts,
+ *   then the most covered. Other coverage (interviews, round-ups, opinion) is not shown.
  * - **Catch up:** up to four of the earlier weeks' weightiest stories, skipping companies already featured; hidden
  *   with fewer than two, so a quiet month is not padded with weak news.
  */
@@ -42,12 +43,16 @@ internal fun WeeklyNews.toFrontPage(): FrontPage {
             ?.let { teasers += it }
     }
     val shown = (listOfNotNull(lead) + teasers).toSet()
-    val ticker =
+    val deals =
         stories
-            .filter { it !in shown }
-            .sortedWith(compareByDescending<WeeklyStory> { it.publishedAt }.thenBy { it.id })
-            .groupBy { it.companies.joinToString(" · ") }
-            .map { (company, list) -> TickerLine(company, list.first(), list.drop(1)) }
+            .mapNotNull { it.deal() }
+            .sortedWith(
+                compareBy<Deal> { it.kind != "Exit" }
+                    .thenByDescending { it.story.amountMillions() ?: -1.0 }
+                    .thenByDescending { it.story.alsoIn.size }
+                    .thenByDescending { it.story.publishedAt },
+            ).distinctBy { it.company }
+            .take(MAX_DEALS)
     // Older stories worth catching up on, unless their company is already featured above.
     val featured = shown.flatMap { it.companies }.toSet()
     val catchUp =
@@ -56,10 +61,11 @@ internal fun WeeklyNews.toFrontPage(): FrontPage {
             .take(MAX_CATCH_UP)
             .takeIf { it.size >= MIN_CATCH_UP }
             .orEmpty()
-    return FrontPage(lead, teasers, ticker, catchUp)
+    return FrontPage(lead, teasers, deals, catchUp)
 }
 
 private const val MAX_TEASERS = 4
+private const val MAX_DEALS = 6
 private const val MAX_CATCH_UP = 4
 private const val MIN_CATCH_UP = 2
 
